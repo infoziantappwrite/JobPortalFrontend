@@ -33,7 +33,7 @@ const ProfileSidebar = ({ user }) => {
   const commonMenu = [
     // Only add "My Profile" here for roles other than candidate
     ...(role !== 'candidate' ? [{ key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` }] : []),
-    { key: 'changepassword', label: 'Change Password', icon: <FiLock />, path: `/${role}/profile/changepassword` },
+    { key: 'changepassword', label: 'Change Password', icon: <FiLock />, path: `/${role}/profileview/changepassword` },
   ];
 
   // Merge the role-specific menu and common menu

@@ -28,6 +28,7 @@ import EditProfile from './pages/EditProfile';
 import AppliedJobs from './pages/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
+import ChangePass from './pages/ChangePass';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -195,21 +196,25 @@ function App() {
             <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
             <Route path="editprofile" element={<EditProfile user={user} />} />
+            <Route path="changepassword" element={<ChangePass user={user} />} />
           </Route>
 
           <Route path="/employee/profileview" element={<ProfileSidebar user={user} />}>
             <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
+            <Route path="changepassword" element={<ChangePass user={user} />} />
           </Route>
 
           <Route path="/admin/profileview" element={<ProfileSidebar user={user} />}>
             <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
+            <Route path="changepassword" element={<ChangePass user={user} />} />
           </Route>
 
           <Route path="/superadmin/profileview" element={<ProfileSidebar user={user} />}>
             <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
+            <Route path="changepassword" element={<ChangePass user={user} />} />
           </Route>
 
 
