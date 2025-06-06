@@ -20,6 +20,7 @@ import AboutMe from './pages/AboutMe';
 import About from './pages/About';
 import AllJobs from './components/AllJobs';
 import DashboardLayout from './components/DashboardLayout';
+import ProfileSidebar from './components/ProfileSidebar';
 import JobApplicationForm from './components/JobApplicationForm';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
@@ -64,8 +65,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/employee/profile" element={<AboutMe />} />
           <Route path="/candidate/profile" element={<AboutMe />} />
-
-
+          {/* <Route path="/candidate/profileview" element={<ProfileSidebar />} /> */}
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
 
@@ -77,8 +77,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-
 
           <Route
             path="/postjob"
@@ -140,10 +138,6 @@ function App() {
             <Route path="applicants" element={<div>All Applicants</div>} />
             <Route path="shortlisted" element={<div>Shortlisted Resumes</div>} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
-
-
-
-
           </Route>
 
           <Route
@@ -161,11 +155,8 @@ function App() {
             <Route path="applicants" element={<div>All Applicants</div>} />
             <Route path="shortlisted" element={<div>Shortlisted Resumes</div>} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
-
-
-
-
           </Route>
+
            <Route
             path="/superadmin"
             element={
@@ -175,11 +166,7 @@ function App() {
             }
           >
             <Route path="dashboard" element={<ApproveRequests/>} />
-            
-
-
-
-          </Route>
+            </Route>
 
           <Route
             path="/candidate"
@@ -199,8 +186,35 @@ function App() {
             <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />
             <Route path="cv-manager" element={<div>CV Manager</div>} />
             <Route path="change-password" element={<div>Change Password</div> }/>
-
           </Route>
+
+          {/* <Route
+            path="/profiles"
+            element={
+              <ProtectedRoute user={user} roles={['candidate']}>
+                <ProfileSidebar user={user} />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<div>candidate Dashboard</div>} />
+            <Route path="jobs" element={<div>Jobs</div>} />
+            <Route path="resume" element={<div>My Resume</div>} />
+            <Route path="myprofile" element={<div>Applied Jobs</div>} />
+            <Route path="view-edit-profile" element={<EditProfile user={user} />} />
+            <Route path="alerts" element={<div>Job Alerts</div>} />
+            <Route path="messages" element={<div>Messages</div>} />
+            <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />
+            <Route path="cv-manager" element={<div>CV Manager</div>} />
+            <Route path="change-password" element={<div>Change Password</div> }/>
+          </Route> */}
+
+          <Route path="/candidate/profileview" element={<ProfileSidebar user={user} />}>
+            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route path="myprofile" element={<AboutMe />} />
+            <Route path="editprofile" element={<EditProfile user={user} />} />
+          </Route>
+
+
           <Route
             path="*"
             element={
