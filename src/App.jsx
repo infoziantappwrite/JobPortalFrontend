@@ -29,6 +29,7 @@ import AppliedJobs from './pages/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
+import ShortlistedJobs from './pages/ShortlistedJobs';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -187,7 +188,7 @@ function App() {
             <Route path="view-edit-profile" element={<EditProfile user={user} />} />
             <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
-            <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />
+            <Route path="shortlisted" element={<ShortlistedJobs user={user} />} />
             <Route path="cv-manager" element={<div>CV Manager</div>} />
             <Route path="change-password" element={<div>Change Password</div> }/>
           </Route>
