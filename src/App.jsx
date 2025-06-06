@@ -26,6 +26,8 @@ import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EditProfile from './pages/EditProfile';
 import AppliedJobs from './pages/AppliedJobs';
+import Shortlisted from './pages/ShortlistedCandidates';
+import Applicants from './pages/Applicants';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -135,8 +137,8 @@ function App() {
             <Route path="dashboard" element={<DashboardEMP/>} />
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobList/>} />
-            <Route path="applicants" element={<div>All Applicants</div>} />
-            <Route path="shortlisted" element={<div>Shortlisted Resumes</div>} />
+            <Route path="applicants" element={<Applicants />} />
+            <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
           </Route>
 
