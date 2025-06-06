@@ -23,6 +23,7 @@ import DashboardLayout from './components/DashboardLayout';
 import JobApplicationForm from './components/JobApplicationForm';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
+import EditProfile from './pages/EditProfile';
 import Sidebar from './components/Sidebar';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -63,6 +64,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/employee/profile" element={<AboutMe />} />
           <Route path="/candidate/profile" element={<AboutMe />} />
+
 
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
@@ -189,9 +191,9 @@ function App() {
           >
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
             <Route path="jobs" element={<div>Jobs</div>} />
-
             <Route path="resume" element={<div>My Resume</div>} />
             <Route path="applied" element={<div>Applied Jobs</div>} />
+            <Route path="view-edit-profile" element={<EditProfile user={user} />} />
             <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />

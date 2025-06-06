@@ -24,7 +24,7 @@ const DashboardLayout = ({ user }) => {
   candidate: [
     { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/candidate/dashboard' },
     { key: 'jobs', label: 'Jobs', icon: <FiBriefcase />, path: '/candidate/jobs' },
-   
+    { key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: '/candidate/view-edit-profile' }, 
     { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
     { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
     { key: 'alerts', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
