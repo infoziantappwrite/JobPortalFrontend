@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import signUp from '../assets/SignUpPage.png';
 import apiClient from '../api/apiClient';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [resendLinkVisible, setResendLinkVisible] = useState(false);
   const [verificationLink, setVerificationLink] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -84,14 +86,26 @@ const Login = ({ setUser }) => {
               className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
+            <div className="relative">
+              <input
+                type={isPasswordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+              <span
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              >
+                {isPasswordVisible ? (
+                  <FiEyeOff size={16} className="text-gray-600" />
+                ) : (
+                  <FiEye size={16} className="text-gray-600" />
+                )}
+              </span>
+            </div>
 
             <div className="flex justify-between items-center text-sm">
               <label className="flex items-center gap-2">
