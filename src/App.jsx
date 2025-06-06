@@ -197,6 +197,21 @@ function App() {
             <Route path="editprofile" element={<EditProfile user={user} />} />
           </Route>
 
+          <Route path="/employee/profileview" element={<ProfileSidebar user={user} />}>
+            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route path="myprofile" element={<AboutMe />} />
+          </Route>
+
+          <Route path="/admin/profileview" element={<ProfileSidebar user={user} />}>
+            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route path="myprofile" element={<AboutMe />} />
+          </Route>
+
+          <Route path="/superadmin/profileview" element={<ProfileSidebar user={user} />}>
+            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route path="myprofile" element={<AboutMe />} />
+          </Route>
+
 
           <Route
             path="*"
