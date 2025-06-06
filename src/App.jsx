@@ -25,7 +25,7 @@ import JobApplicationForm from './components/JobApplicationForm';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EditProfile from './pages/EditProfile';
-import Sidebar from './components/Sidebar';
+import AppliedJobs from './pages/AppliedJobs';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -177,9 +177,9 @@ function App() {
             }
           >
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
-            <Route path="jobs" element={<div>Jobs</div>} />
+            <Route path="jobs" element={<JobList user={user} />} />
             <Route path="resume" element={<div>My Resume</div>} />
-            <Route path="applied" element={<div>Applied Jobs</div>} />
+            <Route path="applied" element={<AppliedJobs user={user} />} />
             <Route path="view-edit-profile" element={<EditProfile user={user} />} />
             <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
@@ -187,26 +187,6 @@ function App() {
             <Route path="cv-manager" element={<div>CV Manager</div>} />
             <Route path="change-password" element={<div>Change Password</div> }/>
           </Route>
-
-          {/* <Route
-            path="/profiles"
-            element={
-              <ProtectedRoute user={user} roles={['candidate']}>
-                <ProfileSidebar user={user} />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<div>candidate Dashboard</div>} />
-            <Route path="jobs" element={<div>Jobs</div>} />
-            <Route path="resume" element={<div>My Resume</div>} />
-            <Route path="myprofile" element={<div>Applied Jobs</div>} />
-            <Route path="view-edit-profile" element={<EditProfile user={user} />} />
-            <Route path="alerts" element={<div>Job Alerts</div>} />
-            <Route path="messages" element={<div>Messages</div>} />
-            <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />
-            <Route path="cv-manager" element={<div>CV Manager</div>} />
-            <Route path="change-password" element={<div>Change Password</div> }/>
-          </Route> */}
 
           <Route path="/candidate/profileview" element={<ProfileSidebar user={user} />}>
             <Route index element={<AboutMe />} /> {/* Default - My Profile */}

@@ -25,8 +25,7 @@ const DashboardLayout = ({ user }) => {
     { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/candidate/dashboard' },
     { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
     { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
-    { key: 'alerts', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
-    { key: 'messages', label: 'Messages', icon: <FiMessageCircle />, path: '/candidate/messages' },
+    { key: 'jobs', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
     { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
     { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
    
