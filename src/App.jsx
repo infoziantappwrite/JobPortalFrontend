@@ -192,25 +192,26 @@ function App() {
           </Route>
 
           <Route path="/candidate/profileview" element={<ProfileSidebar user={user} />}>
-            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
             <Route path="editprofile" element={<EditProfile user={user} />} />
           </Route>
 
           <Route path="/employee/profileview" element={<ProfileSidebar user={user} />}>
-            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
           </Route>
 
           <Route path="/admin/profileview" element={<ProfileSidebar user={user} />}>
-            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
           </Route>
 
           <Route path="/superadmin/profileview" element={<ProfileSidebar user={user} />}>
-            <Route index element={<AboutMe />} /> {/* Default - My Profile */}
+            <Route index element={<AboutMe />} />
             <Route path="myprofile" element={<AboutMe />} />
           </Route>
+
 
 
           <Route

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
-  FiUser, FiBarChart2, FiMenu, FiX
+  FiUser, FiBarChart2, FiMenu, FiX, FiLock
 } from 'react-icons/fi';
 
 const ProfileSidebar = ({ user }) => {
@@ -18,28 +18,37 @@ const ProfileSidebar = ({ user }) => {
     );
   }
 
-  const role = user?.role?.toLowerCase();
+  const role = user?.role?.toLowerCase(); // Get the role dynamically (candidate, admin, etc.)
 
+  // Define role-specific menu items dynamically
   const roleSpecificMenu = {
     candidate: [
-      { key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: '/candidate/profileview/myprofile' },
-      { key: 'editprofile', label: 'Edit Profile', icon: <FiBarChart2 />, path: '/candidate/profileview/editprofile' },
+      { key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` },
+      { key: 'editprofile', label: 'Edit Profile', icon: <FiBarChart2 />, path: `/${role}/profileview/editprofile` },
     ],
+    // Other roles can be added here if necessary
   };
 
-  const menu = [...(roleSpecificMenu[role] || [])];
+  // Define common menu items that will appear for all roles
+  const commonMenu = [
+    // Only add "My Profile" here for roles other than candidate
+    ...(role !== 'candidate' ? [{ key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` }] : []),
+    { key: 'changepassword', label: 'Change Password', icon: <FiLock />, path: `/${role}/profile/changepassword` },
+  ];
+
+  // Merge the role-specific menu and common menu
+  const menu = [...(roleSpecificMenu[role] || []), ...commonMenu];
 
   // Detect active tab from URL
   useEffect(() => {
     const path = location.pathname;
-
     const matchedItem = menu.find(item => path.includes(item.key));
     if (matchedItem) {
       setActiveTab(matchedItem.key);
     } else {
       setActiveTab('myprofile'); // fallback default
     }
-  }, [location.pathname]); // triggers on route change
+  }, [location.pathname, menu]); // added 'menu' dependency to ensure useEffect works correctly
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-jost">
@@ -60,12 +69,9 @@ const ProfileSidebar = ({ user }) => {
 
       {/* Sidebar */}
       <div
-        className={`
-          fixed top-0 left-0 h-full bg-white shadow-lg w-72 z-40
-          transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-full bg-white shadow-lg w-72 z-40 transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0 md:static md:w-64 lg:w-72 md:shadow-md flex flex-col
-        `}
+          md:translate-x-0 md:static md:w-64 lg:w-72 md:shadow-md flex flex-col`}
       >
         {/* Sidebar Header */}
         <div className="p-4 border-b bg-gradient-to-r from-teal-500 to-indigo-600 shadow-md font-jost">
@@ -94,12 +100,7 @@ const ProfileSidebar = ({ user }) => {
                     setSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150
-                    ${
-                      activeTab === key
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'hover:bg-blue-50 text-gray-700 hover:text-blue-700'
-                    }
-                  `}
+                    ${activeTab === key ? 'bg-blue-100 text-blue-800' : 'hover:bg-blue-50 text-gray-700 hover:text-blue-700'}`}
                 >
                   <span className={`text-lg ${activeTab === key ? 'text-blue-700' : ''}`}>{icon}</span>
                   <span className="font-medium text-sm truncate">{label}</span>
