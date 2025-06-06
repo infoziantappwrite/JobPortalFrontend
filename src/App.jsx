@@ -151,11 +151,12 @@ function App() {
             }
           >
             <Route path="dashboard" element={<div>Admin Dashboard</div>} />
-            <Route path="manage-employees" element={<div>manage-employees</div>} />
+            <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobList/>} />
-            <Route path="applicants" element={<div>All Applicants</div>} />
-            <Route path="shortlisted" element={<div>Shortlisted Resumes</div>} />
+            <Route path="create-employees" element={<CreateEmployee />} />
+            <Route path="applicants" element={<Applicants />} />
+            <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
           </Route>
 
