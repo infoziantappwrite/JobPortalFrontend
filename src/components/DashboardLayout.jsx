@@ -1,6 +1,6 @@
 import {  useState } from 'react';
 import { useNavigate,Outlet } from 'react-router-dom';
-import {FiUser, FiBriefcase, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare}from 'react-icons/fi';
+import {FiUser, FiBriefcase, FiLock, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare}from 'react-icons/fi';
 
 
 const DashboardLayout = ({ user }) => {
@@ -23,12 +23,9 @@ const DashboardLayout = ({ user }) => {
  const roleSpecificMenu = {
   candidate: [
     { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/candidate/dashboard' },
-    { key: 'jobs', label: 'Jobs', icon: <FiBriefcase />, path: '/candidate/jobs' },
-   
     { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
     { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
-    { key: 'alerts', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
-    { key: 'messages', label: 'Messages', icon: <FiMessageCircle />, path: '/candidate/messages' },
+    { key: 'jobs', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
     { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
     { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
    
@@ -46,6 +43,7 @@ const DashboardLayout = ({ user }) => {
     { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/admin/dashboard' },
     { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/admin/post-job' },
     { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/admin/manage-employees' },
+    { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/admin/create-employees' },
     { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/admin/manage-jobs' },
     { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/admin/applicants' },
     { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/admin/shortlisted' }

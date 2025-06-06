@@ -151,14 +151,24 @@ export default function Navbar({ user, onLogout }) {
                       Dashboard
                     </Link>
 
-                    <Link
+                    {/* <Link
                       to={`/${user?.role?.toLowerCase()}/profile`}
                        onClick={() => setUserMenuOpen((prev) => !prev)}
                       className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
                     >
                       <FiUserCheck size={16} />
                       My Profile
-                    </Link>
+                    </Link> */}
+
+                    <Link
+                        to={`/${user?.role?.toLowerCase()}/profileview`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
+                      >
+                        <FiUserCheck size={16} />
+                        My Profile
+                      </Link>
+
 
                     <Link
                       to="/account-settings"

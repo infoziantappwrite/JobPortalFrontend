@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import apiClient from '../api/apiClient';
 import { toast } from 'react-toastify';
-import register from '../assets/Register.png'; // Ensure path is correct
+import register from '../assets/Register.png'; 
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -11,6 +13,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('candidate');
   const [verifyUrl, setVerifyUrl] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -89,14 +92,27 @@ const Register = () => {
               className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               required
             />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-              required
-            />
+            <div className="relative">
+              <input
+                type={isPasswordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                required
+              />
+              <span
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              >
+                {isPasswordVisible ? (
+                  <FiEyeOff size={16} className="text-gray-600" />
+                ) : (
+                  <FiEye size={16} className="text-gray-600" />
+                )}
+              </span>
+          </div>
+
             <button
               type="submit"
               className="w-full py-3 text-lg bg-gradient-to-r from-teal-500 to-indigo-800 text-white font-jost rounded-lg hover:bg-indigo-800 transition duration-300"
