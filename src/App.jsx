@@ -198,12 +198,7 @@ function App() {
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<div>Shortlisted Jobs</div>} />
             <Route path="cv-manager" element={<div>CV Manager</div>} />
-
-
-
-
-
-
+            <Route path="change-password" element={<div>Change Password</div> }/>
 
           </Route>
           <Route
