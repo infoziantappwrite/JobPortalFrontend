@@ -15,7 +15,7 @@ const ShortlistedJobs = () => {
   const fetchShortlistedJobs = async () => {
     try {
       setLoadingJobs(true);
-      const res = await apiClient.get('/get-shortlisted-jobs', { withCredentials: true });
+      const res = await apiClient.get('/jobs/get-shortlisted-jobs', { withCredentials: true });
       setJobs(res.data.shortlistedJobs || []);
     } catch (err) {
       setErrorJobs(err.response?.data?.error || 'Failed to load shortlisted jobs.');
