@@ -16,7 +16,7 @@ const ShortlistedJobs = () => {
     try {
       setLoadingJobs(true);
       const res = await apiClient.get('/jobs/get-shortlisted-jobs', { withCredentials: true });
-      setJobs(res.data.shortlistedJobs || []);
+      setJobs(res.data.jobs || []); // backend sends jobs under "jobs"
     } catch (err) {
       setErrorJobs(err.response?.data?.error || 'Failed to load shortlisted jobs.');
     } finally {
@@ -82,14 +82,16 @@ const ShortlistedJobs = () => {
       <ul className="space-y-4">
         {jobs.map((job) => (
           <li
-            key={job.jobID}
+            key={job._id} // use _id as key
             className="border p-4 rounded shadow cursor-pointer hover:bg-gray-50"
             onClick={() => handleJobClick(job)}
           >
             <h3 className="text-xl font-semibold">{job.title}</h3>
             <p className="text-sm text-gray-600">{job.company}</p>
             <p className="text-sm mt-1">Location: {job.location}</p>
-            <p className="text-sm mt-1">Job Description: {job.description.slice(0, 100)}...</p>
+            <p className="text-sm mt-1">
+              Job Description: {(job.description && job.description.length > 100) ? job.description.slice(0, 100) + '...' : job.description || 'N/A'}
+            </p>
           </li>
         ))}
       </ul>
@@ -115,16 +117,6 @@ const ShortlistedJobs = () => {
               {selectedJob.applicationDeadline && (
                 <p><strong>Application Deadline:</strong> {selectedJob.applicationDeadline}</p>
               )}
-
-              <button
-                onClick={() => {
-                  closeJobModal();
-                  openJobDetail(selectedJob.jobID);
-                }}
-                className="text-indigo-600 hover:text-indigo-800 p-2"
-              >
-                View Full Details
-              </button>
             </div>
           </div>
         </div>
@@ -157,8 +149,8 @@ const ShortlistedJobs = () => {
                 </div>
 
                 <div>
-                  <p><span className="font-semibold">Salary Range:</span> {selectedJobDetail.salaryRange}</p>
-                  <p><span className="font-semibold">Application Deadline:</span> {selectedJobDetail.applicationDeadline}</p>
+                  <p><span className="font-semibold">Salary Range:</span> {selectedJobDetail.salaryRange || 'N/A'}</p>
+                  <p><span className="font-semibold">Application Deadline:</span> {selectedJobDetail.applicationDeadline || 'N/A'}</p>
                 </div>
 
                 {selectedJobDetail.applicationInstructions && (
