@@ -3,22 +3,20 @@ import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
   FiUser, FiBarChart2, FiMenu, FiX, FiLock
 } from 'react-icons/fi';
+import { useUser } from '../contexts/UserContext';
 
-const ProfileSidebar = ({ user }) => {
+const ProfileSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('myprofile');
+ const { user,loading} = useUser(); // ✅ Get user and loading state
 
-  if (!user) {
-    return (
-      <p className="text-center mt-10 text-red-500 font-semibold">
-        Please log in to access the dashboard.
-      </p>
-    );
-  }
 
-  const role = user?.role?.toLowerCase(); // Get the role dynamically (candidate, admin, etc.)
+
+  
+  const role = user?.role?.toLowerCase();
+ // Get the role dynamically (candidate, admin, etc.)
 
   // Define role-specific menu items dynamically
   const roleSpecificMenu = {
@@ -49,6 +47,16 @@ const ProfileSidebar = ({ user }) => {
       setActiveTab('myprofile'); // fallback default
     }
   }, [location.pathname, menu]); // added 'menu' dependency to ensure useEffect works correctly
+ if (!user) {
+    return (
+      <p className="text-center mt-10 text-red-500 font-semibold">
+        Please log in to access the dashboard.
+      </p>
+    );
+  }
+  if (loading) {
+  return <div className="flex justify-center items-center h-screen">Loading...</div>;
+}
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-jost">

@@ -4,45 +4,50 @@ import { toast } from 'react-toastify';
 import signUp from '../assets/SignUpPage.png';
 import apiClient from '../api/apiClient';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import Cookies from 'js-cookie';
+import { useUser } from '../contexts/UserContext';
 
-const Login = ({ setUser }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [resendLinkVisible, setResendLinkVisible] = useState(false);
-  const [verificationLink, setVerificationLink] = useState(null);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiClient.post('/login', { email, password });
-      const { token, user } = response.data;
-
-      if (user.role === 'user' && !user.emailVerified) {
+      const response = await apiClient.post('/login', { email, password },{
+          withCredentials: true,
+        });
+      const {token,user } = response.data;
+      if (user.role === 'user' && !user.emailVerified){
         toast.error('Please verify your email before logging in.');
         setResendLinkVisible(true);
-        setVerificationLink(response.data.emailVerificationLink);
         return;
       }
+      
 
       if (user.role === 'admin' && user.status !== 'approved') {
         toast.warn('Your account is pending approval by the Super Admin.');
         return;
       }
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
-
+      Cookies.set('at', token, { expires: 1 }); 
+      
+      
       toast.success('Login successful');
+      await refreshUser();      
+     
+
+      setTimeout(() => {
       navigate('/');
+    }, 1000);
     } catch (error) {
       const status = error.response?.status;
       const data = error.response?.data;
 
       if (status === 403 && data?.emailVerificationLink) {
-        setVerificationLink(data.emailVerificationLink);
         setResendLinkVisible(true);
       }
 
@@ -130,18 +135,7 @@ const Login = ({ setUser }) => {
               <p className="text-red-500 font-jost">
                 Your email is not verified. Please verify to proceed.
               </p>
-              {verificationLink && (
-                <p>
-                  <a
-                    href={verificationLink}
-                    className="text-indigo-600 underline font-jost"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Verify Email
-                  </a>
-                </p>
-              )}
+              
               <button
                 onClick={handleResendVerification}
                 className="text-indigo-600 font-jost underline hover:text-indigo-800"

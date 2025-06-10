@@ -1,17 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUser, FaBars, FaBell, } from 'react-icons/fa';
-import {
-  FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers,
-  FiInfo,
-  FiBriefcase,
-  FiUsers,
-  FiBookOpen
-} from 'react-icons/fi';
+import {FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers,FiInfo,FiBriefcase,FiBookOpen} from 'react-icons/fi';
 import logo from '/src/assets/logos/Logo.png';
 import apiClient from '../api/apiClient';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import { useUser } from '../contexts/UserContext';
 
-export default function Navbar({ user, onLogout }) {
+export default function Navbar() {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
@@ -21,6 +18,11 @@ export default function Navbar({ user, onLogout }) {
   const location = useLocation();
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+ const { user,setUser } = useUser(); // ✅ Get user and loading state
+
+  
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,15 +42,22 @@ export default function Navbar({ user, onLogout }) {
   }, [lastScrollY]);
 
 
-  const handleLogoutClick = async () => {
-    try {
-      await apiClient.post('/logout');
-      if (onLogout) onLogout();
+ const handleLogoutClick = async () => {
+  try {
+    await apiClient.post('/logout');
+   
+    Cookies.remove('at'); // Clear the authentication token cookie
+    toast.success('Logout successful');
+    setUser(null); // Clear user state
+    setUserMenuOpen(false); // Close user menu
+    setTimeout(() => {
       navigate('/login');
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-  };
+    }, 1000);
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
+};
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -69,6 +78,7 @@ export default function Navbar({ user, onLogout }) {
   };
 
   const isActive = (path) => location.pathname === path;
+ 
 
   return (
     <nav
@@ -126,7 +136,7 @@ export default function Navbar({ user, onLogout }) {
 
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-64 bg-white shadow-xl border border-gray-200 rounded-xl z-20 text-sm">
-                  {/* User Info Header */}
+                  {/*   Info Header */}
                   <div className="flex items-center gap-4 px-5 py-4 border-b border-gray-200">
                     <div className="bg-indigo-100 text-indigo-600 p-2 rounded-full">
                       <FiUser size={20} />
