@@ -1,0 +1,144 @@
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from 'react';
+import apiClient from '../api/apiClient';
+import {
+  FiMail, FiPhone, FiUser, FiMapPin, FiBook, FiBriefcase, FiDollarSign,
+  FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink, FiSave,FiUserCheck
+} from 'react-icons/fi';
+
+const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png';
+
+const EditProfile = () => {
+  const [form, setForm] = useState({});
+  const [socials, setSocials] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await apiClient.get('/get-profile');
+        const data = res.data;
+        setForm({
+          ...data.profile,
+          email: data.user.email,
+          website: data.profile.website || '',
+        });
+        setSocials(data.profile.socials || {});
+      } catch (err) {
+        setMessage('Error loading profile.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith('socials.')) {
+      const key = name.split('.')[1];
+      setSocials((prev) => ({ ...prev, [key]: value }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const { email, ...formData } = form; // email is not editable
+      const updated = {
+        ...formData,
+        socials,
+      };
+      await apiClient.put('/edit-profile', updated);
+      setMessage('Profile updated successfully!');
+    } catch (err) {
+      setMessage('Failed to save profile.');
+    }
+  };
+
+  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
+
+  const renderInput = (label, name, icon, value, isLink = false, disabled = false) => (
+    <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
+      <div className="text-indigo-500 mt-1">{icon}</div>
+      <div className="w-full">
+        <p className="text-sm text-gray-600">{label}</p>
+        {isLink && value ? (
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 font-medium hover:underline break-words"
+          >
+            {value}
+          </a>
+        ) : (
+          <input
+            type="text"
+            name={name}
+            value={value || ''}
+            onChange={handleChange}
+            disabled={disabled}
+            className={`w-full mt-1 input bg-white text-gray-800 ${
+              disabled ? 'cursor-not-allowed opacity-60' : ''
+            }`}
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center p-5">
+      <div className="w-full max-w-6xl bg-white p-10 rounded-2xl shadow-xl space-y-10">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <img
+              src={form.profileImageURL || defaultProfileImage}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border shadow"
+            />
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">{form.name || 'Candidate Name'}</h2>
+              <p className="text-sm text-gray-500">{form.jobTitle}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-indigo-600 text-white rounded-lg shadow hover:from-teal-600 hover:to-indigo-700 transition"
+          >
+            <FiSave />
+            Save
+          </button>
+        </div>
+
+        {message && <p className="text-center text-sm text-green-600">{message}</p>}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {renderInput('Email', 'email', <FiMail />, form.email, false, true)}
+          {renderInput('Phone', 'phone', <FiPhone />, form.phone)}
+          {renderInput('Age', 'age', <FiUser />, form.age)}
+          {renderInput('City', 'city', <FiMapPin />, form.city)}
+          {renderInput('Country', 'country', <FiMapPin />, form.country)}
+          {renderInput('Full Address', 'fullAddress', <FiMapPin />, form.fullAddress)}
+          {renderInput('Profile Description', 'profileDescription', <FiBook />, form.profileDescription)}
+          {renderInput('Job Title', 'jobTitle', <FiBriefcase />, form.jobTitle)}
+          {renderInput('Education', 'education', <FiBook />, form.education)}
+          {renderInput('Years of Experience', 'yearsOfExp', <FiBriefcase />, form.yearsOfExp)}
+          {renderInput('Current Salary', 'currentSalary', <FiDollarSign />, form.currentSalary)}
+          {renderInput('Expected Salary', 'expectedSalary', <FiDollarSign />, form.expectedSalary)}
+          {renderInput('Website', 'website', <FiLink />, form.website)}
+          {renderInput('LinkedIn', 'socials.linkedin', <FiLinkedin className="text-blue-600" />, socials.linkedin)}
+          {renderInput('Facebook', 'socials.facebook', <FiFacebook className="text-blue-700" />, socials.facebook)}
+          {renderInput('Twitter', 'socials.twitter', <FiTwitter className="text-sky-400" />, socials.twitter)}
+          {renderInput('Google+', 'socials.googleplus', <FiGlobe className="text-red-500" />, socials.googleplus)}
+            {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditProfile;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/NavBar';
 import Footer from './components/Footer';
@@ -32,29 +32,24 @@ import ChangePass from './pages/ChangePass';
 import ShortlistedJobs from './pages/ShortlistedJobs';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import GlobalLoader from './components/GlobalLoader';
+import ViewProfile from './candidate/ViewProfile';
+import CandidateProfile from './candidate/CandidateProfile';
+import EditProfilecandidate from './candidate/EditProfile';
 
 function App() {
   // user state to track logged in user info
   const [user, setUser] = useState(null);
-
-  // on app mount, get user info from localStorage (if any)
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  // logout handler clears user state and localStorage
+  //console.log('User state:', user);
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    
     setUser(null);
   };
 
 
   return (
     <Router>
+      <GlobalLoader />
       <Navbar user={user} onLogout={handleLogout} />
       <div className="min-h-screen pt-20">
         <Routes>
@@ -193,11 +188,11 @@ function App() {
             <Route path="change-password" element={<div>Change Password</div> }/>
           </Route>
 
-          <Route path="/candidate/profileview" element={<ProfileSidebar user={user} />}>
-            <Route index element={<AboutMe />} />
-            <Route path="myprofile" element={<AboutMe />} />
-            <Route path="editprofile" element={<EditProfile user={user} />} />
-            <Route path="changepassword" element={<ChangePass user={user} />} />
+          <Route path="/candidate/profileview" element={<ProfileSidebar />}>
+            <Route index element={<ViewProfile/>} />
+            <Route path="myprofile" element={<ViewProfile/>} />
+            <Route path="editprofile" element={<EditProfilecandidate/>} />
+            <Route path="changepassword" element={<ChangePass/>} />
           </Route>
 
           <Route path="/employee/profileview" element={<ProfileSidebar user={user} />}>

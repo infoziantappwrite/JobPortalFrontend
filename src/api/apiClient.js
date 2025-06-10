@@ -1,14 +1,13 @@
 import axios from 'axios';
-import { getToken } from './tokenService';
+import Cookies from 'js-cookie';
 
 const apiClient = axios.create({
-  baseURL: 'https://jobportalbackend-production-87e4.up.railway.app/api', // Your backend URL here
-  withCredentials: true, // to allow cookies to be sent
+  baseURL: 'https://jobportalbackend-production-87e4.up.railway.app/api',
+  withCredentials: true,
 });
 
-// Automatically attach token to requests
 apiClient.interceptors.request.use((config) => {
-  const token = getToken();
+  const token = Cookies.get('at'); // using 'at' instead of 'token'
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

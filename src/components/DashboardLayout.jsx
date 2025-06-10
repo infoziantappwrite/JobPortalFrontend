@@ -2,12 +2,15 @@ import {  useState } from 'react';
 import { useNavigate,Outlet } from 'react-router-dom';
 import {FiUser, FiBriefcase, FiLock, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare}from 'react-icons/fi';
 
+import { useUser } from '../contexts/UserContext';
 
-const DashboardLayout = ({ user }) => {
+const DashboardLayout = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  //console.log('User in Dashboard:', user);
+ const { user,loading} = useUser(); // ✅ Get user and loading state
+
+
 
   if (!user) {
     return <p className="text-center mt-10 text-red-500 font-semibold">Please log in to access the dashboard.</p>;
@@ -66,6 +69,21 @@ const DashboardLayout = ({ user }) => {
     ...(roleSpecificMenu[role] || []),
 
   ];
+  if (loading) {
+  return (
+    <p className="text-center mt-10 text-gray-500 font-semibold">
+      Loading user data...
+    </p>
+  );
+}
+
+if (!user) {
+  return (
+    <p className="text-center mt-10 text-red-500 font-semibold">
+      Please log in to access the dashboard.
+    </p>
+  );
+}
 
   
   return (
