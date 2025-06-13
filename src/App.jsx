@@ -37,6 +37,7 @@ import ViewProfile from './candidate/ViewProfile';
 import EditProfilecandidate from './candidate/EditProfile';
 /*candidate jobs*/
 import Jobalerts from './candidate/jobs/Jobalerts';
+import Myresume from './candidate/jobs/Myresume';
 
 function App() {
   // user state to track logged in user info
@@ -180,7 +181,7 @@ function App() {
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
             <Route path="jobs" element={<Jobalerts/>} />
             
-            <Route path="resume" element={<div>My Resume</div>} />
+            <Route path="resume" element={<Myresume/>} />
             <Route path="applied" element={<AppliedJobs user={user} />} />
             <Route path="view-edit-profile" element={<EditProfile user={user} />} />
             <Route path="alerts" element={<div>Job Alerts</div>} />
