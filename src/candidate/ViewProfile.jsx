@@ -5,7 +5,7 @@ import {
 } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
 
-const defaultProfileImage = 'https://www.bing.com/images/search?q=no%20profile%20image&view=detailv2&FORM=IQFRBA&id=ED4493F38A8D5C7DB9D2EBCD1E8132C925837B61&selectedindex=0&&expw=2048&exph=2048&ccid=hGSCbXlc&ck=A77F8862931F94B379864FAD292F2034&simid=607994721149606088&thid=OIP.hGSCbXlcOjL_9mmzerqAbQHaHa&idpp=serp&idpbck=1'; // Use your own fallback image
+const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png'; // Use your own fallback image
 
 const ViewProfile = () => {
   const [profileData, setProfileData] = useState(null);

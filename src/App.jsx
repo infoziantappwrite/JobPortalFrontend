@@ -34,8 +34,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
 import ViewProfile from './candidate/ViewProfile';
-import CandidateProfile from './candidate/CandidateProfile';
 import EditProfilecandidate from './candidate/EditProfile';
+/*candidate jobs*/
+import Jobalerts from './candidate/jobs/Jobalerts';
 
 function App() {
   // user state to track logged in user info
@@ -177,7 +178,8 @@ function App() {
             }
           >
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
-            <Route path="jobs" element={<JobList user={user} />} />
+            <Route path="jobs" element={<Jobalerts/>} />
+            
             <Route path="resume" element={<div>My Resume</div>} />
             <Route path="applied" element={<AppliedJobs user={user} />} />
             <Route path="view-edit-profile" element={<EditProfile user={user} />} />
@@ -194,6 +196,7 @@ function App() {
             <Route path="editprofile" element={<EditProfilecandidate/>} />
             <Route path="changepassword" element={<ChangePass/>} />
           </Route>
+          <Route path="jobdetails" element={<JobDetails />} />
 
           <Route path="/employee/profileview" element={<ProfileSidebar user={user} />}>
             <Route index element={<AboutMe />} />
