@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../api/apiClient';
+import apiClient from '../../api/apiClient';
 import { toast } from 'react-toastify';
-import register from '../assets/Register.png'; 
+import register from '../../assets/Register.png'; 
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Register = () => {
@@ -14,9 +14,10 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    //console.log('Registering with role:', role);
     e.preventDefault();
     try {
-        await apiClient.post(`/register/${role}`, {
+        await apiClient.post(`${role}/auth/register`, {
             name,
             email,
             password,
@@ -130,38 +131,8 @@ const Register = () => {
           </p>
 
           {/* OR Divider */}
-          <div className="flex items-center my-6 w-full max-w-sm">
-            <div className="flex-grow h-px bg-gray-300" />
-            <span className="px-3 text-sm text-gray-500 font-jost">or</span>
-            <div className="flex-grow h-px bg-gray-300" />
-          </div>
-
-          {/* Social Login Buttons - Horizontally Scrollable */}
-          <div className="space-y-3 ">
-            <button
-              type="button"
-              className="w-full flex items-center justify-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition font-jost"
-            >
-              <img
-                src="https://img.icons8.com/color/16/000000/google-logo.png"
-                alt="Google"
-                className="mr-2"
-              />
-              Continue with Google
-            </button>
-            <button
-              type="button"
-              className="w-full flex items-center justify-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition font-jost"
-            >
-              <img
-                src="https://img.icons8.com/color/16/000000/microsoft.png"
-                alt="Microsoft"
-                className="mr-2"
-              />
-              Continue with Microsoft
-            </button>
-          </div>
-          {/* Verification Link */}
+         
+          
           
         </div>
       </div>

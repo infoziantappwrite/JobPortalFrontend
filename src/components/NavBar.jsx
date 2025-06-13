@@ -44,8 +44,9 @@ export default function Navbar() {
 
  const handleLogoutClick = async () => {
   try {
-    await apiClient.post('/logout');
-   
+    await apiClient.post(`${user?.userType?.toLowerCase()}/auth/logout`, {}, {
+      withCredentials: true,
+    });
     Cookies.remove('at'); // Clear the authentication token cookie
     toast.success('Logout successful');
     setUser(null); // Clear user state
@@ -143,14 +144,14 @@ export default function Navbar() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800">{user.name}</p>
-                      <p className="text-xs text-gray-500">{formatRole(user.role)}</p>
+                      <p className="text-xs text-gray-500">{formatRole(user.userType)}</p>
                     </div>
                   </div>
 
                   {/* Menu Links */}
                   <div className="flex flex-col py-2 px-2 space-y-1">
                     <Link
-                      to={`/${user?.role?.toLowerCase()}/dashboard`}
+                      to={`/${user?.userType?.toLowerCase()}/dashboard`}
                        onClick={() => setUserMenuOpen((prev) => !prev)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition ${isActive(`/${user?.role?.toLowerCase()}/dashboard`)
                         ? 'text-indigo-700 font-medium'
@@ -171,7 +172,7 @@ export default function Navbar() {
                     </Link> */}
 
                     <Link
-                        to={`/${user?.role?.toLowerCase()}/profileview`}
+                        to={`/${user?.userType?.toLowerCase()}/profileview`}
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
                       >

@@ -15,7 +15,7 @@ const ProfileSidebar = () => {
 
 
   
-  const role = user?.role?.toLowerCase();
+  const role = user?.userType?.toLowerCase();
  // Get the role dynamically (candidate, admin, etc.)
 
   // Define role-specific menu items dynamically
