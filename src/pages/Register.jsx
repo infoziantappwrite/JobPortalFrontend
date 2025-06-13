@@ -1,31 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import apiClient from '../api/apiClient';
 import { toast } from 'react-toastify';
 import register from '../assets/Register.png'; 
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('candidate');
-  const [verifyUrl, setVerifyUrl] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiClient.post(`/register/${role}`, {
-        name,
-        email,
-        password,
-      });
+        await apiClient.post(`/register/${role}`, {
+            name,
+            email,
+            password,
+          });
       toast.success('Registration successful. Please verify your email.');
-      setVerifyUrl(response.data.emailVerificationLink);
+      
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Registration failed');
@@ -165,21 +162,7 @@ const Register = () => {
             </button>
           </div>
           {/* Verification Link */}
-          {verifyUrl && (
-            <div className="text-sm text-center text-gray-600 mt-4 space-y-2">
-              <p className="text-green-600 font-jost">
-                Registration successful. Please verify your email:
-              </p>
-              <a
-                href={verifyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline font-jost hover:text-blue-800"
-              >
-                Verify Email
-              </a>
-            </div>
-          )}
+          
         </div>
       </div>
     </div>

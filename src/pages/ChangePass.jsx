@@ -37,7 +37,7 @@ const ChangePass = () => {
     
 
     try {
-      await apiClient.post('/reset-password', {
+      await apiClient.post('/change-password', {
         oldPassword,
         newPassword,
       });

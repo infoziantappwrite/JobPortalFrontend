@@ -1,14 +1,16 @@
-import {  useState } from 'react';
-import { useNavigate,Outlet } from 'react-router-dom';
-import {FiUser, FiBriefcase, FiLock, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare}from 'react-icons/fi';
+import { useState } from 'react';
+import { useNavigate, Outlet } from 'react-router-dom';
+import { FiUser, FiBriefcase, FiLock, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare } from 'react-icons/fi';
+import { useLocation } from 'react-router-dom';
+
 
 import { useUser } from '../contexts/UserContext';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
- const { user,loading} = useUser(); // ✅ Get user and loading state
+  const { user, loading } = useUser(); // ✅ Get user and loading state
 
 
 
@@ -23,46 +25,46 @@ const DashboardLayout = () => {
 
   ];
 
- const roleSpecificMenu = {
-  candidate: [
-    { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/candidate/dashboard' },
-    { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
-    { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
-    { key: 'jobs', label: 'Job Listing', icon: <FiBell />, path: '/candidate/jobs' },
-    { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
-    { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
-   
-  ],
-  superadmin: [
-    { key: 'company', label: 'SuperAdmin Profile', icon: <FiUser />, path: '/superadmin/profile' },
-    { key: 'add', label: 'Approve Companies', icon: <FiUsers />, path: '/superadmin/approve-companies' },
-    { key: 'manage', label: 'Manage Companies', icon: <FiUsers />, path: '/superadmin/manage-companies' },
-    { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/superadmin/manage-jobs' },
-    { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/superadmin/applicants' },
-    { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/superadmin/shortlisted' },
-    { key: 'view', label: 'View Profile', icon: <FiUser />, path: '/superadmin/view-profile' }
-  ],
-  admin: [
-    { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/admin/dashboard' },
-    { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/admin/post-job' },
-    { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/admin/manage-employees' },
-    { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/admin/create-employees' },
-    { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/admin/manage-jobs' },
-    { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/admin/applicants' },
-    { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/admin/shortlisted' }
-  ],
-  employee: [
-    { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },
-    { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/employee/post-job' },
-    { key: 'manage-jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/employee/manage-jobs' },
-    { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/employee/applicants' },
-    { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/employee/shortlisted' },
-    { key: 'resume-alerts', label: 'Resume Alerts', icon: <FiBell />, path: '/employee/resume-alerts' }
-  ]
-};
+  const roleSpecificMenu = {
+    candidate: [
+      { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/candidate/dashboard' },
+      { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
+      { key: 'jobs', label: 'Job Alerts', icon: <FiBell />, path: '/candidate/jobs' },
+      { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
+      { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
+      { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
+
+    ],
+    superadmin: [
+      { key: 'company', label: 'SuperAdmin Profile', icon: <FiUser />, path: '/superadmin/profile' },
+      { key: 'add', label: 'Approve Companies', icon: <FiUsers />, path: '/superadmin/approve-companies' },
+      { key: 'manage', label: 'Manage Companies', icon: <FiUsers />, path: '/superadmin/manage-companies' },
+      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/superadmin/manage-jobs' },
+      { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/superadmin/applicants' },
+      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/superadmin/shortlisted' },
+      { key: 'view', label: 'View Profile', icon: <FiUser />, path: '/superadmin/view-profile' }
+    ],
+    admin: [
+      { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/admin/dashboard' },
+      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/admin/post-job' },
+      { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/admin/manage-employees' },
+      { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/admin/create-employees' },
+      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/admin/manage-jobs' },
+      { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/admin/applicants' },
+      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/admin/shortlisted' }
+    ],
+    employee: [
+      { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },
+      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/employee/post-job' },
+      { key: 'manage-jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/employee/manage-jobs' },
+      { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/employee/applicants' },
+      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/employee/shortlisted' },
+      { key: 'resume-alerts', label: 'Resume Alerts', icon: <FiBell />, path: '/employee/resume-alerts' }
+    ]
+  };
 
 
-  
+
 
   const menu = [
     ...commonItems,
@@ -70,22 +72,22 @@ const DashboardLayout = () => {
 
   ];
   if (loading) {
-  return (
-    <p className="text-center mt-10 text-gray-500 font-semibold">
-      Loading user data...
-    </p>
-  );
-}
+    return (
+      <p className="text-center mt-10 text-gray-500 font-semibold">
+        Loading user data...
+      </p>
+    );
+  }
 
-if (!user) {
-  return (
-    <p className="text-center mt-10 text-red-500 font-semibold">
-      Please log in to access the dashboard.
-    </p>
-  );
-}
+  if (!user) {
+    return (
+      <p className="text-center mt-10 text-red-500 font-semibold">
+        Please log in to access the dashboard.
+      </p>
+    );
+  }
 
-  
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 font-jost">
       {/* Mobile Header */}
@@ -130,36 +132,33 @@ if (!user) {
         {/* Menu Items */}
         <div className="flex-1 overflow-y-auto p-4">
           <ul className="space-y-4"> {/* Increased from space-y-1.5 to space-y-3 */}
-            {menu.map(({ key, label, icon,path, isLogout }) => (
-              <li key={key}>
-                <button
-                  onClick={() => {
-                   
-                      
-                   
-                      setActiveTab(key);
-                      navigate(`${path}`);
+            {menu.map(({ key, label, icon, path, isLogout }) => {
+              const isActive = location.pathname.includes(path);
+              return (
+                <li key={key}>
+                  <button
+                    onClick={() => {
+                      navigate(path);
                       setSidebarOpen(false);
-                    }
-                  }
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150
-                ${activeTab === key && !isLogout
-                      ? 'bg-blue-100 text-blue-800'
-                      : isLogout
-                        ? 'hover:bg-red-50 text-gray-600 hover:text-red-700'
-                        : 'hover:bg-blue-50 text-gray-700 hover:text-blue-700'
-                    }
-          `}
-                >
-                  
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150
+          ${isActive && !isLogout
+                        ? 'bg-blue-100 text-blue-800'
+                        : isLogout
+                          ? 'hover:bg-red-50 text-gray-600 hover:text-red-700'
+                          : 'hover:bg-blue-50 text-gray-700 hover:text-blue-700'
+                      }
+        `}
+                  >
+                    <span className={`text-lg ${isActive && !isLogout ? 'text-blue-700' : ''}`}>
+                      {icon}
+                    </span>
+                    <span className="font-medium text-sm truncate">{label}</span>
+                  </button>
+                </li>
+              );
+            })}
 
-                  <span className={`text-lg ${activeTab === key && !isLogout ? 'text-blue-700' : ''}`}>
-                    {icon}
-                  </span>
-                  <span className="font-medium text-sm truncate">{label}</span>
-                </button>
-              </li>
-            ))}
           </ul>
         </div>
 
@@ -179,7 +178,7 @@ if (!user) {
 
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto">
+        <div className=" overflow-y-auto">
           <div className="w-full max-w-7xl mx-auto ">
             <div className=" rounded-lg">
               <Outlet />

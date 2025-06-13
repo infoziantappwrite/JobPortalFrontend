@@ -3,8 +3,12 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import {
   FiMail, FiPhone, FiUser, FiMapPin, FiBook, FiBriefcase, FiDollarSign,
-  FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink, FiSave,FiUserCheck
+  FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink, FiSave, FiUserCheck
 } from 'react-icons/fi';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png';
 
@@ -36,7 +40,13 @@ const EditProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith('socials.')) {
+
+    if (name === 'languages') {
+      setForm((prev) => ({ ...prev, languages: value }));
+    } else if (name === 'categories') {
+      const selected = Array.from(e.target.selectedOptions, (opt) => opt.value);
+      setForm((prev) => ({ ...prev, categories: selected }));
+    } else if (name.startsWith('socials.')) {
       const key = name.split('.')[1];
       setSocials((prev) => ({ ...prev, [key]: value }));
     } else {
@@ -44,19 +54,32 @@ const EditProfile = () => {
     }
   };
 
+
   const handleSave = async () => {
-    try {
-      const { email, ...formData } = form; // email is not editable
-      const updated = {
-        ...formData,
-        socials,
-      };
-      await apiClient.put('/edit-profile', updated);
-      setMessage('Profile updated successfully!');
-    } catch (err) {
-      setMessage('Failed to save profile.');
-    }
-  };
+  try {
+    const { email, languages, ...formData } = form;
+
+    const updated = {
+      ...formData,
+      languages:
+        typeof languages === 'string'
+          ? languages.split(',').map((lang) => lang.trim()).filter(Boolean)
+          : Array.isArray(languages)
+          ? languages
+          : [],
+      socials,
+    };
+
+    await apiClient.put('/edit-profile', updated);
+    toast.success('Profile updated successfully!');
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    //setMessage('Failed to save profile.');
+    toast.error('Failed to save profile.');
+  }
+};
+
+
 
   if (loading) return <p className="text-center mt-10">Loading profile...</p>;
 
@@ -81,9 +104,8 @@ const EditProfile = () => {
             value={value || ''}
             onChange={handleChange}
             disabled={disabled}
-            className={`w-full mt-1 input bg-white text-gray-800 ${
-              disabled ? 'cursor-not-allowed opacity-60' : ''
-            }`}
+            className={`w-full mt-1 input bg-white text-gray-800 ${disabled ? 'cursor-not-allowed opacity-60' : ''
+              }`}
           />
         )}
       </div>
@@ -134,7 +156,37 @@ const EditProfile = () => {
           {renderInput('Facebook', 'socials.facebook', <FiFacebook className="text-blue-700" />, socials.facebook)}
           {renderInput('Twitter', 'socials.twitter', <FiTwitter className="text-sky-400" />, socials.twitter)}
           {renderInput('Google+', 'socials.googleplus', <FiGlobe className="text-red-500" />, socials.googleplus)}
-            {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)}
+          {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)}
+         {renderInput('Languages (comma-separated)', 'languages', <FiGlobe />, Array.isArray(form.languages) ? form.languages.join(', ') : form.languages)}
+
+          <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
+            <div className="text-indigo-500 mt-1"><FiBook /></div>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">Categories</p>
+              <Select
+                isMulti
+                name="categories"
+                menuPlacement="top" // 👈 This forces the menu to open above
+                options={[
+                  { value: 'Banking', label: 'Banking' },
+                  { value: 'Digital & Creative', label: 'Digital & Creative' },
+                  { value: 'Retail', label: 'Retail' },
+                  { value: 'Human Resources', label: 'Human Resources' },
+                  { value: 'Management', label: 'Management' }
+                ]}
+                className="mt-1"
+                classNamePrefix="select"
+                value={(form.categories || []).map((cat) => ({ value: cat, label: cat }))}
+                onChange={(selected) => {
+                  const values = selected.map((option) => option.value);
+                  setForm((prev) => ({ ...prev, categories: values }));
+                }}
+              />
+            </div>
+          </div>
+
+
+
         </div>
       </div>
     </div>
