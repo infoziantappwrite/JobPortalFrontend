@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { FiUser, FiBriefcase, FiLock, FiBell, FiMessageCircle, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare } from 'react-icons/fi';
+import { FiUser, FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 
 
@@ -18,7 +18,7 @@ const DashboardLayout = () => {
     return <p className="text-center mt-10 text-red-500 font-semibold">Please log in to access the dashboard.</p>;
   }
 
-  const role = user?.role?.toLowerCase();
+  const role = user?.userType?.toLowerCase();
 
   const commonItems = [
 
@@ -44,14 +44,14 @@ const DashboardLayout = () => {
       { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/superadmin/shortlisted' },
       { key: 'view', label: 'View Profile', icon: <FiUser />, path: '/superadmin/view-profile' }
     ],
-    admin: [
-      { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/admin/dashboard' },
-      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/admin/post-job' },
-      { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/admin/manage-employees' },
-      { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/admin/create-employees' },
-      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/admin/manage-jobs' },
-      { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/admin/applicants' },
-      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/admin/shortlisted' }
+    company: [
+      { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
+      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/company/post-job' },
+      { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
+      { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/company/create-employees' },
+      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/company/manage-jobs' },
+      { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/company/applicants' },
+      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/company/shortlisted' }
     ],
     employee: [
       { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },

@@ -30,7 +30,7 @@ const ProtectedRoute = ({ children, roles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles && !roles.includes(user.role)) {
+  if (roles && !roles.includes(user.userType)) {
     toast.warn('Unauthorized access. Redirected to home.');
     return <Navigate to="/" replace />;
   }

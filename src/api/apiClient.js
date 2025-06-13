@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const apiClient = axios.create({
-  baseURL: 'https://jobportalbackend-production-87e4.up.railway.app/api',
+  baseURL: 'https://jobportalbackend-production-8f6a.up.railway.app/api/v1',
   withCredentials: true,
 });
 
