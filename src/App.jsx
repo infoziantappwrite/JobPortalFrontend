@@ -35,6 +35,9 @@ import EditProfilecandidate from './candidate/EditProfile';
 import Jobalerts from './candidate/jobs/Jobalerts';
 import Myresume from './candidate/jobs/Myresume';
 import PublicRoute from './components/PublicRoute';
+import EmployeeRegister from './pages/Auth/EmployeeRegister';
+import EmployeeLogin from './pages/Auth/EmployeeLogin';
+import SuperAdminLogin from './pages/Auth/SuperLogin';
 
 function App() {
 
@@ -62,6 +65,39 @@ function App() {
               </PublicRoute>
             }
           />
+          <Route
+            path="/register/employee"
+            element={
+              <PublicRoute>
+                <EmployeeRegister />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/login/employee"
+            element={
+              <PublicRoute>
+                <EmployeeLogin />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/login/admin/super"
+            element={
+              <PublicRoute>
+                <SuperAdminLogin/>
+              </PublicRoute>
+            }
+          />
+          
+
+
+
+
+
+         
+
 
           <Route path="/verify-success" element={<VerifySuccess />} />
           <Route path="/verify-failed" element={<VerifyFailed />} />
@@ -156,19 +192,19 @@ function App() {
           <Route path="/employee/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
           <Route path="/company/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
           <Route path="/superadmin/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
 
