@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import {
-  FiMail, FiPhone, FiUser,FiCheckCircle, FiMapPin, FiBook, FiBriefcase, FiDollarSign, FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink,
+  FiMail, FiPhone, FiUser, FiCheckCircle, FiMapPin, FiBook, FiBriefcase, FiDollarSign, FiGithub, FiGlobe, FiX, FiLinkedin, FiFacebook, FiTwitter, FiLink,
 } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
 
 const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png'; // Use your own fallback image
 
 const ViewProfile = () => {
-  const [profileData, setProfileData] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -16,8 +16,8 @@ const ViewProfile = () => {
     const fetchProfile = async () => {
       try {
         const res = await apiClient.get('/candidate/info/get-profile');
-        //console.log('Profile data:', res.data); // Debugging line to check the response
-        setProfileData(res.data);
+        //console.log('Profile data:', res.data.candidateInfo); 
+        setProfile(res.data.candidateInfo);
       } catch (err) {
         setError('Failed to fetch profile data');
       } finally {
@@ -30,9 +30,8 @@ const ViewProfile = () => {
 
   if (loading) return <p className="text-center mt-10">Loading profile...</p>;
   if (error) return <p className="text-red-600 text-center">{error}</p>;
-  if (!profileData) return <p className="text-center">No profile data found.</p>;
-
-  const { user, profile } = profileData;
+  if (!profile) return <p className="text-center">No profile data found.</p>;
+  console.log(profile)
 
   const Section = ({ title, fields }) => (
     <div className="space-y-4">
@@ -45,13 +44,14 @@ const ViewProfile = () => {
               <p className="text-sm text-gray-600">{label}</p>
               {isLink && value ? (
                 <a
-                  href={value}
+                  href={value.startsWith('http') ? value : `https://${value}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline break-words"
                 >
                   {value}
                 </a>
+
               ) : (
                 <p className="font-medium text-gray-800 break-words">{value || '-'}</p>
               )}
@@ -76,7 +76,7 @@ const ViewProfile = () => {
                 alt="Profile"
                 className="w-28 h-28 rounded-full border object-cover shadow"
               />
-              <span className="text-gray-700 font-semibold">{profile.name || user.fullName}</span>
+              <span className="text-gray-700 font-semibold">{profile.name}</span>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ const ViewProfile = () => {
         <Section
           title="Basic Information"
           fields={[
-            { label: 'Email', value: user.email, icon: <FiMail /> },
+            { label: 'Email', value: profile.email, icon: <FiMail /> },
             { label: 'Phone', value: profile.phone, icon: <FiPhone /> },
             { label: 'Age', value: profile.age, icon: <FiUser /> },
             { label: 'Location', value: `${profile.city}, ${profile.country}`, icon: <FiMapPin /> },
@@ -135,14 +135,14 @@ const ViewProfile = () => {
               isLink: true,
             },
             {
-              label: 'Google+',
-              value: profile.socials.googleplus,
-              icon: <FiGlobe className="text-red-500" />,
+              label: 'Github',
+              value: profile.socials.github,
+              icon: <FiGithub className="text-red-500" />,
               isLink: true,
             },
             {
               label: 'Website',
-              value: profile.website,
+              value: profile.socials.website,
               icon: <FiLink className="text-green-600" />,
               isLink: true,
             },

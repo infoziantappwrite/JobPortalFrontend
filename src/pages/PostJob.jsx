@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
@@ -78,16 +79,7 @@ const PostJob = () => {
           city: form.city,
           address: form.address,
         },
-        careerLevel: form.careerLevel,
-        experienceLevel: form.experienceLevel,
-        gender: form.gender,
-        industry: form.industry,
-        qualification: form.qualification,
-        applicationDeadline: form.applicationDeadline,
-        country: form.country,
-        city: form.city,
-        address: form.address,
-      });
+        );
 
       toast.success('Job posted successfully!');
 
