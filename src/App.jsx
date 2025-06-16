@@ -137,8 +137,7 @@ function App() {
           >
             <Route path="dashboard" element={<div>Admin Dashboard</div>} />
             <Route path="manage-employees" element={<EmployeeList />} />
-            <Route path="post-job" element={<PostJob />} />
-            <Route path="manage-jobs" element={<JobList />} />
+            <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />

@@ -16,7 +16,7 @@ const Jobalerts = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await apiClient.get('/jobs/all');
+        const res = await apiClient.get('/common/job/all');
         console.log('Fetched jobs:', res.data.jobs);
         setJobs(res.data.jobs || []);
       } catch (err) {

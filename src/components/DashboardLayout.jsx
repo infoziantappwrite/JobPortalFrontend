@@ -46,12 +46,10 @@ const DashboardLayout = () => {
     ],
     company: [
       { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
-      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/company/post-job' },
-      { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
+      { key: 'viewJobs', label: 'View Jobs', icon: <FiBriefcase />, path: '/company/view-jobs' },
       { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/company/create-employees' },
-      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/company/manage-jobs' },
-      { key: 'applicants', label: 'All Applicants', icon: <FiUserCheck />, path: '/company/applicants' },
-      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/company/shortlisted' }
+      { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
+      { key: 'approve', label: 'Approve Employees', icon: <FiUserCheck />, path: '/company/approve-employees' },
     ],
     employee: [
       { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },
