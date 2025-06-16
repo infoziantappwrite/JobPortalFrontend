@@ -56,15 +56,27 @@ const PostJob = () => {
     const salaryParts = form.offeredSalary.split('-').map(s => parseInt(s.trim()));
 
     try {
-      await apiClient.post('/employee/job/postjob', {
-        title: form.title,
-        description: form.description,
-        location: form.location,
-        employmentType: form.employmentType,
-        skills: form.skills.split(',').map((s) => s.trim()),
-        salaryRange: {
-          min: salaryParts[0] || 0,
-          max: salaryParts[1] || 0,
+      await apiClient.post(
+        '/employee/job/postjob',
+        {
+          title: form.title,
+          description: form.description,
+          company: form.company,
+          location: form.location,
+          jobType: form.jobType,
+          emailAddress: form.emailAddress,
+          username: form.username,
+          specialisms: form.specialisms.split(',').map((s) => s.trim()),
+          offeredSalary: form.offeredSalary,
+          careerLevel: form.careerLevel,
+          experience: form.experience,
+          gender: form.gender,
+          industry: form.industry,
+          qualification: form.qualification,
+          applicationDeadline: form.applicationDeadline,
+          country: form.country,
+          city: form.city,
+          address: form.address,
         },
         careerLevel: form.careerLevel,
         experienceLevel: form.experienceLevel,
