@@ -37,6 +37,7 @@ import Myresume from './candidate/jobs/Myresume';
 import PublicRoute from './components/PublicRoute';
 import EmployeeRegister from './pages/Auth/EmployeeRegister';
 import EmployeeLogin from './pages/Auth/EmployeeLogin';
+import SuperAdminLogin from './pages/Auth/SuperLogin';
 
 function App() {
 
@@ -77,6 +78,15 @@ function App() {
             element={
               <PublicRoute>
                 <EmployeeLogin />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/login/admin/super"
+            element={
+              <PublicRoute>
+                <SuperAdminLogin/>
               </PublicRoute>
             }
           />
