@@ -3,6 +3,7 @@ import { FiMapPin, FiBriefcase } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../api/apiClient'; // Adjust the import path as necessary
 import { Bell } from 'lucide-react';
+import { useUser } from '../../contexts/UserContext'; // Adjust the import path as necessary
 
 const Jobalerts = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Jobalerts = () => {
   const [locationFilter, setLocationFilter] = useState('');
   const [jobTypeFilter, setJobTypeFilter] = useState('');
   const [jobs, setJobs] = useState([]);
+  const { user,loading} = useUser(); // ✅ Get user and loading state
   
 
   useEffect(() => {
@@ -39,6 +41,8 @@ const Jobalerts = () => {
     (j) => j.companyID === job.companyID && j._id !== job._id // exclude current job
   );
 
+  const role = user?.userType?.toLowerCase();
+
   navigate('/jobdetails', {
     state: {
       jobdetails: job,
@@ -57,9 +61,10 @@ const Jobalerts = () => {
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-  <Bell className="text-blue-600 w-5 h-5" />
-  My Job Alerts
-</h2>
+            <Bell className="text-blue-600 w-5 h-5" />
+            {user?.userType?.toLowerCase() === 'candidate' ? 'My Job Alerts' : 'Posted Jobs'}
+          </h2>
+
           <div className="flex gap-4">
             <select
               className="bg-blue-100 px-4 py-2 rounded-md text-sm text-gray-700"
