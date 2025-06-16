@@ -15,7 +15,8 @@ const ViewProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await apiClient.get('/get-profile');
+        const res = await apiClient.get('/candidate/info/get-profile');
+        //console.log('Profile data:', res.data); // Debugging line to check the response
         setProfileData(res.data);
       } catch (err) {
         setError('Failed to fetch profile data');
