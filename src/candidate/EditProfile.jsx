@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import {
   FiMail, FiPhone, FiUser, FiMapPin, FiBook, FiBriefcase, FiDollarSign,
-  FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink, FiSave, FiUserCheck
+  FiGlobe, FiLinkedin, FiFacebook, FiTwitter, FiLink, FiSave, FiUserCheck, FiGithub, FiX
 } from 'react-icons/fi';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
@@ -23,11 +23,14 @@ const EditProfile = () => {
       try {
         const res = await apiClient.get('/candidate/info/get-profile');
         const data = res.data;
+        const { _id, createdAt, updatedAt, __v, ...filteredCandidateInfo } = data.candidateInfo;
+
         setForm({
-          ...data.profile,
-          email: data.user.email,
+          ...filteredCandidateInfo,
+          email: data.candidateInfo.email, // this line is optional if already in filteredCandidateInfo
         });
-        setSocials(data.profile.socials || {});
+
+        setSocials(data.candidateInfo.socials || {});
       } catch (err) {
         setMessage('Error loading profile.');
       } finally {
@@ -55,29 +58,29 @@ const EditProfile = () => {
 
 
   const handleSave = async () => {
-  try {
-    const { email,website, languages, ...formData } = form;
+    try {
+      const { email, languages, ...formData } = form;
 
-    const updated = {
-      ...formData,
-      languages:
-        typeof languages === 'string'
-          ? languages.split(',').map((lang) => lang.trim()).filter(Boolean)
-          : Array.isArray(languages)
-          ? languages
-          : [],
-      socials: (({ website, ...rest }) => rest)(socials),
-    };
-    console.log(updated)
+      const updated = {
+        ...formData,
+        languages:
+          typeof languages === 'string'
+            ? languages.split(',').map((lang) => lang.trim()).filter(Boolean)
+            : Array.isArray(languages)
+              ? languages
+              : [],
+        socials
+      };
+      //console.log(updated)
 
-    await apiClient.put('/candidate/info/edit-profile', updated);
-    toast.success('Profile updated successfully!');
-  } catch (err) {
-    console.error('Error saving profile:', err);
-    //setMessage('Failed to save profile.');
-    toast.error('Failed to save profile.');
-  }
-};
+      await apiClient.put('/candidate/info/edit-profile', updated);
+      toast.success('Profile updated successfully!');
+    } catch (err) {
+      //console.error('Error saving profile:', err);
+      //setMessage('Failed to save profile.');
+      toast.error('Failed to save profile.');
+    }
+  };
 
 
 
@@ -154,10 +157,10 @@ const EditProfile = () => {
           {renderInput('Website', 'socials.website', <FiLink />, socials.website)}
           {renderInput('LinkedIn', 'socials.linkedin', <FiLinkedin className="text-blue-600" />, socials.linkedin)}
           {renderInput('Facebook', 'socials.facebook', <FiFacebook className="text-blue-700" />, socials.facebook)}
-          {renderInput('Twitter', 'socials.twitter', <FiTwitter className="text-sky-400" />, socials.twitter)}
-          {renderInput('Google+', 'socials.googleplus', <FiGlobe className="text-red-500" />, socials.googleplus)}
+          {renderInput('X', 'socials.twitter', <FiX className="text-sky-400" />, socials.twitter)}
+          {renderInput('Github', 'socials.github', <FiGithub className="text-gray-500" />, socials.github)}
           {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)}
-         {renderInput('Languages (comma-separated)', 'languages', <FiGlobe />, Array.isArray(form.languages) ? form.languages.join(', ') : form.languages)}
+          {renderInput('Languages (comma-separated)', 'languages', <FiGlobe />, Array.isArray(form.languages) ? form.languages.join(', ') : form.languages)}
 
           <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
             <div className="text-indigo-500 mt-1"><FiBook /></div>

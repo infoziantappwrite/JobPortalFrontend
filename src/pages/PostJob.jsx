@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
