@@ -192,19 +192,19 @@ function App() {
           <Route path="/employee/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
           <Route path="/company/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
           <Route path="/superadmin/profileview" element={<ProfileSidebar />}>
             <Route index element={<div>My Profile</div>} />
             <Route path="myprofile" element={<div>My Profile</div>} />
-            <Route path="changepassword" element={<div>Change Password</div>} />
+            <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
 

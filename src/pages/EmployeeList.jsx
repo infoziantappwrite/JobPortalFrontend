@@ -16,7 +16,7 @@ export default function EmployeesList() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await apiClient.get('/company/employees', {
+      const response = await apiClient.get('/company/employee/get/employees', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEmployees(response.data.employees);

@@ -10,6 +10,9 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
+import { useUser } from '../contexts/UserContext';
+
+
 const ChangePass = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -19,7 +22,11 @@ const ChangePass = () => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const { user } = useUser();
+
   const [error, setError] = useState('');
+
+  const role = user?.userType?.toLowerCase();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +44,7 @@ const ChangePass = () => {
     
 
     try {
-      await apiClient.post('/change-password', {
+      await apiClient.post(`/${role}/auth/change-password`, {
         oldPassword,
         newPassword,
       });
