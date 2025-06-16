@@ -1,0 +1,39 @@
+{
+    "user": {
+        "id": "6842658d3d3a6a9576338dbd",
+        "email": "predeep@infoziant.com",
+        "fullName": ""
+    },
+    "profile": {
+        "profileImageURL": "https://ex.com/pred",
+        "name": "Predeep",
+        "phone": "8098317198",
+        "profileDescription": "Hello",
+        "age": 21,
+        "country": "India",
+        "city": "Coimbatore",
+        "fullAddress": "Coimbatore - CBE",
+        "jobTitle": "SDE",
+        "currentSalary": "50-60k",
+        "expectedSalary": "60-70k",
+        "education": "BE CSE",
+        "yearsOfExp": "0-1",
+        "languages": [
+            "English",
+            "Hindi",
+            "Tamil"
+        ],
+        "categories": [
+            "Banking",
+            "Retail"
+        ],
+        "allowProfileListing": true,
+        "socials": {
+            "linkedin": "https://linkedin.com/pred",
+            "facebook": "https://facebook.com/us",
+            "twitter": "",
+            "googleplus": ""
+        },
+        "website": "https://pred.com"
+    }
+}

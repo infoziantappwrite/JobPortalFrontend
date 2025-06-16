@@ -1,31 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import apiClient from '../api/apiClient';
+import apiClient from '../../api/apiClient';
 import { toast } from 'react-toastify';
-import register from '../assets/Register.png'; 
+import register from '../../assets/Register.png'; 
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('candidate');
-  const [verifyUrl, setVerifyUrl] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    //console.log('Registering with role:', role);
     e.preventDefault();
     try {
-      const response = await apiClient.post(`/register/${role}`, {
-        name,
-        email,
-        password,
-      });
+        await apiClient.post(`${role}/auth/register`, {
+            name,
+            email,
+            password,
+          });
       toast.success('Registration successful. Please verify your email.');
-      setVerifyUrl(response.data.emailVerificationLink);
+      
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Registration failed');
@@ -133,53 +131,9 @@ const Register = () => {
           </p>
 
           {/* OR Divider */}
-          <div className="flex items-center my-6 w-full max-w-sm">
-            <div className="flex-grow h-px bg-gray-300" />
-            <span className="px-3 text-sm text-gray-500 font-jost">or</span>
-            <div className="flex-grow h-px bg-gray-300" />
-          </div>
-
-          {/* Social Login Buttons - Horizontally Scrollable */}
-          <div className="space-y-3 ">
-            <button
-              type="button"
-              className="w-full flex items-center justify-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition font-jost"
-            >
-              <img
-                src="https://img.icons8.com/color/16/000000/google-logo.png"
-                alt="Google"
-                className="mr-2"
-              />
-              Continue with Google
-            </button>
-            <button
-              type="button"
-              className="w-full flex items-center justify-center py-2 px-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition font-jost"
-            >
-              <img
-                src="https://img.icons8.com/color/16/000000/microsoft.png"
-                alt="Microsoft"
-                className="mr-2"
-              />
-              Continue with Microsoft
-            </button>
-          </div>
-          {/* Verification Link */}
-          {verifyUrl && (
-            <div className="text-sm text-center text-gray-600 mt-4 space-y-2">
-              <p className="text-green-600 font-jost">
-                Registration successful. Please verify your email:
-              </p>
-              <a
-                href={verifyUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline font-jost hover:text-blue-800"
-              >
-                Verify Email
-              </a>
-            </div>
-          )}
+         
+          
+          
         </div>
       </div>
     </div>

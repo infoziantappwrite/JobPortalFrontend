@@ -1,31 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import apiClient from '../api/apiClient';
-import { Mail, User, ShieldCheck } from 'lucide-react';
 
+import { Mail, User, ShieldCheck } from 'lucide-react';
+import { useUser } from '../contexts/UserContext';
 
 const About = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await apiClient.get('/jobs/me', {
-          withCredentials: true,
-        });
-        setUserInfo(res.data.user);
-      } catch (err) {
-        console.error('Error fetching user info:', err);
-        setError('Failed to load user details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+  const { user } = useUser(); // Get user from context
+ setUserInfo(user);
+ 
 
   if (loading) return <div className="p-6 font-jost text-gray-700">Loading user details...</div>;
   if (error) return <div className="p-6 font-jost text-red-500">{error}</div>;

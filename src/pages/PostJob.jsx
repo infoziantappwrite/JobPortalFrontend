@@ -58,8 +58,7 @@ const PostJob = () => {
       }
     }
 
-    const token = localStorage.getItem('token');
-    if (!token) return toast.error('You must be logged in to post a job');
+   
 
     try {
       await apiClient.post(
@@ -84,7 +83,7 @@ const PostJob = () => {
           city: form.city,
           address: form.address,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+       
       );
 
       toast.success('Job posted successfully!');

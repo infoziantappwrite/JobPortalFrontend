@@ -1,17 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUser, FaBars, FaBell, } from 'react-icons/fa';
-import {
-  FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers,
-  FiInfo,
-  FiBriefcase,
-  FiUsers,
-  FiBookOpen
-} from 'react-icons/fi';
+import {FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers,FiInfo,FiBriefcase,FiBookOpen} from 'react-icons/fi';
 import logo from '/src/assets/logos/Logo.png';
 import apiClient from '../api/apiClient';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
+import { useUser } from '../contexts/UserContext';
 
-export default function Navbar({ user, onLogout }) {
+export default function Navbar() {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
@@ -21,6 +18,11 @@ export default function Navbar({ user, onLogout }) {
   const location = useLocation();
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+ const { user,setUser } = useUser(); // ✅ Get user and loading state
+
+  
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,15 +42,23 @@ export default function Navbar({ user, onLogout }) {
   }, [lastScrollY]);
 
 
-  const handleLogoutClick = async () => {
-    try {
-      await apiClient.post('/logout');
-      if (onLogout) onLogout();
+ const handleLogoutClick = async () => {
+  try {
+    await apiClient.post(`${user?.userType?.toLowerCase()}/auth/logout`, {}, {
+      withCredentials: true,
+    });
+    Cookies.remove('at'); // Clear the authentication token cookie
+    toast.success('Logout successful');
+    setUser(null); // Clear user state
+    setUserMenuOpen(false); // Close user menu
+    setTimeout(() => {
       navigate('/login');
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-  };
+    }, 1000);
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
+};
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -69,6 +79,7 @@ export default function Navbar({ user, onLogout }) {
   };
 
   const isActive = (path) => location.pathname === path;
+ 
 
   return (
     <nav
@@ -126,21 +137,21 @@ export default function Navbar({ user, onLogout }) {
 
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-64 bg-white shadow-xl border border-gray-200 rounded-xl z-20 text-sm">
-                  {/* User Info Header */}
+                  {/*   Info Header */}
                   <div className="flex items-center gap-4 px-5 py-4 border-b border-gray-200">
                     <div className="bg-indigo-100 text-indigo-600 p-2 rounded-full">
                       <FiUser size={20} />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800">{user.name}</p>
-                      <p className="text-xs text-gray-500">{formatRole(user.role)}</p>
+                      <p className="text-xs text-gray-500">{formatRole(user.userType)}</p>
                     </div>
                   </div>
 
                   {/* Menu Links */}
                   <div className="flex flex-col py-2 px-2 space-y-1">
                     <Link
-                      to={`/${user?.role?.toLowerCase()}/dashboard`}
+                      to={`/${user?.userType?.toLowerCase()}/dashboard`}
                        onClick={() => setUserMenuOpen((prev) => !prev)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition ${isActive(`/${user?.role?.toLowerCase()}/dashboard`)
                         ? 'text-indigo-700 font-medium'
@@ -161,7 +172,7 @@ export default function Navbar({ user, onLogout }) {
                     </Link> */}
 
                     <Link
-                        to={`/${user?.role?.toLowerCase()}/profileview`}
+                        to={`/${user?.userType?.toLowerCase()}/profileview`}
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
                       >
