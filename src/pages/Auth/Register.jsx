@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
 import { toast } from 'react-toastify';
-import register from '../../assets/Register.png'; 
+import register from '../../assets/Register.png';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Register = () => {
@@ -17,13 +17,13 @@ const Register = () => {
     //console.log('Registering with role:', role);
     e.preventDefault();
     try {
-        await apiClient.post(`${role}/auth/register`, {
-            name,
-            email,
-            password,
-          });
+      await apiClient.post(`${role}/auth/register`, {
+        name,
+        email,
+        password,
+      });
       toast.success('Registration successful. Please verify your email.');
-      
+
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Registration failed');
@@ -45,7 +45,7 @@ const Register = () => {
       <div className="w-full md:w-1/2 h-full bg-white flex items-center justify-center">
         <div className="w-full h-full overflow-y-auto px-6 py-10 flex flex-col items-center justify-start">
           <h2 className="text-2xl font-jost mb-10 text-gray-800 text-center">
-            Create a Free Account
+            🙌 Hey there! Create your account
           </h2>
 
           {/* Role toggle buttons */}
@@ -54,8 +54,8 @@ const Register = () => {
               type="button"
               onClick={() => setRole('candidate')}
               className={`text-lg px-12 py-3 rounded-lg font-jost transition ${role === 'candidate'
-                  ? 'bg-gradient-to-r from-teal-500 to-indigo-800 text-white shadow-lg'
-                  : 'bg-teal-100 text-teal-900'
+                ? 'bg-gradient-to-r from-teal-500 to-indigo-800 text-white shadow-lg'
+                : 'bg-teal-100 text-teal-900'
                 }`}
             >
               Candidate
@@ -64,8 +64,8 @@ const Register = () => {
               type="button"
               onClick={() => setRole('company')}
               className={`text-lg px-12 py-3 rounded-lg font-jost transition ${role === 'company'
-                  ? 'bg-gradient-to-r from-teal-500 to-indigo-800 text-white shadow-lg'
-                  : 'bg-teal-100 text-teal-900'
+                ? 'bg-gradient-to-r from-teal-500 to-indigo-800 text-white shadow-lg'
+                : 'bg-teal-100 text-teal-900'
                 }`}
             >
               Organisation
@@ -109,7 +109,7 @@ const Register = () => {
                   <FiEye size={16} className="text-gray-600" />
                 )}
               </span>
-          </div>
+            </div>
 
             <button
               type="submit"
@@ -131,9 +131,9 @@ const Register = () => {
           </p>
 
           {/* OR Divider */}
-         
-          
-          
+
+
+
         </div>
       </div>
     </div>

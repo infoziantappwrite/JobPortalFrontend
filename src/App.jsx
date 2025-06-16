@@ -35,6 +35,9 @@ import EditProfilecandidate from './candidate/EditProfile';
 import Jobalerts from './candidate/jobs/Jobalerts';
 import Myresume from './candidate/jobs/Myresume';
 import PublicRoute from './components/PublicRoute';
+import EmployeeRegister from './pages/Auth/EmployeeRegister';
+import EmployeeLogin from './pages/Auth/EmployeeLogin';
+import SuperAdminLogin from './pages/Auth/SuperLogin';
 
 function App() {
 
@@ -62,6 +65,39 @@ function App() {
               </PublicRoute>
             }
           />
+          <Route
+            path="/register/employee"
+            element={
+              <PublicRoute>
+                <EmployeeRegister />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/login/employee"
+            element={
+              <PublicRoute>
+                <EmployeeLogin />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/login/admin/super"
+            element={
+              <PublicRoute>
+                <SuperAdminLogin/>
+              </PublicRoute>
+            }
+          />
+          
+
+
+
+
+
+         
+
 
           <Route path="/verify-success" element={<VerifySuccess />} />
           <Route path="/verify-failed" element={<VerifyFailed />} />
