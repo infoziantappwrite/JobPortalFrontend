@@ -19,7 +19,7 @@ export default function CreateEmployee() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await apiClient.post('/create/employee', formData, {
+      await apiClient.post('/company/employee/create/employee', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Employee created successfully');
