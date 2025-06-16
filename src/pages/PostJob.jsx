@@ -8,12 +8,15 @@ const PostJob = () => {
   const [form, setForm] = useState({
     title: '',
     description: '',
+    company: '',
     location: 'Remote',
-    employmentType: 'Full-time',
-    skills: '',
+    jobType: 'Full-time',
+    emailAddress: '',
+    username: '',
+    specialisms: '',
     offeredSalary: '',
     careerLevel: '',
-    experienceLevel: '',
+    experience: '',
     gender: '',
     industry: '',
     qualification: '',
@@ -34,10 +37,12 @@ const PostJob = () => {
     const requiredFields = [
       'title',
       'description',
-      'employmentType',
-      'skills',
+      'company',
+      'emailAddress',
+      'jobType',
+      'specialisms',
       'careerLevel',
-      'experienceLevel',
+      'experience',
       'gender',
       'industry',
       'qualification',
@@ -54,7 +59,7 @@ const PostJob = () => {
       }
     }
 
-    const salaryParts = form.offeredSalary.split('-').map(s => parseInt(s.trim()));
+   
 
     try {
       await apiClient.post(
@@ -79,19 +84,24 @@ const PostJob = () => {
           city: form.city,
           address: form.address,
         },
-        );
+       
+      );
 
       toast.success('Job posted successfully!');
 
+      // Reset form
       setForm({
         title: '',
         description: '',
+        company: '',
         location: 'Remote',
-        employmentType: 'Full-time',
-        skills: '',
+        jobType: 'Full-time',
+        emailAddress: '',
+        username: '',
+        specialisms: '',
         offeredSalary: '',
         careerLevel: '',
-        experienceLevel: '',
+        experience: '',
         gender: '',
         industry: '',
         qualification: '',
@@ -112,6 +122,7 @@ const PostJob = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-6xl bg-white p-10 rounded-2xl shadow-xl space-y-10"
       >
+        {/* Step Header */}
         <div>
           <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">Post a New Job!</h2>
           <p className="text-center text-gray-500 text-sm mb-6">Kindly provide detailed job info ✨</p>
@@ -132,9 +143,11 @@ const PostJob = () => {
           </div>
         </div>
 
+        {/* Dynamic Field Sections */}
         {[
-          { title: "Job Details", fields: ["title", "skills", "description"] },
-          { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experienceLevel", "employmentType"] },
+          { title: "Job Details", fields: ["title", "specialisms", "description"] },
+          { title: "Company Information", fields: ["company", "emailAddress", "username"] },
+          { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experience", "jobType"] },
           { title: "Requirements", fields: ["gender", "industry", "qualification", "applicationDeadline"] },
           { title: "Job Location", fields: ["country", "city", "address", "location"] },
         ].map((section, i) => (
@@ -143,7 +156,7 @@ const PostJob = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {section.fields.map((field) => {
                 const isTextarea = field === "description";
-                const isSelect = ["gender", "location", "employmentType", "careerLevel", "qualification", "industry"].includes(field);
+                const isSelect = ["gender", "location", "jobType", "careerLevel", "qualification", "industry"].includes(field);
                 const isDate = field === "applicationDeadline";
 
                 return isSelect ? (
@@ -170,7 +183,7 @@ const PostJob = () => {
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
 
-                    {field === "employmentType" &&
+                    {field === "jobType" &&
                       ["Full-time", "Part-time", "Contract", "Internship"].map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
@@ -216,6 +229,7 @@ const PostJob = () => {
           </div>
         ))}
 
+        {/* Submit Button */}
         <button
           type="submit"
           className="w-auto py-3 px-5 bg-gradient-to-r from-teal-500 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:from-teal-600 hover:to-indigo-700 transition duration-300"
