@@ -21,12 +21,11 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await apiClient.get('/get-profile');
+        const res = await apiClient.get('/candidate/info/get-profile');
         const data = res.data;
         setForm({
           ...data.profile,
           email: data.user.email,
-          website: data.profile.website || '',
         });
         setSocials(data.profile.socials || {});
       } catch (err) {
@@ -57,7 +56,7 @@ const EditProfile = () => {
 
   const handleSave = async () => {
   try {
-    const { email, languages, ...formData } = form;
+    const { email,website, languages, ...formData } = form;
 
     const updated = {
       ...formData,
@@ -67,10 +66,11 @@ const EditProfile = () => {
           : Array.isArray(languages)
           ? languages
           : [],
-      socials,
+      socials: (({ website, ...rest }) => rest)(socials),
     };
+    console.log(updated)
 
-    await apiClient.put('/edit-profile', updated);
+    await apiClient.put('/candidate/info/edit-profile', updated);
     toast.success('Profile updated successfully!');
   } catch (err) {
     console.error('Error saving profile:', err);
@@ -151,7 +151,7 @@ const EditProfile = () => {
           {renderInput('Years of Experience', 'yearsOfExp', <FiBriefcase />, form.yearsOfExp)}
           {renderInput('Current Salary', 'currentSalary', <FiDollarSign />, form.currentSalary)}
           {renderInput('Expected Salary', 'expectedSalary', <FiDollarSign />, form.expectedSalary)}
-          {renderInput('Website', 'website', <FiLink />, form.website)}
+          {renderInput('Website', 'socials.website', <FiLink />, socials.website)}
           {renderInput('LinkedIn', 'socials.linkedin', <FiLinkedin className="text-blue-600" />, socials.linkedin)}
           {renderInput('Facebook', 'socials.facebook', <FiFacebook className="text-blue-700" />, socials.facebook)}
           {renderInput('Twitter', 'socials.twitter', <FiTwitter className="text-sky-400" />, socials.twitter)}
