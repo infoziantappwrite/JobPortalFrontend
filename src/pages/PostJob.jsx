@@ -62,7 +62,7 @@ const PostJob = () => {
 
     try {
       await apiClient.post(
-        '/jobs/postjob',
+        '/employee/job/postjob',
         {
           title: form.title,
           description: form.description,
