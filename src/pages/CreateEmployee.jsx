@@ -18,7 +18,7 @@ export default function CreateEmployee() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await apiClient.post('/company/employee/create/employee', formData, {
+      await apiClient.post('/company/employee/create/', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Employee created successfully');
@@ -83,10 +83,11 @@ export default function CreateEmployee() {
           </div>
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition duration-300"
+            className="w-full bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-2 rounded-lg transition duration-300"
           >
             Create Employee
           </button>
+
         </form>
       </div>
     </div>
