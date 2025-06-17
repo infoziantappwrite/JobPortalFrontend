@@ -1,254 +1,214 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
-import { Eye, X } from 'lucide-react';
+import { FiEye, FiUsers, FiTrash2 } from 'react-icons/fi';
+import { UserPlus, X } from 'lucide-react';
 
 const Applicants = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [loadingJobs, setLoadingJobs] = useState(true);
-  const [errorJobs, setErrorJobs] = useState(null);
-
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [loadingAppDetail, setLoadingAppDetail] = useState(false);
   const [errorAppDetail, setErrorAppDetail] = useState('');
   const [shortlisting, setShortlisting] = useState(false);
 
-  const fetchAppliedJobs = async () => {
-    try {
-      setLoadingJobs(true);
-      const res = await apiClient.get('/employee/job/get-applicants', { withCredentials: true });
-      setJobs(res.data.jobs || []);
-    } catch (err) {
-      setErrorJobs(err.response?.data?.error || 'Failed to load applied jobs.');
-    } finally {
-      setLoadingJobs(false);
-    }
-  };
-
   useEffect(() => {
-    fetchAppliedJobs();
+    const fetchPostedJobs = async () => {
+      setLoading(true);
+      try {
+        const res = await apiClient.get('/employee/job/applicant/get-applicants', { withCredentials: true });
+        setJobs(res.data.jobs || []);
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to load jobs.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPostedJobs();
   }, []);
 
-  const handleJobClick = (job) => {
-    setSelectedJob(job);
-  };
-
-  const closeJobModal = () => {
-    setSelectedJob(null);
+  const handleViewApplicants = (jobID) => {
+    const job = jobs.find(j => j._id === jobID);
+    if (job) setSelectedJob(job);
   };
 
   const openApplicantDetail = async (applicationID) => {
-    if (!selectedJob?._id) {
-      setErrorAppDetail('Job ID not found for this application.');
-      return;
-    }
-
+    if (!selectedJob?._id) return;
     setLoadingAppDetail(true);
-    setErrorAppDetail('');
-    setSelectedApplication(null);
-
     try {
       const res = await apiClient.post('/jobs/get-detail', {
         IDs: [applicationID],
-        jobID: selectedJob._id, // <-- FIXED: Send jobID here
+        jobID: selectedJob._id,
         type: 'jobApplication',
       });
-      const data = res?.data?.jobApplications?.[0];
-      if (data) {
-        setSelectedApplication(data);
-      } else {
-        setErrorAppDetail('No application data found.');
-      }
+      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
     } catch (err) {
-      console.error('Error fetching application detail:', err);
       setErrorAppDetail(err.response?.data?.error || 'Failed to load application details.');
     } finally {
       setLoadingAppDetail(false);
     }
   };
 
-  const closeApplicantModal = () => {
-    setSelectedApplication(null);
-    setErrorAppDetail('');
-  };
-
   const handleShortlist = async () => {
-    if (!selectedApplication?._id || !selectedApplication?.jobID?._id || !selectedApplication?.userID?._id) {
-      alert('Missing required applicant or job data.');
-      return;
-    }
-
+    const app = selectedApplication;
+    if (!app?._id || !app?.jobID?._id || !app?.userID?._id) return;
     setShortlisting(true);
     try {
       await apiClient.post('/jobs/shortlist', {
-        jobID: selectedApplication.jobID._id, // <-- FIXED keys here
-        applicantID: selectedApplication.userID._id,
+        jobID: app.jobID._id,
+        applicantID: app.userID._id,
       });
-
-      closeApplicantModal();
-      await fetchAppliedJobs(); // Refresh job list
+      setSelectedApplication(null);
+      setSelectedJob(null);
     } catch (err) {
-      console.error('Failed to update status:', err);
       alert(err.response?.data?.error || 'Could not shortlist applicant.');
     } finally {
       setShortlisting(false);
     }
   };
 
-
-  if (loadingJobs) return <div className="text-center p-8">Loading applied jobs...</div>;
-  if (errorJobs) return <div className="text-red-600 text-center p-8">{errorJobs}</div>;
-
-  if (jobs.length === 0) {
-    return (
-      <div className="text-center text-gray-600 p-8">
-        You have not applied to any jobs yet.
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center py-10">Loading jobs...</div>;
+  if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6 text-center">Posted Jobs with Applicants</h2>
+    <div className="max-w-7xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
+          <FiUsers className="text-indigo-600" />
+          Applicants
+        </h2>
+      </div>
 
-      {/* Jobs list */}
-      <ul className="space-y-4">
-        {jobs.map((job) => (
-          <li
-            key={job._id}
-            className="border p-4 rounded shadow cursor-pointer hover:bg-gray-50"
-            onClick={() => handleJobClick(job)}
-          >
-            <h3 className="text-xl font-semibold">{job.title}</h3>
-            <p className="text-sm text-gray-600">{job.company}</p>
-            <p className="text-sm mt-1">Applicants: {job.applicants?.length || 0}</p>
-            {job.postedBy && (
-              <p className="text-xs text-gray-500 mt-2">
-                Posted by: <span className="font-medium">{job.postedBy.name}</span> ({job.postedBy.email})
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {/* Modal: Applicants list for selected job */}
-      {selectedJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full max-h-[90vh] overflow-auto relative">
-            <button
-              onClick={closeJobModal}
-              className="absolute top-4 right-4 text-gray-600 hover:text-black"
-              aria-label="Close applicants modal"
-            >
-              <X size={24} />
+      {!selectedJob ? (
+        <div className="overflow-x-auto bg-white rounded shadow-md">
+          <table className="min-w-full">
+            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
+              <tr>
+                <th className="py-2 px-4">Title</th>
+                <th className="py-2 px-4">Company</th>
+                <th className="py-2 px-4">Posted By</th>
+                <th className="py-2 px-4">Applicants</th>
+                <th className="py-2 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm text-gray-800">
+              {jobs.map(job => (
+                <tr key={job._id} className="border-t hover:bg-gray-50">
+                  <td className="py-3 px-4 font-medium text-indigo-700">{job.title}</td>
+                  <td className="py-3 px-4">{job.company}</td>
+                  <td className="py-3 px-4">{job.postedBy?.name}</td>
+                  <td className="py-3 px-4">{job.applicants?.length || 0}</td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => handleViewApplicants(job._id)}
+                      className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded"
+                    >
+                      View Applicants
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">
+              Applicants for <span className="text-indigo-600">{selectedJob.title}</span>
+            </h3>
+            <button onClick={() => setSelectedJob(null)} className="text-gray-500 hover:text-black">
+              <X />
             </button>
-
-            <h3 className="text-xl font-bold mb-4">Applicants for {selectedJob.title}</h3>
-
-            {selectedJob.applicants.length === 0 ? (
-              <p className="text-gray-500">No applicants for this job yet.</p>
-            ) : (
-              <ul className="space-y-3 max-h-[60vh] overflow-auto">
-                {selectedJob.applicants.map((applicant, idx) => {
-                  if (applicant.userID) {
-                    return (
-                      <li
-                        key={applicant.applicationID || idx}
-                        className="p-3 border rounded text-sm flex justify-between items-center hover:bg-gray-100"
-                      >
-                        <div>
-                          <p><strong>Name:</strong> {applicant.userID.name}</p>
-                          <p><strong>Email:</strong> {applicant.userID.email}</p>
-                          <p><strong>Application ID:</strong> {applicant.applicationID}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500 border px-2 py-1 rounded">
-                            {applicant.status}
-                          </span>
-                          <button
-                            onClick={() => {
-                              closeJobModal();
-                              openApplicantDetail(applicant.applicationID);
-                            }}
-                            aria-label={`View details for ${applicant.userID.name}`}
-                            className="text-indigo-600 hover:text-indigo-800 p-2"
-                          >
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={idx} className="p-3 border rounded text-sm text-gray-500 italic">
-                      Anonymous Applicant (Buffer only)
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
           </div>
+
+          {selectedJob.applicants?.length === 0 ? (
+            <p className="text-gray-600">No applicants for this job.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {selectedJob.applicants.map((applicant, idx) => (
+                <div
+                  key={applicant.applicationID || idx}
+                  className="bg-white p-5 rounded-md shadow-md hover:shadow-lg border"
+                >
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${applicant.userID?.name}`}
+                    alt="avatar"
+                    className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
+                  />
+                  <h4 className="text-center font-semibold text-base text-gray-800">{applicant.userID?.name}</h4>
+                  <p className="text-sm text-center text-indigo-600">{applicant.userID?.role || 'Applicant'}</p>
+                  <p className="text-sm text-center text-gray-500">{applicant.userID?.email}</p>
+                  <div className="flex justify-center gap-3 mt-3">
+                    <button
+                      onClick={() => openApplicantDetail(applicant.applicationID)}
+                      className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
+                      title="View"
+                    >
+                      <FiEye />
+                    </button>
+                    <button
+                      className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
+                      title="Shortlist"
+                    >
+                      <UserPlus />
+                    </button>
+                    <button
+                      className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-600"
+                      title="Delete"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Modal: Detailed Applicant info */}
+      {/* Application Detail Modal */}
       {selectedApplication && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-60 flex justify-center items-center">
-          <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
             <button
-              onClick={closeApplicantModal}
+              onClick={() => setSelectedApplication(null)}
               className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              aria-label="Close application detail modal"
+              aria-label="Close"
             >
               <X size={20} />
             </button>
-
-            {loadingAppDetail && <p className="text-gray-700">Loading application details...</p>}
-
-            {errorAppDetail && <p className="text-red-500">{errorAppDetail}</p>}
-
-            {!loadingAppDetail && !errorAppDetail && selectedApplication && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-indigo-700">Application Details</h2>
-
-                <div>
-                  <p><span className="font-semibold">Name:</span> {selectedApplication.userID?.name}</p>
-                  <p><span className="font-semibold">Email:</span> {selectedApplication.userID?.email}</p>
-                  <p><span className="font-semibold">Role:</span> {selectedApplication.userID?.role}</p>
-                  <p><span className="font-semibold">Status:</span> {selectedApplication.status}</p>
+            {loadingAppDetail ? (
+              <p className="text-center text-gray-600">Loading...</p>
+            ) : errorAppDetail ? (
+              <p className="text-center text-red-500">{errorAppDetail}</p>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold text-indigo-700 mb-4">Application Details</h2>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
+                  <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
+                  <p><strong>Status:</strong> {selectedApplication.status}</p>
                 </div>
-
-                <div>
-                  <p><span className="font-semibold">Job Title:</span> {selectedApplication.jobID?.title}</p>
-                  <p><span className="font-semibold">Company:</span> {selectedApplication.jobID?.company}</p>
-                  <p><span className="font-semibold">Location:</span> {selectedApplication.jobID?.location}</p>
-                  <p><span className="font-semibold">Description:</span> {selectedApplication.jobID?.description}</p>
-                </div>
-
-                <div>
-                  <a
-                    href={selectedApplication.resumeURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    View Resume
-                  </a>
-                </div>
-
+                <a
+                  href={selectedApplication.resumeURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline block mt-4"
+                >
+                  View Resume
+                </a>
                 {selectedApplication.status !== 'shortlisted' && (
-                  <div className="pt-4">
-                    <button
-                      onClick={handleShortlist}
-                      disabled={shortlisting}
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                    >
-                      {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleShortlist}
+                    disabled={shortlisting}
+                    className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
+                  >
+                    {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
+                  </button>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
