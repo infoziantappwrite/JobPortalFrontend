@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
-import { FiEdit, FiTrash2, FiEye, FiCheckSquare, FiSquare } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiEye, FiCheckSquare, FiSquare, FiBriefcase, FiFilter } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
-import EditJobModal from './EditJobModal';
-import ViewJobModal from './ViewJobModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { FiBriefcase, FiFilter } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-
 
 const JobList = ({ user }) => {
   const navigate = useNavigate();
@@ -89,7 +85,7 @@ const JobList = ({ user }) => {
   const handleDelete = async () => {
     try {
       for (let id of selectedIds) {
-        await apiClient.delete(`/jobs/${id}`, { withCredentials: true });
+        await apiClient.delete(`employee/job/${id}`, { withCredentials: true });
       }
       alert('Deleted successfully');
       setConfirmDelete(false);
@@ -98,6 +94,19 @@ const JobList = ({ user }) => {
     } catch (error) {
       alert(error.response?.data?.error || 'Failed to delete job');
     }
+  };
+
+  const handleViewJob = (job) => {
+    const relatedJobs = jobs.filter(
+      (j) => j.companyID === job.companyID && j._id !== job._id
+    );
+
+    navigate('/jobdetails', {
+      state: {
+        jobdetails: job,
+        relatedJobs: relatedJobs,
+      },
+    });
   };
 
   return (
@@ -168,10 +177,12 @@ const JobList = ({ user }) => {
                     {job.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="py-3 px-4">{new Date(job.postedAt).toLocaleDateString()} & {new Date(job.applicationDeadline).toLocaleDateString()}</td>
+                <td className="py-3 px-4">
+                  {new Date(job.postedAt).toLocaleDateString()} & {new Date(job.applicationDeadline).toLocaleDateString()}
+                </td>
                 <td className="py-3 px-4">{job.isActive ? '✔️' : '❌'}</td>
                 <td className="py-3 px-4 flex gap-3">
-                  <button onClick={() => navigate('/jobs/view', { state: job })} title="View" className="text-indigo-600 hover:text-indigo-800">
+                  <button onClick={() => handleViewJob(job)} title="View" className="text-indigo-600 hover:text-indigo-800">
                     <FiEye />
                   </button>
                   {role !== 'candidate' && (
@@ -201,6 +212,5 @@ const JobList = ({ user }) => {
     </div>
   );
 };
-
 
 export default JobList;
