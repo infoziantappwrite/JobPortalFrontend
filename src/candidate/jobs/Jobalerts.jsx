@@ -19,7 +19,7 @@ const Jobalerts = () => {
     const fetchJobs = async () => {
       try {
         const res = await apiClient.get('/common/job/all');
-        console.log('Fetched jobs:', res.data.jobs);
+        //console.log('Fetched jobs:', res.data.jobs);
         setJobs(res.data.jobs || []);
       } catch (err) {
         console.error('Error fetching jobs:', err);
@@ -41,7 +41,7 @@ const Jobalerts = () => {
     (j) => j.companyID === job.companyID && j._id !== job._id // exclude current job
   );
 
-  const role = user?.userType?.toLowerCase();
+
 
   navigate('/jobdetails', {
     state: {
@@ -54,6 +54,14 @@ const Jobalerts = () => {
 
   const uniqueLocations = [...new Set(jobs.map((job) => job.location))];
   const uniqueTypes = [...new Set(jobs.map((job) => job.jobType))];
+  if (loading)
+  return (
+    <div className="flex items-center justify-center h-[300px]">
+      <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-500 border-t-transparent"></div>
+      <span className="ml-3 text-gray-700 font-medium">Loading...</span>
+    </div>
+  );
+
 
   return (
     <div className="bg-blue-50 min-h-screen p-10 flex justify-center items-start">
