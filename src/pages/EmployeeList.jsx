@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
+import { FiEye, FiEdit, FiTrash2, FiSave, FiX, FiUserCheck } from 'react-icons/fi';
 
 export default function EmployeesList() {
   const [employees, setEmployees] = useState([]);
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', password: '', position: '' });
   const [showEditModal, setShowEditModal] = useState(false);
+  const [viewModal, setViewModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -15,7 +19,7 @@ export default function EmployeesList() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await apiClient.get('/company/employee/get/employees', {
+      const response = await apiClient.get('/company/employee/get/', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEmployees(response.data.employees);
@@ -32,7 +36,7 @@ export default function EmployeesList() {
 
   const handleEditSubmit = async () => {
     try {
-      await apiClient.patch(`/company/employee/get/employee/${editId}`, editForm, {
+      await apiClient.patch(`/company/employee/patch/${editId}`, editForm, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Employee updated');
@@ -47,7 +51,7 @@ export default function EmployeesList() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this employee?')) return;
     try {
-      await apiClient.delete(`/delete/employee/${id}`, {
+      await apiClient.delete(`/company/employee/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Employee deleted');
@@ -80,22 +84,31 @@ export default function EmployeesList() {
                   <p className="text-sm text-gray-500">{emp.email}</p>
                 </div>
               </div>
+
               <div className="flex gap-2">
                 <button
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg transition"
-                  onClick={() => handleEditClick(emp)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
+                  onClick={() => {
+                    setSelectedEmployee(emp);
+                    setViewModal(true);
+                  }}
                 >
-                  ✏️ Edit
+                  <FiEye /> View
                 </button>
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
+                  className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
+                  onClick={() => handleEditClick(emp)}
+                >
+                  <FiEdit /> Edit
+                </button>
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2"
                   onClick={() => handleDelete(emp._id)}
                 >
-                  🗑️ Delete
+                  <FiTrash2 /> Delete
                 </button>
               </div>
             </div>
-
           ))
         )}
       </div>
@@ -106,15 +119,7 @@ export default function EmployeesList() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 animate-fade-in">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-blue-100 text-blue-600 rounded-full p-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+                <FiUserCheck size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-800">Edit Employee</h3>
             </div>
@@ -152,21 +157,44 @@ export default function EmployeesList() {
             <div className="flex justify-end mt-6 gap-3">
               <button
                 onClick={handleEditSubmit}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition flex items-center gap-2"
               >
-                💾 Save
+                <FiSave /> Save
               </button>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg transition"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-5 py-2 rounded-lg transition flex items-center gap-2"
               >
-                ✖ Cancel
+                <FiX /> Cancel
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* View Modal */}
+      {viewModal && selectedEmployee && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-all">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 animate-fade-in">
+            <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+              <FiEye /> Employee Details
+            </h3>
+            <div className="space-y-3">
+              <p><strong>Name:</strong> {selectedEmployee.name}</p>
+              <p><strong>Email:</strong> {selectedEmployee.email}</p>
+              <p><strong>Position:</strong> {selectedEmployee.position || 'Not specified'}</p>
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setViewModal(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg transition flex items-center gap-2"
+              >
+                <FiX /> Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
