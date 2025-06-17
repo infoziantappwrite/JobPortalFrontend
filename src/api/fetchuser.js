@@ -5,7 +5,7 @@ import apiClient from './apiClient';
 export const fetchCurrentUser = async () => {
   try {
     const response = await apiClient.get('common/auth/me');
-    console.log('Current user fetched successfully:', response.data);
+    //console.log('Current user fetched successfully:', response.data);
     return response.data.user; // user data
    
   } catch (error) {

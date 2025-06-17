@@ -11,13 +11,14 @@ import {
 } from 'react-icons/fi';
 import { Banknote } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
+import ApplyButton from '../candidate/jobs/ApplyButton';
 
 const JobDetails = () => {
   const location = useLocation();
    const navigate = useNavigate();
   const { jobdetails, relatedJobs } = location.state || {};
    const { user} = useUser(); // ✅ Get user and loading state
-
+  //console.log(jobdetails)
   if (!jobdetails) {
     return (
       <div className="text-center mt-10 text-red-500 font-semibold">
@@ -27,6 +28,7 @@ const JobDetails = () => {
   }
 
   const {
+    _id,
     title,
     location: jobLocation,
     jobType,
@@ -42,6 +44,7 @@ const JobDetails = () => {
     applicationDeadline,
     country,
     city,
+    applicants
     
   } = jobdetails;
 
@@ -77,12 +80,8 @@ const JobDetails = () => {
         {/* Right */}
         
         {user?.userType?.toLowerCase() === 'candidate' && (
-          <button
-            onClick={() => alert(`Applying for job: ${title}`)} // Replace with actual apply logic
-            className="bg-gradient-to-r from-teal-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-teal-600 hover:to-blue-700 transition"
-          >
-            Apply
-          </button>
+          <ApplyButton jobId={_id} jobTitle={title} applications={applicants}/>
+
         )}
       </div>
 

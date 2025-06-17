@@ -17,7 +17,7 @@ const Myresume = () => {
             try {
                 const res = await apiClient.get('/candidate/info/get-profile');
                 setCandidateInfo(res.data.candidateInfo);
-                console.log(res.data)
+               // console.log(res.data)
             } catch (error) {
                 console.error('Error fetching candidate profile:', error);
             }
