@@ -38,6 +38,7 @@ import PublicRoute from './components/PublicRoute';
 import EmployeeRegister from './pages/Auth/EmployeeRegister';
 import EmployeeLogin from './pages/Auth/EmployeeLogin';
 import SuperAdminLogin from './pages/Auth/SuperLogin';
+import CVManager from './candidate/jobs/CVManager';
 
 function App() {
 
@@ -175,7 +176,7 @@ function App() {
             <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />
-            <Route path="cv-manager" element={<div>CV Manager</div>} />
+            <Route path="cv-manager" element={<CVManager/>} />
             <Route path="change-password" element={<div>Change Password</div>} />
           </Route>
           {/* candidate Routes end */}
