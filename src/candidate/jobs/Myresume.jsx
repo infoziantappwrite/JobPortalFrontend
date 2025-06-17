@@ -36,7 +36,7 @@ const Myresume = () => {
 
     return (
         <div className="bg-blue-100 min-h-screen p-10">
-            <div className="p-6 bg-white rounded-2xl shadow-lg max-w-4xl mx-auto space-y-10">
+            <div className="p-6 bg-white rounded-2xl shadow-lg max-w-6xl mx-auto space-y-10">
                 <h2 className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-semibold text-gray-800 mb-8">
                     <HiOutlineDocumentText className="text-blue-600 text-3xl" />
                     <span className="border-b-2 border-blue-600 pb-1">My Resume</span>

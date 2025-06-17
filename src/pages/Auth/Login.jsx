@@ -22,7 +22,7 @@ const Login = () => {
         withCredentials: true,
       });
       // Store the token in cookies
-      Cookies.set('at', response.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+      Cookies.set('at', response.data.token, { expires: 1, secure: true, sameSite: 'strict' });
       //console.log('Login response:', response.data);
       toast.success(response.data.message || 'Login successful');
       await refreshUser();
