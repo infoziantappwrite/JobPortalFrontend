@@ -22,7 +22,7 @@ const EmployeeLogin = () => {
         withCredentials: true,
       });
 
-      Cookies.set('at', response.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+      Cookies.set('at', response.data.token, { expires: 1, secure: true, sameSite: 'strict' });
 
       toast.success(response.data.message || 'Login successful');
       await refreshUser();

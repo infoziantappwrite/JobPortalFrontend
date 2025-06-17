@@ -57,7 +57,7 @@ const CVManager = () => {
 
   return (
      <div className="bg-blue-100 min-h-screen p-10 ">
-    <div className="p-6 bg-white rounded-2xl shadow-lg max-w-4xl mx-auto space-y-10">
+    <div className="p-6 bg-white rounded-2xl shadow-lg max-w-6xl mx-auto space-y-10">
       <h2 className="text-xl font-semibold text-gray-800 mb-6">CV Manager</h2>
 
       {/* Upload Box */}

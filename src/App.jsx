@@ -176,8 +176,6 @@ function App() {
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
             <Route path="applied" element={<AppliedJobs />} />
-            <Route path="view-edit-profile" element={<EditProfile />} />
-            <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />
             <Route path="cv-manager" element={<CVManager/>} />

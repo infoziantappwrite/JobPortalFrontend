@@ -81,7 +81,6 @@ const JobDetails = () => {
         
         {user?.userType?.toLowerCase() === 'candidate' && (
           <ApplyButton jobId={_id} jobTitle={title} applications={applicants}/>
-
         )}
       </div>
 
