@@ -39,6 +39,7 @@ import EmployeeRegister from './pages/Auth/EmployeeRegister';
 import EmployeeLogin from './pages/Auth/EmployeeLogin';
 import SuperAdminLogin from './pages/Auth/SuperLogin';
 import CVManager from './candidate/jobs/CVManager';
+import ApproveEmployee from './pages/ApproveEmployee';
 
 function App() {
 
@@ -142,6 +143,7 @@ function App() {
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
+            <Route path="approve-employees" element={<ApproveEmployee />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
           </Route>
           {/* Company Routes end */}
