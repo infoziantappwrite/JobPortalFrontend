@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from 'react';
-import { FiEdit, FiTrash, FiUploadCloud } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiUploadCloud,FiEye } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import apiClient from '../../api/apiClient';
 
@@ -13,6 +13,7 @@ const CVManager = () => {
     try {
       const { data } = await apiClient.get('/candidate/cv');
       setCvs(data.CVs || []);
+      console.log(data.CVs);
     } catch (err) {
       toast.error('Failed to load CVs');
     }
@@ -37,8 +38,8 @@ const CVManager = () => {
       toast.success('Resume uploaded successfully');
       fetchCVs();
     } catch (error) {
-        console.error(error);
-      toast.error('Upload failed. Please try again.');
+      console.error(error);
+      toast.error(error.response.data.message||'Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -100,30 +101,37 @@ const CVManager = () => {
       </div>
 
       {/* CV Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {cvs.map((cv) => (
-          <div
-            key={cv._id}
-            className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center shadow-sm"
-          >
-            <h3 className="text-gray-800 font-medium">Sample CV</h3>
-            <div className="flex justify-center gap-3 mt-4">
-              <button
-                onClick={() => window.open(cv.fileUrl, '_blank')}
-                className="p-2 bg-teal-100 text-teal-600 rounded hover:bg-teal-200"
-              >
-                <FiEdit />
-              </button>
-              <button
-                onClick={() => handleDelete(cv._id)}
-                className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200"
-              >
-                <FiTrash />
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  {cvs.map((cv) => (
+    <div
+      key={cv._id}
+      className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center shadow-sm"
+    >
+      <h3 className="text-gray-800 font-medium">{cv.fileName}</h3>
+
+      <div className="flex justify-center gap-3 mt-4">
+        {/* View Button */}
+        <button
+          onClick={() => window.open(cv.fileURL, '_blank')}
+          className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+          title="View Resume"
+        >
+          <FiEye />
+        </button>
+
+        {/* Delete Button */}
+        <button
+          onClick={() => handleDelete(cv._id)}
+          className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200"
+          title="Delete Resume"
+        >
+          <FiTrash />
+        </button>
       </div>
+    </div>
+  ))}
+</div>
+
     </div>
     </div>
   );
