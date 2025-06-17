@@ -31,6 +31,7 @@ import './App.css';
 import GlobalLoader from './components/GlobalLoader';
 import ViewProfile from './candidate/ViewProfile';
 import EditProfilecandidate from './candidate/EditProfile';
+import EditJob from './pages/EditJob';
 /*candidate jobs*/
 import Jobalerts from './candidate/jobs/Jobalerts';
 import Myresume from './candidate/jobs/Myresume';
@@ -107,7 +108,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
           <Route path="/companies" element={<Companies />} />
-          <Route path="jobdetails" element={<JobDetails />} />
+          <Route path="/jobdetails" element={<JobDetails />} />
+          <Route path="/jobs/edit" element={<EditJob />} />
 
 
           {/* Employee Routes */}
