@@ -31,7 +31,7 @@ const JobList = ({ user }) => {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get('/jobs/all', {
+      const res = await apiClient.get('/common/job/all', {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
