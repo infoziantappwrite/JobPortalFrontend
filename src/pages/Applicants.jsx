@@ -1,45 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
-import { Eye, X } from 'lucide-react';
+import { FiEye, FiUsers } from 'react-icons/fi';
+import { X } from 'lucide-react';
 
 const Applicants = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [loadingJobs, setLoadingJobs] = useState(true);
-  const [errorJobs, setErrorJobs] = useState(null);
-
   const [selectedApplication, setSelectedApplication] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const [loadingAppDetail, setLoadingAppDetail] = useState(false);
   const [errorAppDetail, setErrorAppDetail] = useState('');
   const [shortlisting, setShortlisting] = useState(false);
 
-  const fetchAppliedJobs = async () => {
+  const fetchPostedJobs = async () => {
+    setLoading(true);
     try {
-      setLoadingJobs(true);
       const res = await apiClient.get('/employee/job/get-applicants', { withCredentials: true });
       setJobs(res.data.jobs || []);
     } catch (err) {
-      setErrorJobs(err.response?.data?.error || 'Failed to load applied jobs.');
+      setError(err.response?.data?.error || 'Failed to load jobs.');
     } finally {
-      setLoadingJobs(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAppliedJobs();
+    fetchPostedJobs();
   }, []);
 
-  const handleJobClick = (job) => {
+  const handleViewApplicants = async (jobID) => {
+    const job = jobs.find(j => j._id === jobID);
+    if (!job) return;
     setSelectedJob(job);
-  };
-
-  const closeJobModal = () => {
-    setSelectedJob(null);
   };
 
   const openApplicantDetail = async (applicationID) => {
     if (!selectedJob?._id) {
-      setErrorAppDetail('Job ID not found for this application.');
+      setErrorAppDetail('Job ID not found.');
       return;
     }
 
@@ -50,9 +50,10 @@ const Applicants = () => {
     try {
       const res = await apiClient.post('/jobs/get-detail', {
         IDs: [applicationID],
-        jobID: selectedJob._id, // <-- FIXED: Send jobID here
+        jobID: selectedJob._id,
         type: 'jobApplication',
       });
+
       const data = res?.data?.jobApplications?.[0];
       if (data) {
         setSelectedApplication(data);
@@ -60,10 +61,33 @@ const Applicants = () => {
         setErrorAppDetail('No application data found.');
       }
     } catch (err) {
-      console.error('Error fetching application detail:', err);
       setErrorAppDetail(err.response?.data?.error || 'Failed to load application details.');
     } finally {
       setLoadingAppDetail(false);
+    }
+  };
+
+  const handleShortlist = async () => {
+    const app = selectedApplication;
+    if (!app?._id || !app?.jobID?._id || !app?.userID?._id) {
+      alert('Missing data');
+      return;
+    }
+
+    setShortlisting(true);
+    try {
+      await apiClient.post('/jobs/shortlist', {
+        jobID: app.jobID._id,
+        applicantID: app.userID._id,
+      });
+
+      setSelectedApplication(null);
+      setSelectedJob(null);
+      fetchPostedJobs();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Could not shortlist applicant.');
+    } finally {
+      setShortlisting(false);
     }
   };
 
@@ -72,140 +96,116 @@ const Applicants = () => {
     setErrorAppDetail('');
   };
 
-  const handleShortlist = async () => {
-    if (!selectedApplication?._id || !selectedApplication?.jobID?._id || !selectedApplication?.userID?._id) {
-      alert('Missing required applicant or job data.');
-      return;
-    }
-
-    setShortlisting(true);
-    try {
-      await apiClient.post('/jobs/shortlist', {
-        jobID: selectedApplication.jobID._id, // <-- FIXED keys here
-        applicantID: selectedApplication.userID._id,
-      });
-
-      closeApplicantModal();
-      await fetchAppliedJobs(); // Refresh job list
-    } catch (err) {
-      console.error('Failed to update status:', err);
-      alert(err.response?.data?.error || 'Could not shortlist applicant.');
-    } finally {
-      setShortlisting(false);
-    }
+  const closeApplicantsListModal = () => {
+    setSelectedJob(null);
   };
 
-
-  if (loadingJobs) return <div className="text-center p-8">Loading applied jobs...</div>;
-  if (errorJobs) return <div className="text-red-600 text-center p-8">{errorJobs}</div>;
-
-  if (jobs.length === 0) {
-    return (
-      <div className="text-center text-gray-600 p-8">
-        You have not applied to any jobs yet.
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center p-8">Loading jobs...</div>;
+  if (error) return <div className="text-red-600 text-center p-8">{error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6 text-center">Posted Jobs with Applicants</h2>
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-indigo-700">
+        <FiUsers /> Posted Jobs with Applicants
+      </h2>
 
-      {/* Jobs list */}
-      <ul className="space-y-4">
-        {jobs.map((job) => (
-          <li
-            key={job._id}
-            className="border p-4 rounded shadow cursor-pointer hover:bg-gray-50"
-            onClick={() => handleJobClick(job)}
-          >
-            <h3 className="text-xl font-semibold">{job.title}</h3>
-            <p className="text-sm text-gray-600">{job.company}</p>
-            <p className="text-sm mt-1">Applicants: {job.applicants?.length || 0}</p>
-            {job.postedBy && (
-              <p className="text-xs text-gray-500 mt-2">
-                Posted by: <span className="font-medium">{job.postedBy.name}</span> ({job.postedBy.email})
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-x-auto bg-white rounded shadow-md">
+        <table className="min-w-full">
+          <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
+            <tr>
+              <th className="py-2 px-4">Title</th>
+              <th className="py-2 px-4">Company</th>
+              <th className="py-2 px-4">Posted By</th>
+              <th className="py-2 px-4">Applicants</th>
+              <th className="py-2 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm text-gray-800">
+            {jobs.map((job) => (
+              <tr key={job._id} className="border-t hover:bg-gray-50">
+                <td className="py-3 px-4">{job.title}</td>
+                <td className="py-3 px-4">{job.company}</td>
+                <td className="py-3 px-4">{job.postedBy?.name} ({job.postedBy?.email})</td>
+                <td className="py-3 px-4">{job.applicants?.length || 0}</td>
+                <td className="py-3 px-4">
+                  <button
+                    onClick={() => handleViewApplicants(job._id)}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm"
+                  >
+                    <FiEye className="inline mr-1" /> View Applicants
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* Modal: Applicants list for selected job */}
+      {/* Modal: Applicants List */}
       {selectedJob && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full max-h-[90vh] overflow-auto relative">
             <button
-              onClick={closeJobModal}
+              onClick={closeApplicantsListModal}
               className="absolute top-4 right-4 text-gray-600 hover:text-black"
-              aria-label="Close applicants modal"
+              aria-label="Close"
             >
               <X size={24} />
             </button>
 
             <h3 className="text-xl font-bold mb-4">Applicants for {selectedJob.title}</h3>
 
-            {selectedJob.applicants.length === 0 ? (
-              <p className="text-gray-500">No applicants for this job yet.</p>
+            {selectedJob.applicants?.length === 0 ? (
+              <p className="text-gray-500">No applicants for this job.</p>
             ) : (
-              <ul className="space-y-3 max-h-[60vh] overflow-auto">
-                {selectedJob.applicants.map((applicant, idx) => {
-                  if (applicant.userID) {
-                    return (
-                      <li
-                        key={applicant.applicationID || idx}
-                        className="p-3 border rounded text-sm flex justify-between items-center hover:bg-gray-100"
-                      >
-                        <div>
-                          <p><strong>Name:</strong> {applicant.userID.name}</p>
-                          <p><strong>Email:</strong> {applicant.userID.email}</p>
-                          <p><strong>Application ID:</strong> {applicant.applicationID}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500 border px-2 py-1 rounded">
-                            {applicant.status}
-                          </span>
-                          <button
-                            onClick={() => {
-                              closeJobModal();
-                              openApplicantDetail(applicant.applicationID);
-                            }}
-                            aria-label={`View details for ${applicant.userID.name}`}
-                            className="text-indigo-600 hover:text-indigo-800 p-2"
-                          >
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={idx} className="p-3 border rounded text-sm text-gray-500 italic">
-                      Anonymous Applicant (Buffer only)
+              <ul className="space-y-3">
+                {selectedJob.applicants.map((applicant, idx) =>
+                  applicant.userID ? (
+                    <li
+                      key={applicant.applicationID || idx}
+                      className="p-3 border rounded text-sm flex justify-between items-center hover:bg-gray-100"
+                    >
+                      <div>
+                        <p><strong>{applicant.userID.name}</strong></p>
+                        <p className="text-xs text-gray-600">{applicant.userID.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs border px-2 py-1 rounded text-gray-500">
+                          {applicant.status}
+                        </span>
+                        <button
+                          onClick={() => openApplicantDetail(applicant.applicationID)}
+                          className="text-indigo-600 hover:text-indigo-800 p-2"
+                        >
+                          <FiEye />
+                        </button>
+                      </div>
                     </li>
-                  );
-                })}
+                  ) : (
+                    <li key={idx} className="text-gray-500 italic">
+                      Anonymous Applicant
+                    </li>
+                  )
+                )}
               </ul>
             )}
           </div>
         </div>
       )}
 
-      {/* Modal: Detailed Applicant info */}
+      {/* Modal: Applicant Detail */}
       {selectedApplication && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-60 flex justify-center items-center">
           <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
             <button
               onClick={closeApplicantModal}
               className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              aria-label="Close application detail modal"
+              aria-label="Close"
             >
               <X size={20} />
             </button>
 
-            {loadingAppDetail && <p className="text-gray-700">Loading application details...</p>}
-
+            {loadingAppDetail && <p>Loading application details...</p>}
             {errorAppDetail && <p className="text-red-500">{errorAppDetail}</p>}
 
             {!loadingAppDetail && !errorAppDetail && selectedApplication && (
@@ -213,17 +213,17 @@ const Applicants = () => {
                 <h2 className="text-xl font-semibold text-indigo-700">Application Details</h2>
 
                 <div>
-                  <p><span className="font-semibold">Name:</span> {selectedApplication.userID?.name}</p>
-                  <p><span className="font-semibold">Email:</span> {selectedApplication.userID?.email}</p>
-                  <p><span className="font-semibold">Role:</span> {selectedApplication.userID?.role}</p>
-                  <p><span className="font-semibold">Status:</span> {selectedApplication.status}</p>
+                  <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
+                  <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
+                  <p><strong>Role:</strong> {selectedApplication.userID?.role}</p>
+                  <p><strong>Status:</strong> {selectedApplication.status}</p>
                 </div>
 
                 <div>
-                  <p><span className="font-semibold">Job Title:</span> {selectedApplication.jobID?.title}</p>
-                  <p><span className="font-semibold">Company:</span> {selectedApplication.jobID?.company}</p>
-                  <p><span className="font-semibold">Location:</span> {selectedApplication.jobID?.location}</p>
-                  <p><span className="font-semibold">Description:</span> {selectedApplication.jobID?.description}</p>
+                  <p><strong>Job Title:</strong> {selectedApplication.jobID?.title}</p>
+                  <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
+                  <p><strong>Location:</strong> {selectedApplication.jobID?.location}</p>
+                  <p><strong>Description:</strong> {selectedApplication.jobID?.description}</p>
                 </div>
 
                 <div>
