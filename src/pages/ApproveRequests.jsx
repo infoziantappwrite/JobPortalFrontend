@@ -1,6 +1,4 @@
-// src/pages/ApproveRequests.jsx
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 
@@ -11,10 +9,15 @@ const ApproveRequests = () => {
     const fetchPendingCompanies = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await apiClient.get('/pending/companies', {
+        const res = await apiClient.get('/superadmin/company/all', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setPendingCompanies(res.data.pendingCompanies);
+        const allCompanies = res.data.companies || [];
+
+        console.log(allCompanies);
+        
+        const pending = allCompanies.filter(company => company.status === 'pending');
+        setPendingCompanies(pending);
       } catch (err) {
         console.error('Error fetching pending companies:', err);
         toast.error('Failed to fetch pending companies.');
@@ -24,51 +27,66 @@ const ApproveRequests = () => {
     fetchPendingCompanies();
   }, []);
 
-  const handleApprove = async (companyId) => {
+  const handleStatusUpdate = async (companyId, status) => {
     try {
       const token = localStorage.getItem('token');
-      await apiClient.post(`/approve/company/${companyId}`, {}, {
+      await apiClient.patch(`/superadmin/company/approve/${companyId}`, {
+        currStatus: status,
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Company approved!');
+
+      toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);
       setPendingCompanies(prev => prev.filter(c => c._id !== companyId));
     } catch (err) {
-      console.error('Error approving company:', err);
-      toast.error('Failed to approve company.');
+      console.error(`Error updating company status to ${status}:`, err);
+      toast.error(`Failed to ${status} company.`);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Pending Company Approvals</h2>
+    <div className="container mx-auto p-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">📋 Pending Company Approvals</h2>
+
       {pendingCompanies.length === 0 ? (
-        <p>No pending approvals.</p>
+        <p className="text-center text-gray-500">✅ No pending approvals.</p>
       ) : (
-        <table className="min-w-full bg-white border rounded shadow">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">Company Name</th>
-              <th className="border px-4 py-2">Email</th>
-              <th className="border px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingCompanies.map((company) => (
-              <tr key={company._id}>
-                <td className="border px-4 py-2">{company.name}</td>
-                <td className="border px-4 py-2">{company.email}</td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleApprove(company._id)}
-                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                  >
-                    Approve
-                  </button>
-                </td>
+        <div className="overflow-x-auto shadow-lg rounded-xl border border-gray-200">
+          <table className="min-w-full table-auto bg-white text-sm text-gray-700">
+            <thead>
+              <tr className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white">
+                <th className="px-6 py-3 text-left rounded-tl-xl">Company Name</th>
+                <th className="px-6 py-3 text-left">Email</th>
+                <th className="px-6 py-3 text-left rounded-tr-xl">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pendingCompanies.map((company, index) => (
+                <tr
+                  key={company._id}
+                  className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white hover:bg-gray-100 transition-all'}
+                >
+                  <td className="px-6 py-4 font-medium">{company.name}</td>
+                  <td className="px-6 py-4">{company.email}</td>
+                  <td className="px-6 py-4 space-x-3">
+                    <button
+                      onClick={() => handleStatusUpdate(company._id, 'approved')}
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm transition"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleStatusUpdate(company._id, 'rejected')}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-sm transition"
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
