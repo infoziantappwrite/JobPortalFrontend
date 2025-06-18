@@ -21,7 +21,7 @@ import ProfileSidebar from './components/ProfileSidebar';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EditProfile from './pages/EditProfile';
-import AppliedJobs from './pages/AppliedJobs';
+import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
@@ -32,6 +32,7 @@ import GlobalLoader from './components/GlobalLoader';
 import ViewProfile from './candidate/ViewProfile';
 import EditProfilecandidate from './candidate/EditProfile';
 import EditJob from './pages/EditJob';
+import Job from './components/Job';
 /*candidate jobs*/
 import Jobalerts from './candidate/jobs/Jobalerts';
 import Myresume from './candidate/jobs/Myresume';
@@ -50,6 +51,7 @@ import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateVie
 // Company Details
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
+
 
 function App() {
 
@@ -116,9 +118,8 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
+          <Route path="/job/:slug" element={<Job />}/>
           <Route path="/companies" element={<Companies />} />
-          <Route path="/jobdetails" element={<JobDetails />} />
-          <Route path="/jobs/edit" element={<EditJob />} />
 
 
           {/* Employee Routes */}
@@ -136,6 +137,8 @@ function App() {
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
+            <Route path="jobdetails" element={<JobDetails />} />
+            <Route path="jobs-edit" element={<EditJob />} />
           </Route>
           {/* Employee Routes end */}
 
@@ -152,6 +155,7 @@ function App() {
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />
@@ -189,6 +193,7 @@ function App() {
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applied" element={<AppliedJobs />} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />

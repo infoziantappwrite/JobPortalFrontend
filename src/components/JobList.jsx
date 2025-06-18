@@ -1,31 +1,53 @@
 import { useEffect, useState } from 'react';
-import { FiEdit, FiTrash2, FiEye, FiCheckSquare, FiSquare, FiBriefcase, FiFilter } from 'react-icons/fi';
+import {
+  FiEdit, FiTrash2, FiEye, FiCheckSquare,
+  FiSquare, FiBriefcase, FiFilter
+} from 'react-icons/fi';
 import apiClient from '../api/apiClient';
+import { fetchCurrentUser } from '../api/fetchuser';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { useNavigate } from 'react-router-dom';
 
-const JobList = ({ user }) => {
+const JobList = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingJobs, setLoadingJobs] = useState(true);
   const [selectedIds, setSelectedIds] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [filter, setFilter] = useState({ range: 'all', status: 'all' });
 
-  const role = user?.role?.toLowerCase();
   const token = localStorage.getItem('token');
 
+  // Fetch user on mount
   useEffect(() => {
-    fetchJobs();
+    const getUser = async () => {
+      try {
+        const fetchedUser = await fetchCurrentUser();
+        setUser(fetchedUser);
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    getUser();
   }, []);
+
+  // Fetch jobs once user is loaded
+  useEffect(() => {
+    if (user) fetchJobs();
+  }, [user]);
 
   useEffect(() => {
     applyFilters();
   }, [filter, jobs]);
 
   const fetchJobs = async () => {
-    setLoading(true);
+    setLoadingJobs(true);
     try {
       const res = await apiClient.get('/common/job/all', {
         headers: { Authorization: `Bearer ${token}` },
@@ -35,7 +57,7 @@ const JobList = ({ user }) => {
     } catch (error) {
       console.error('Failed to load jobs:', error);
     } finally {
-      setLoading(false);
+      setLoadingJobs(false);
     }
   };
 
@@ -54,7 +76,7 @@ const JobList = ({ user }) => {
       const minutes = minutesMap[filter.range];
       filtered = filtered.filter(job => {
         const createdAt = new Date(job.postedAt);
-        const diff = (now - createdAt) / (1000 * 60); // in minutes
+        const diff = (now - createdAt) / (1000 * 60);
         return diff <= minutes;
       });
     }
@@ -101,13 +123,16 @@ const JobList = ({ user }) => {
       (j) => j.companyID === job.companyID && j._id !== job._id
     );
 
-    navigate('/jobdetails', {
+    navigate('/employee/jobdetails', {
       state: {
         jobdetails: job,
         relatedJobs: relatedJobs,
       },
     });
   };
+
+  const role = user?.role?.toLowerCase();
+  const userId = String(user?._id || user?.id || '').trim();
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -164,40 +189,58 @@ const JobList = ({ user }) => {
             </tr>
           </thead>
           <tbody className="text-sm text-gray-800">
-            {filteredJobs.map(job => (
-              <tr key={job._id} className="border-t hover:bg-gray-50">
-                <td className="px-4">
-                  <button onClick={() => handleCheckbox(job._id)}>
-                    {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
-                  </button>
-                </td>
-                <td className="py-3 px-4">{job.title}</td>
-                <td className="py-3 px-4">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${job.isActive ? 'bg-teal-100 text-teal-800' : 'bg-red-100 text-red-700'}`}>
-                    {job.isActive ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  {new Date(job.postedAt).toLocaleDateString()} & {new Date(job.applicationDeadline).toLocaleDateString()}
-                </td>
-                <td className="py-3 px-4">{job.isActive ? '✔️' : '❌'}</td>
-                <td className="py-3 px-4 flex gap-3">
-                  <button onClick={() => handleViewJob(job)} title="View" className="text-indigo-600 hover:text-indigo-800">
-                    <FiEye />
-                  </button>
-                  {role !== 'candidate' && (
-                    <>
-                      <button onClick={() => navigate('/jobs/edit', { state: job })} title="Edit" className="text-yellow-600 hover:text-yellow-800">
-                        <FiEdit />
-                      </button>
-                      <button onClick={() => { setSelectedIds([job._id]); setConfirmDelete(true); }} title="Delete" className="text-red-500 hover:text-red-700">
-                        <FiTrash2 />
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredJobs.map(job => {
+              const postedById = String(job.postedBy?._id || job.postedBy?.id || '').trim();
+              const canEdit = role !== 'candidate' && userId === postedById;
+
+              return (
+                <tr key={job._id} className="border-t hover:bg-gray-50">
+                  <td className="px-4">
+                    <button onClick={() => handleCheckbox(job._id)}>
+                      {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
+                    </button>
+                  </td>
+                  <td className="py-3 px-4">{job.title}</td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${job.isActive ? 'bg-teal-100 text-teal-800' : 'bg-red-100 text-red-700'}`}>
+                      {job.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    {new Date(job.postedAt).toLocaleDateString()} & {new Date(job.applicationDeadline).toLocaleDateString()}
+                  </td>
+                  <td className="py-3 px-4">{job.isActive ? '✔' : '❌'}</td>
+                  <td className="py-3 px-4 flex gap-3">
+                    <button onClick={() => handleViewJob(job)} title="View" className="text-indigo-600 hover:text-indigo-800">
+                      <FiEye />
+                    </button>
+                      <>
+                        <button
+                          onClick={() => canEdit && navigate('/employee/jobs-edit', { state: job })}
+                          title="Edit"
+                          disabled={!canEdit}
+                          className={`text-yellow-600 hover:text-yellow-800 ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <FiEdit />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (canEdit) {
+                              setSelectedIds([job._id]);
+                              setConfirmDelete(true);
+                            }
+                          }}
+                          title="Delete"
+                          disabled={!canEdit}
+                          className={`text-red-500 hover:text-red-700 ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

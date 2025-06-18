@@ -4,13 +4,22 @@ import {
   FiMail, FiPhone, FiUser, FiCheckCircle, FiMapPin, FiBook, FiBriefcase, FiDollarSign, FiGithub, FiGlobe, FiX, FiLinkedin, FiFacebook, FiTwitter, FiLink,
 } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
-
-const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png'; // Use your own fallback image
+ // Use your own fallback image
 
 const ViewProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+
+  const getColorFromName = (name) => {
+    if (!name) return 'bg-gray-500';
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  };
+
+  
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -71,14 +80,15 @@ const ViewProfile = () => {
 
           <div className="flex justify-center">
             <div className="flex flex-col items-center gap-2">
-              <img
-                src={profile.profileImageURL || defaultProfileImage}
-                alt="Profile"
-                className="w-28 h-28 rounded-full border object-cover shadow"
-              />
+              <div
+                className={`w-28 h-28 rounded-full ${getColorFromName(profile.name)} text-white flex items-center justify-center text-3xl font-bold border shadow`}
+              >
+                {profile.name?.charAt(0).toUpperCase() || "?"}
+              </div>
               <span className="text-gray-700 font-semibold">{profile.name}</span>
             </div>
           </div>
+
         </div>
 
         <Section
