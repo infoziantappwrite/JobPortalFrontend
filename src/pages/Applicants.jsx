@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
-import { FiEye, FiUsers, FiTrash2 } from 'react-icons/fi';
+import { FiEye, FiUsers } from 'react-icons/fi';
 import { UserPlus, X } from 'lucide-react';
 
 const Applicants = () => {
@@ -37,12 +37,13 @@ const Applicants = () => {
     if (!selectedJob?._id) return;
     setLoadingAppDetail(true);
     try {
-      const res = await apiClient.post('/jobs/get-detail', {
-        IDs: [applicationID],
-        jobID: selectedJob._id,
-        type: 'jobApplication',
+      const res = await apiClient.get('/candidate/info/get-profile', {
+        params: {
+          applicantID: applicationID,
+          jobID: selectedJob._id
+        }
       });
-      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
+      setSelectedApplication(res?.data?.applicant || null);
     } catch (err) {
       setErrorAppDetail(err.response?.data?.error || 'Failed to load application details.');
     } finally {
@@ -50,23 +51,54 @@ const Applicants = () => {
     }
   };
 
-  const handleShortlist = async () => {
-    const app = selectedApplication;
-    if (!app?._id || !app?.jobID?._id || !app?.userID?._id) return;
-    setShortlisting(true);
-    try {
-      await apiClient.post('/jobs/shortlist', {
-        jobID: app.jobID._id,
-        applicantID: app.userID._id,
-      });
-      setSelectedApplication(null);
-      setSelectedJob(null);
-    } catch (err) {
-      alert(err.response?.data?.error || 'Could not shortlist applicant.');
-    } finally {
-      setShortlisting(false);
-    }
-  };
+const handleShortlist = async (applicant, jobID) => {
+  console.log('Applicant:', applicant);
+  console.log('Job ID:', jobID);
+
+  // Extract applicantID from candidateID._id
+  let applicantID = null;
+
+  if (typeof applicant.candidateID === 'string') {
+    applicantID = applicant.candidateID;
+  } else if (applicant.candidateID?._id) {
+    applicantID = applicant.candidateID._id;
+  } else if (applicant._id) {
+    applicantID = applicant._id;
+  }
+
+  if (!applicantID || !jobID) {
+    console.warn('Missing applicantID or jobID', { applicantID, jobID });
+    alert("Invalid applicant data. Missing jobID or applicantID.");
+    return;
+  }
+
+  setShortlisting(true);
+  try {
+    const res = await apiClient.post(
+      '/employee/job/applicant/shortlist',
+      {
+        jobID,
+        applicantID,
+      },
+      { withCredentials: true }
+    );
+
+    console.log('Shortlist response:', res.data);
+
+    setSelectedApplication(null);
+    setSelectedJob(null);
+  } catch (err) {
+    console.error('Shortlist failed:', err.response?.data || err.message);
+    alert(err.response?.data?.error || 'Could not shortlist applicant.');
+  } finally {
+    setShortlisting(false);
+  }
+};
+
+
+
+
+
 
   if (loading) return <div className="text-center py-10">Loading jobs...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -149,16 +181,12 @@ const Applicants = () => {
                       <FiEye />
                     </button>
                     <button
+                      onClick={() => handleShortlist(applicant, selectedJob._id)}
                       className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
                       title="Shortlist"
+                      disabled={shortlisting}
                     >
                       <UserPlus />
-                    </button>
-                    <button
-                      className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-600"
-                      title="Delete"
-                    >
-                      <FiTrash2 />
                     </button>
                   </div>
                 </div>
@@ -168,7 +196,6 @@ const Applicants = () => {
         </div>
       )}
 
-      {/* Application Detail Modal */}
       {selectedApplication && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white rounded-lg shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
@@ -201,12 +228,13 @@ const Applicants = () => {
                 </a>
                 {selectedApplication.status !== 'shortlisted' && (
                   <button
-                    onClick={handleShortlist}
+                    onClick={() => handleShortlist(selectedApplication, selectedJob._id)}
                     disabled={shortlisting}
                     className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
                   >
                     {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
                   </button>
+
                 )}
               </>
             )}
