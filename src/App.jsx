@@ -43,6 +43,7 @@ import CVManager from './candidate/jobs/CVManager';
 import ApproveEmployee from './pages/ApproveEmployee';
 import ApproveRequests from './pages/ApproveRequests';
 import SuperCompanyManage from './pages/SuperCompanyManage';
+import Job from './components/Job';
 
 function App() {
 
@@ -109,6 +110,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
+          <Route path="/job/:slug" element={<Job />}/>
           <Route path="/companies" element={<Companies />} />
           <Route path="/jobdetails" element={<JobDetails />} />
           <Route path="/jobs/edit" element={<EditJob />} />
