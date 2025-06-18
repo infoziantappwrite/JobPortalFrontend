@@ -110,8 +110,6 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/jobs" element={<AllJobs />} />
           <Route path="/companies" element={<Companies />} />
-          <Route path="/jobdetails" element={<JobDetails />} />
-          <Route path="/jobs/edit" element={<EditJob />} />
 
 
           {/* Employee Routes */}
@@ -129,6 +127,8 @@ function App() {
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
+            <Route path="jobdetails" element={<JobDetails />} />
+            <Route path="jobs-edit" element={<EditJob />} />
           </Route>
           {/* Employee Routes end */}
 
