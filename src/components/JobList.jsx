@@ -101,7 +101,7 @@ const JobList = ({ user }) => {
       (j) => j.companyID === job.companyID && j._id !== job._id
     );
 
-    navigate('/jobdetails', {
+    navigate('/employee/jobdetails', {
       state: {
         jobdetails: job,
         relatedJobs: relatedJobs,
@@ -187,7 +187,7 @@ const JobList = ({ user }) => {
                   </button>
                   {role !== 'candidate' && (
                     <>
-                      <button onClick={() => navigate('/jobs/edit', { state: job })} title="Edit" className="text-yellow-600 hover:text-yellow-800">
+                      <button onClick={() => navigate('/employee/jobs-edit', { state: job })} title="Edit" className="text-yellow-600 hover:text-yellow-800">
                         <FiEdit />
                       </button>
                       <button onClick={() => { setSelectedIds([job._id]); setConfirmDelete(true); }} title="Delete" className="text-red-500 hover:text-red-700">

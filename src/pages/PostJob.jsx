@@ -156,7 +156,7 @@ const PostJob = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {section.fields.map((field) => {
                 const isTextarea = field === "description";
-                const isSelect = ["gender", "location", "jobType", "careerLevel", "qualification", "industry"].includes(field);
+                const isSelect = ["gender", "location", "jobType", "careerLevel", "qualification", "industry", "experience", "offeredSalary"].includes(field);
                 const isDate = field === "applicationDeadline";
 
                 return isSelect ? (
@@ -182,6 +182,17 @@ const PostJob = () => {
                       ["Remote", "In-person", "Hybrid"].map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
+                      
+                    {field === "experience" &&
+                      ["0-1 Years", "1-2 Years", "5-10 Years", "10+ Years"].map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+
+                    {field === "offeredSalary" &&
+                      ["<30k", "30-40k", "40-50k", "50-70k", "70k+"].map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+
 
                     {field === "jobType" &&
                       ["Full-time", "Part-time", "Contract", "Internship"].map((opt) => (
