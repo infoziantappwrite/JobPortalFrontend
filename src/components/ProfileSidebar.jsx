@@ -24,13 +24,17 @@ const ProfileSidebar = () => {
       { key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` },
       { key: 'editprofile', label: 'Edit Profile', icon: <FiBarChart2 />, path: `/${role}/profileview/editprofile` },
     ],
+    company: [
+       { key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` },
+      { key: 'editprofile', label: 'Edit Profile', icon: <FiBarChart2 />, path: `/${role}/profileview/editprofile` },
+    ],
     // Other roles can be added here if necessary
   };
 
   // Define common menu items that will appear for all roles
   const commonMenu = [
     // Only add "My Profile" here for roles other than candidate
-    ...(role !== 'candidate' ? [{ key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` }] : []),
+    ...(role !== 'candidate' && role !== 'company' ? [{ key: 'myprofile', label: 'My Profile', icon: <FiUser />, path: `/${role}/profileview/myprofile` }] : []),
     { key: 'changepassword', label: 'Change Password', icon: <FiLock />, path: `/${role}/profileview/changepassword` },
   ];
 

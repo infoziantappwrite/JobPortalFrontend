@@ -41,8 +41,15 @@ import EmployeeLogin from './pages/Auth/EmployeeLogin';
 import SuperAdminLogin from './pages/Auth/SuperLogin';
 import CVManager from './candidate/jobs/CVManager';
 import ApproveEmployee from './pages/ApproveEmployee';
+// Super Admin Management
 import ApproveRequests from './pages/ApproveRequests';
 import SuperCompanyManage from './pages/SuperCompanyManage';
+import SuperEmployeeManage from './pages/SuperEmployeeManage';
+import SuperCandidateManage from './pages/SuperCandidateManage';
+import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateViewPage';
+// Company Details
+import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
+import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
 
 function App() {
 
@@ -164,6 +171,9 @@ function App() {
             <Route path="dashboard" element={<div>Dashboard</div>} />
             <Route path="approve-companies" element={<ApproveRequests />} />
             <Route path="manage-companies" element={<SuperCompanyManage />} />
+            <Route path="manage-employee" element={<SuperEmployeeManage />} />
+            <Route path="manage-candidate" element={<SuperCandidateManage />} />
+            <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
           </Route>
           {/*superadmin Routes end*/}
 
@@ -202,8 +212,8 @@ function App() {
           </Route>
 
           <Route path="/company/profileview" element={<ProfileSidebar />}>
-            <Route index element={<div>My Profile</div>} />
-            <Route path="myprofile" element={<div>My Profile</div>} />
+            <Route path="myprofile" element={<CompanyProfileView />} />
+            <Route path="editprofile" element={<CompanyEditProfile />} />
             <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
