@@ -43,7 +43,7 @@ const Jobalerts = () => {
 
 
 
-  navigate('/jobdetails', {
+  navigate(`/${user?.userType?.toLowerCase()}/jobdetails`, {
     state: {
       jobdetails: job,
       relatedJobs: relatedJobs,
@@ -65,7 +65,7 @@ const Jobalerts = () => {
 
   return (
     <div className="bg-blue-50 min-h-screen p-10 flex justify-center items-start">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-7xl">
+      <div className="bg-white p-6 rounded-xl shadow-lg w-full ">
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
@@ -102,7 +102,7 @@ const Jobalerts = () => {
           <div >Type</div>
           <div>Location</div>
           <div>Posted On</div>
-            <div >Action</div>
+          <div >Action</div>
         </div>
 
         {filteredJobs.map((job) => (
