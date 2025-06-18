@@ -39,9 +39,6 @@ const DashboardLayout = () => {
       { key: 'company', label: 'SuperAdmin Profile', icon: <FiUser />, path: '/superadmin/profile' },
       { key: 'add', label: 'Approve Companies', icon: <FiUsers />, path: '/superadmin/approve-companies' },
       { key: 'manage', label: 'Manage Companies', icon: <FiUsers />, path: '/superadmin/manage-companies' },
-      { key: 'jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/superadmin/manage-jobs' },
-      { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/superadmin/applicants' },
-      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/superadmin/shortlisted' },
       { key: 'view', label: 'View Profile', icon: <FiUser />, path: '/superadmin/view-profile' }
     ],
     company: [
