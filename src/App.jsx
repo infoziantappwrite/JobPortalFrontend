@@ -21,7 +21,7 @@ import ProfileSidebar from './components/ProfileSidebar';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EditProfile from './pages/EditProfile';
-import AppliedJobs from './pages/AppliedJobs';
+import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
@@ -143,6 +143,7 @@ function App() {
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />
@@ -175,6 +176,7 @@ function App() {
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applied" element={<AppliedJobs />} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />
