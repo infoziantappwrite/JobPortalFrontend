@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const getColorByString = (str) => {
   const colors = [
-    'bg-teal-100 text-teal-700',
+    'bg-teal-100 text-green-700',
     'bg-blue-100 text-blue-700',
     'bg-pink-100 text-pink-700',
     'bg-yellow-100 text-yellow-700',
@@ -21,7 +21,12 @@ const JobCards = ({ paginatedJobs }) => {
   const navigate = useNavigate();
 
   const handleCardClick = (job) => {
-  const formattedTitle = job.title.toLowerCase().replace(/\s+/g, '-');
+  const formattedTitle = job.title
+  .toLowerCase()
+  .replace(/[^a-z0-9\s-]/g, '')   // Removes / and all non-alphanumeric characters except space and hyphen
+  .replace(/\s+/g, '-')           // Replaces spaces with hyphens
+  .trim();
+
 
   // Filter related jobs by same company, excluding current job
   const relatedJobs = paginatedJobs.filter(
@@ -38,7 +43,7 @@ const JobCards = ({ paginatedJobs }) => {
 
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-6">
       {paginatedJobs.map((job) => (
   <div
     key={job._id}
@@ -57,7 +62,7 @@ const JobCards = ({ paginatedJobs }) => {
 
     {/* Logo */}
     <div className="flex justify-center items-center mt-6 mb-4">
-      <div className={`w-20 h-20 ${getColorByString(job.company || '')} text-white font-bold text-xl rounded-full flex items-center justify-center uppercase shadow-inner`}>
+      <div className={`w-20 h-20 ${getColorByString(job.company || '')} text-black font-bold text-xl rounded-full flex items-center justify-center uppercase shadow-inner`}>
         {job.company?.[0] || 'C'}
       </div>
     </div>
