@@ -17,7 +17,7 @@ const Applicants = () => {
     const fetchPostedJobs = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/employee/job/applicant/shortlisted-applicants', { withCredentials: true });
+        const res = await apiClient.get('/employee/job/applicant/get-applicants', { withCredentials: true });
         setJobs(res.data.jobs || []);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load jobs.');
