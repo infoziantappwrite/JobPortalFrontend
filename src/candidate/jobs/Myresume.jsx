@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
     FiPhone, FiMapPin, FiHome, FiBriefcase, FiBookOpen,
     FiDollarSign, FiGlobe, FiLinkedin, FiTwitter,
-    FiFacebook, FiInstagram, FiUser, FiGithub,FiMail
+    FiFacebook, FiInstagram, FiUser, FiGithub, FiMail
 } from 'react-icons/fi';
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import SectionTimeline from './SectionTimeline'; // Adjust path if needed
@@ -12,31 +12,39 @@ import apiClient from '../../api/apiClient';
 const Myresume = () => {
     const [candidateInfo, setCandidateInfo] = useState(null);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await apiClient.get('/candidate/info/get-profile');
-                setCandidateInfo(res.data.candidateInfo);
-                console.log(res.data)
-            } catch (error) {
-                console.error('Error fetching candidate profile:', error);
-            }
-        };
+    const fetchProfile = async () => {
+        try {
+            const res = await apiClient.get('/candidate/info/get-profile');
+            setCandidateInfo(res.data.candidateInfo);
+        } catch (error) {
+            console.error('Error fetching candidate profile:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchProfile();
     }, []);
+    const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+
+    const getColorFromName = (name) => {
+        if (!name) return 'bg-gray-500';
+        const index = name.charCodeAt(0) % colors.length;
+        return colors[index];
+    };
+
+
 
     if (!candidateInfo) return <div className="text-center p-10">Loading profile...</div>;
 
     const {
-        name, profileImageURL, profileDescription,email, phone, age, country, city, fullAddress,
+        name, profileDescription, email, phone, age, country, city, fullAddress,
         jobTitle, currentSalary, expectedSalary, education, yearsOfExp,
-        languages, categories, socials, educationHistory, workExperience, awards
+        languages, categories, socials
     } = candidateInfo;
 
     return (
-        <div className="bg-blue-100 min-h-screen p-10">
-            <div className="p-6 bg-white rounded-2xl shadow-lg max-w-4xl mx-auto space-y-10">
+        <div className="bg-blue-50 min-h-screen p-10">
+            <div className="p-6 bg-white rounded-2xl shadow-lg max-w-6xl mx-auto space-y-10">
                 <h2 className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-semibold text-gray-800 mb-8">
                     <HiOutlineDocumentText className="text-blue-600 text-3xl" />
                     <span className="border-b-2 border-blue-600 pb-1">My Resume</span>
@@ -44,98 +52,92 @@ const Myresume = () => {
 
                 {/* Profile Header */}
                 <div className="flex items-center gap-6 bg-blue-100 p-6 rounded-xl shadow-lg">
-                    {/* Profile Image or Initial */}
-                    {profileImageURL ? (
-                        <img
-                            src={profileImageURL}
-                            alt="Profile"
-                            className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
-                        />
-                    ) : (
-                        <div className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold border-2 border-blue-500">
-                            {name?.charAt(0).toUpperCase() || "?"}
-                        </div>
-                    )}
+
+                    <div className={`w-24 h-24 rounded-full ${getColorFromName(name)} text-white flex items-center justify-center text-3xl font-bold border-2`}>
+                        {name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+
+
 
                     {/* Name, Job Title & Description */}
                     <div className="flex-1">
                         {/* Name + Job Title */}
-                       
-                            <h1 className="text-2xl font-bold text-gray-800 ">{name}</h1>
-                            <h2 className="text-lg font-semibold text-blue-600">{jobTitle}</h2>
-                            <div className="md:col-span-2 mt-2 border-l-4 border-indigo-400 pl-2">
-    <p className="text-gray-600 text-sm">{profileDescription}</p>
-  </div>
-                       
+
+                        <h1 className="text-2xl font-bold text-gray-800 ">{name}</h1>
+                        <h2 className="text-lg font-semibold text-blue-600">{jobTitle}</h2>
+                        <div className="md:col-span-2 mt-2 border-l-4 border-indigo-400 pl-2">
+                            <p className="text-gray-600 text-sm">{profileDescription}</p>
+                        </div>
+
 
                         {/* Description */}
-                        
+
                     </div>
                 </div>
 
                 <hr />
 
-               {/* Contact Info */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-gray-800">
+                {/* Contact Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-gray-800">
 
-  {/* Phone */}
-  <div className="flex items-center gap-2">
-    <FiPhone className="text-teal-600" />
-    <strong>Phone:</strong> {phone}
-  </div>
+                    {/* Phone */}
+                    <div className="flex items-center gap-2">
+                        <FiPhone className="text-teal-600" />
+                        <strong>Phone:</strong> {phone}
+                    </div>
 
-  {/* Email */}
-  <div className="flex items-center gap-2">
-    <FiMail className="text-blue-600" />
-    <strong>Email:</strong> {email}
-  </div>
+                    {/* Email */}
+                    <div className="flex items-center gap-2">
+                        <FiMail className="text-blue-600" />
+                        <strong>Email:</strong> {email}
+                    </div>
 
-  {/* Age */}
-  <div className="flex items-center gap-2">
-    <FiUser className="text-blue-600" />
-    <strong>Age:</strong> {age}
-  </div>
+                    {/* Age */}
+                    <div className="flex items-center gap-2">
+                        <FiUser className="text-blue-600" />
+                        <strong>Age:</strong> {age}
+                    </div>
 
-  {/* Location */}
-  <div className="flex items-center gap-2">
-    <FiMapPin className="text-teal-600" />
-    <strong>Location:</strong> {city}, {country}
-  </div>
+                    {/* Location */}
+                    <div className="flex items-center gap-2">
+                        <FiMapPin className="text-teal-600" />
+                        <strong>Location:</strong> {city}, {country}
+                    </div>
 
-  {/* Address */}
-  <div className="flex items-center gap-2">
-    <FiHome className="text-blue-600" />
-    <strong>Address:</strong> {fullAddress}
-  </div>
+                    {/* Address */}
+                    <div className="flex items-center gap-2">
+                        <FiHome className="text-blue-600" />
+                        <strong>Address:</strong> {fullAddress}
+                    </div>
 
-  {/* Current Salary */}
-  <div className="flex items-center gap-2">
-    <FiDollarSign className="text-teal-600" />
-    <strong>Current Salary:</strong> {currentSalary}
-  </div>
+                    {/* Current Salary */}
+                    <div className="flex items-center gap-2">
+                        <FiDollarSign className="text-teal-600" />
+                        <strong>Current Salary:</strong> {currentSalary}
+                    </div>
 
-  {/* Expected Salary */}
-  <div className="flex items-center gap-2">
-    <FiDollarSign className="text-blue-600" />
-    <strong>Expected Salary:</strong> {expectedSalary}
-  </div>
+                    {/* Expected Salary */}
+                    <div className="flex items-center gap-2">
+                        <FiDollarSign className="text-blue-600" />
+                        <strong>Expected Salary:</strong> {expectedSalary}
+                    </div>
 
-  {/* Education */}
-  <div className="flex items-center gap-2">
-    <FiBookOpen className="text-teal-600" />
-    <strong>Education:</strong> {education}
-  </div>
+                    {/* Education */}
+                    <div className="flex items-center gap-2">
+                        <FiBookOpen className="text-teal-600" />
+                        <strong>Education:</strong> {education}
+                    </div>
 
-  {/* Experience */}
-  <div className="flex items-center gap-2">
-    <FiBriefcase className="text-blue-600" />
-    <strong>Experience:</strong> {yearsOfExp} years
-  </div>
+                    {/* Experience */}
+                    <div className="flex items-center gap-2">
+                        <FiBriefcase className="text-blue-600" />
+                        <strong>Experience:</strong> {yearsOfExp} years
+                    </div>
 
-  {/* Profile Description */}
-  
+                    {/* Profile Description */}
 
-</div>
+
+                </div>
 
 
                 {/* Skills and Socials */}
@@ -196,14 +198,29 @@ const Myresume = () => {
                 </div>
 
                 {/* Education, Experience, Awards */}
-                <SectionTimeline title="Education" items={educationHistory} type="education" />
-        <hr />
-        <SectionTimeline title="Experience" items={workExperience} type="experience" />
-        <hr />
-        <SectionTimeline title="Awards" items={awards} type="awards" />
-        <hr />
+                <SectionTimeline
+                    title="Education"
+                    items={candidateInfo.educationHistory}
+                    type="education"
+                    fetchData={fetchProfile}
+                />
+                <hr />
+                <SectionTimeline
+                    title="Experience"
+                    items={candidateInfo.workExperience}
+                    type="experience"
+                    fetchData={fetchProfile}
+                />
+                <hr />
+                <SectionTimeline
+                    title="Awards"
+                    items={candidateInfo.awards}
+                    type="awards"
+                    fetchData={fetchProfile}
+                />
+
             </div>
-           
+
         </div>
     );
 };

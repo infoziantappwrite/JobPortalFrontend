@@ -21,7 +21,7 @@ import ProfileSidebar from './components/ProfileSidebar';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EditProfile from './pages/EditProfile';
-import AppliedJobs from './pages/AppliedJobs';
+import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
@@ -41,6 +41,8 @@ import EmployeeLogin from './pages/Auth/EmployeeLogin';
 import SuperAdminLogin from './pages/Auth/SuperLogin';
 import CVManager from './candidate/jobs/CVManager';
 import ApproveEmployee from './pages/ApproveEmployee';
+import ApproveRequests from './pages/ApproveRequests';
+import SuperCompanyManage from './pages/SuperCompanyManage';
 
 function App() {
 
@@ -89,17 +91,17 @@ function App() {
             path="/login/admin/super"
             element={
               <PublicRoute>
-                <SuperAdminLogin/>
+                <SuperAdminLogin />
               </PublicRoute>
             }
           />
-          
 
 
 
 
 
-         
+
+
 
 
           <Route path="/verify-success" element={<VerifySuccess />} />
@@ -143,6 +145,7 @@ function App() {
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />
@@ -160,6 +163,8 @@ function App() {
             }
           >
             <Route path="dashboard" element={<div>Dashboard</div>} />
+            <Route path="approve-companies" element={<ApproveRequests />} />
+            <Route path="manage-companies" element={<SuperCompanyManage />} />
           </Route>
           {/*superadmin Routes end*/}
 
@@ -175,12 +180,11 @@ function App() {
             <Route path="dashboard" element={<div>candidate Dashboard</div>} />
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applied" element={<AppliedJobs />} />
-            <Route path="view-edit-profile" element={<EditProfile />} />
-            <Route path="alerts" element={<div>Job Alerts</div>} />
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />
-            <Route path="cv-manager" element={<CVManager/>} />
+            <Route path="cv-manager" element={<CVManager />} />
             <Route path="change-password" element={<div>Change Password</div>} />
           </Route>
           {/* candidate Routes end */}

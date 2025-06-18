@@ -17,6 +17,13 @@ const EditProfile = () => {
   const [socials, setSocials] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+
+  const getColorFromName = (name) => {
+    if (!name) return 'bg-gray-500';
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,30 +64,31 @@ const EditProfile = () => {
   };
 
 
-  const handleSave = async () => {
-    try {
-      const { email, languages, ...formData } = form;
+ const handleSave = async () => {
+  try {
+    const { email, languages, ...formData } = form;
 
-      const updated = {
-        ...formData,
-        languages:
-          typeof languages === 'string'
-            ? languages.split(',').map((lang) => lang.trim()).filter(Boolean)
-            : Array.isArray(languages)
-              ? languages
-              : [],
-        socials
-      };
-      //console.log(updated)
+    const updated = {
+      ...formData,
+      languages:
+        typeof languages === 'string'
+          ? languages.split(',').map((lang) => lang.trim()).filter(Boolean)
+          : Array.isArray(languages)
+          ? languages
+          : [],
+      socials
+    };
 
-      await apiClient.put('/candidate/info/edit-profile', updated);
-      toast.success('Profile updated successfully!');
-    } catch (err) {
-      //console.error('Error saving profile:', err);
-      //setMessage('Failed to save profile.');
-      toast.error('Failed to save profile.');
-    }
-  };
+    console.log('Final payload sent to backend:', updated); // Debug log
+
+    await apiClient.put('/candidate/info/edit-profile', updated);
+    toast.success('Profile updated successfully!');
+  } catch (err) {
+    console.error('Error saving profile:', err?.response?.data || err.message); // 👈 LOG the backend's error
+    toast.error('Failed to save profile.');
+  }
+};
+
 
 
 
@@ -120,11 +128,11 @@ const EditProfile = () => {
       <div className="w-full max-w-6xl bg-white p-10 rounded-2xl shadow-xl space-y-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <img
-              src={form.profileImageURL || defaultProfileImage}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border shadow"
-            />
+            <div
+                className={`w-28 h-28 rounded-full ${getColorFromName(form.name)} text-white flex items-center justify-center text-3xl font-bold border shadow`}
+              >
+                {form.name?.charAt(0).toUpperCase() || "?"}
+              </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-800">{form.name || 'Candidate Name'}</h2>
               <p className="text-sm text-gray-500">{form.jobTitle}</p>
@@ -142,6 +150,7 @@ const EditProfile = () => {
         {message && <p className="text-center text-sm text-green-600">{message}</p>}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {renderInput('Name', 'name', <FiPhone />, form.name)}
           {renderInput('Email', 'email', <FiMail />, form.email, false, true)}
           {renderInput('Phone', 'phone', <FiPhone />, form.phone)}
           {renderInput('Age', 'age', <FiUser />, form.age)}
@@ -159,7 +168,7 @@ const EditProfile = () => {
           {renderInput('Facebook', 'socials.facebook', <FiFacebook className="text-blue-700" />, socials.facebook)}
           {renderInput('X', 'socials.twitter', <FiX className="text-sky-400" />, socials.twitter)}
           {renderInput('Github', 'socials.github', <FiGithub className="text-gray-500" />, socials.github)}
-          {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)}
+          {/* {renderInput('Profile Image', 'profileImageURL', <FiUserCheck className="text-green-500" />, form.profileImageURL)} */}
           {renderInput('Languages (comma-separated)', 'languages', <FiGlobe />, Array.isArray(form.languages) ? form.languages.join(', ') : form.languages)}
 
           <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
