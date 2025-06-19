@@ -39,14 +39,20 @@ const EditCompanyProfile = () => {
   const [form, setForm] = useState({});
   const [socials, setSocials] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isNewProfile, setIsNewProfile] = useState(true);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await apiClient.get('/company/info');
         const data = res.data.companyInfo;
-        setForm(data);
-        setSocials(data.socials || {});
+        if (data) {
+          setForm(data);
+          setSocials(data.socials || {});
+          setIsNewProfile(false); // Means update existing profile
+        }
+
       } catch (err) {
         toast.error('Error loading company profile');
       } finally {
@@ -67,15 +73,23 @@ const EditCompanyProfile = () => {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      const updated = { ...form, socials };
-      await apiClient.put('/company/info', updated);
+const handleSave = async () => {
+  try {
+    const updated = { ...form, socials };
+
+    if (isNewProfile) {
+      await apiClient.post('/company/info', updated); // create
+      toast.success('Company profile created successfully!');
+      setIsNewProfile(false); // Switch to update mode
+    } else {
+      await apiClient.put('/company/info', updated); // update
       toast.success('Company profile updated successfully!');
-    } catch (err) {
-      toast.error('Failed to update profile');
     }
-  };
+  } catch (err) {
+    toast.error('Failed to save profile');
+  }
+};
+
 
   const handleImageUpload = async (e) => {
     const formData = new FormData();
