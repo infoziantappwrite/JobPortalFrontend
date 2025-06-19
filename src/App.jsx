@@ -25,7 +25,7 @@ import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
-import ShortlistedJobs from './pages/ShortlistedJobs';
+import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
@@ -51,6 +51,7 @@ import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateVie
 // Company Details
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
+import CompanyDetails from './pages/CompanyDetails';
 
 
 function App() {
@@ -120,6 +121,8 @@ function App() {
           <Route path="/jobs" element={<AllJobs />} />
           <Route path="/job/:slug" element={<Job />}/>
           <Route path="/companies" element={<Companies />} />
+          <Route path="/company/:companyName" element={<CompanyDetails />} />
+
 
 
           {/* Employee Routes */}
