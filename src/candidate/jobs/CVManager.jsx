@@ -13,7 +13,7 @@ const CVManager = () => {
     try {
       const { data } = await apiClient.get('/candidate/cv');
       setCvs(data.CVs || []);
-      console.log(data.CVs);
+      //console.log(data.CVs);
     } catch (err) {
       toast.error('Failed to load CVs');
     }

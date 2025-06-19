@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   FiMapPin,
@@ -11,13 +11,38 @@ import {
 import { Banknote } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 import ApplyButton from '../candidate/jobs/ApplyButton';
+import apiClient from '../api/apiClient';
 
 const JobDetails = () => {
   const location = useLocation();
    
-  const { jobdetails } = location.state || {};
-   const { user} = useUser(); // ✅ Get user and loading state
-  //console.log(jobdetails)
+   const jobId = location?.state?.jobid;
+   const { user} = useUser(); 
+  //console.log(jobId)
+    const [jobdetails, setJobdetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      if (!jobId) return;
+      try {
+        const res = await apiClient.get(`/employee/job/${jobId}`);
+        setJobdetails(res.data.job);
+      } catch (err) {
+        console.error('Failed to fetch job details:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [jobId]);
+
+
+   if (loading) {
+    return <div className="text-center mt-10 text-indigo-600">Loading job details...</div>;
+  }
+
   if (!jobdetails) {
     return (
       <div className="text-center mt-10 text-red-500 font-semibold">

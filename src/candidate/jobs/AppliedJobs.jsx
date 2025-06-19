@@ -30,7 +30,7 @@ const AppliedJobs = () => {
         setLoading(true);
         const res = await apiClient.get('/candidate/job/get-applied-jobs', { withCredentials: true });
         setJobs(res.data.jobs || []);
-        console.log(res.data.jobs);
+        //console.log(res.data.jobs);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applied jobs.');
       } finally {
