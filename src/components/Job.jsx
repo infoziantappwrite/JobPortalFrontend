@@ -43,7 +43,6 @@ const Job = () => {
     applicationDeadline,
     country,
     city,
-     applicants
   } = jobdetails;
 
   const initial = title?.trim()?.charAt(0)?.toUpperCase() || 'J';
@@ -111,13 +110,23 @@ const Job = () => {
        {!user ? (
   <button
     onClick={() => navigate('/login')}
-    className="mt-6 bg-gradient-to-r from-teal-500 to-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-md shadow transition"
+    className="mt-6 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold px-5 py-2 rounded-md shadow transition"
   >
     Login to Apply
   </button>
 ) : user?.userType?.toLowerCase() === 'candidate' ? (
-  <ApplyButton jobId={_id} jobTitle={title} applications={applicants} />
+  <button
+    onClick={() =>
+      navigate(`/${user.userType.toLowerCase()}/jobdetails`, {
+        state: { jobid:_id },
+      })
+    }
+    className="mt-6 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold px-5 py-2 rounded-md shadow transition"
+  >
+    Apply for Job
+  </button>
 ) : null}
+
 
             
 

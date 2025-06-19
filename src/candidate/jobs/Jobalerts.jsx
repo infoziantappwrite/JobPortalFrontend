@@ -37,16 +37,13 @@ const Jobalerts = () => {
     );
   });
   const handleView = (job) => {
-  const relatedJobs = jobs.filter(
-    (j) => j.companyID === job.companyID && j._id !== job._id // exclude current job
-  );
+  
 
 
 
   navigate(`/${user?.userType?.toLowerCase()}/jobdetails`, {
     state: {
-      jobdetails: job,
-      relatedJobs: relatedJobs,
+      jobid: job._id, 
     },
   });
 };

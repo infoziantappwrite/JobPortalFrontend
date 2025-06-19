@@ -19,7 +19,8 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
       await apiClient.delete(`/candidate/info/${type}/${id}`, { withCredentials: true });
       toast.success(`${title} deleted successfully`);
       fetchData();
-    } catch {
+    } catch(error) {
+      console.log(error)
       toast.error(`Failed to delete ${title}`);
     } finally {
       setDeletingItemId(null);
