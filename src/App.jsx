@@ -20,7 +20,7 @@ import DashboardLayout from './components/DashboardLayout';
 import ProfileSidebar from './components/ProfileSidebar';
 import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
-import EditProfile from './pages/EditProfile';
+import EmployeeProfile from './pages/EmployeeProfile';
 import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
@@ -211,8 +211,8 @@ function App() {
 
 
           <Route path="/employee/profileview" element={<ProfileSidebar />}>
-            <Route index element={<div>My Profile</div>} />
-            <Route path="myprofile" element={<div>My Profile</div>} />
+            <Route index element={<EmployeeProfile />} />
+            <Route path="myprofile" element={<EmployeeProfile />} />
             <Route path="changepassword" element={<ChangePass />} />
           </Route>
 
