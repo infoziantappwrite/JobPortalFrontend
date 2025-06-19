@@ -15,12 +15,11 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
 
   const handleDelete = async (id) => {
     try {
-        console.log(id);
+        //console.log(id);
       await apiClient.delete(`/candidate/info/${type}/${id}`, { withCredentials: true });
       toast.success(`${title} deleted successfully`);
       fetchData();
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error(`Failed to delete ${title}`);
     } finally {
       setDeletingItemId(null);
@@ -38,8 +37,8 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
       }
       setEditingItem(null);
       fetchData();
-    } catch (error) {
-      console.log(error);
+    } catch {
+      //console.log(error);
       toast.error('Failed to save data');
     }
   };
@@ -61,7 +60,11 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
         {items.map((item, index) => {
           const heading = type === 'education' ? item.degree : type === 'experience' ? item.jobTitle : item.title;
           const subHeading = type === 'education' ? item.institution : type === 'experience' ? item.company : item.year;
-          const badge = type === 'awards' ? item.year : `${item.startYear} - ${item.endYear}`;
+          const badge =
+  type === 'awards'
+    ? item.year
+    : `${item.startYear} - ${item.endYear === 0 ? 'Present' : item.endYear}`;
+
           const initial = getInitial(subHeading);
 
           return (
@@ -167,7 +170,7 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
                   />
                   <input
                     type="number"
-                    placeholder="End Year"
+                    placeholder="End Year (Enter 0 for Present)"
                     className="w-full border rounded px-3 py-2"
                     value={editingItem.endYear || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, endYear: e.target.value })}
