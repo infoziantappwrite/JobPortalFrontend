@@ -217,6 +217,7 @@ function App() {
           </Route>
 
           <Route path="/company/profileview" element={<ProfileSidebar />}>
+           <Route index element={<CompanyProfileView />} />
             <Route path="myprofile" element={<CompanyProfileView />} />
             <Route path="editprofile" element={<CompanyEditProfile />} />
             <Route path="changepassword" element={<ChangePass />} />
