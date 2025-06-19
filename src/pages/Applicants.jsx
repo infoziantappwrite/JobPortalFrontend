@@ -135,37 +135,37 @@ const Applicants = () => {
       </div>
 
       {!selectedJob ? (
-        <div className="overflow-x-auto bg-white rounded shadow-md">
-          <table className="min-w-full">
-            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-              <tr>
-                <th className="py-2 px-4">Title</th>
-                <th className="py-2 px-4">Company</th>
-                <th className="py-2 px-4">Posted By</th>
-                <th className="py-2 px-4">Applicants</th>
-                <th className="py-2 px-4">Actions</th>
+      <div className="overflow-x-auto bg-white rounded-md shadow-md border">
+        <table className="min-w-full table-auto border-collapse">
+          <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
+            <tr>
+              <th className="text-left py-3 px-5 border-b">Title</th>
+              <th className="text-left py-3 px-5 border-b">Company</th>
+              <th className="text-left py-3 px-5 border-b">Posted By</th>
+              <th className="text-left py-3 px-5 border-b">Applicants</th>
+              <th className="text-left py-3 px-5 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm text-gray-800">
+            {jobs.map((job) => (
+              <tr key={job._id} className="hover:bg-gray-50 border-t">
+                <td className="py-3 px-5">{job.title}</td>
+                <td className="py-3 px-5">{job.company}</td>
+                <td className="py-3 px-5">{job.postedBy?.name}</td>
+                <td className="py-3 px-5">{job.applicants?.length || 0}</td>
+                <td className="py-3 px-5">
+                  <button
+                    onClick={() => handleViewApplicants(job._id)}
+                    className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
+                  >
+                    View Applicants
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="text-sm text-gray-800">
-              {jobs.map(job => (
-                <tr key={job._id} className="border-t hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium text-indigo-700">{job.title}</td>
-                  <td className="py-3 px-4">{job.company}</td>
-                  <td className="py-3 px-4">{job.postedBy?.name}</td>
-                  <td className="py-3 px-4">{job.applicants?.length || 0}</td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => handleViewApplicants(job._id)}
-                      className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded"
-                    >
-                      View Applicants
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
       ) : (
         <div>
           <div className="flex justify-between items-center mb-4">
