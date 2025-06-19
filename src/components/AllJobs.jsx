@@ -217,6 +217,7 @@ const AllJobs = () => {
               <option value={20}>20</option>
               <option value={30}>30</option>
               <option value={40}>40</option>
+              <option value={40}>50</option>
             </select>
           </div>
         </div>
@@ -228,17 +229,7 @@ const AllJobs = () => {
 
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mx-10 py-6 gap-2">
-          {[...Array(totalPages).keys()].map((i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-600'}`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+       
       </div>
     </div>
   );

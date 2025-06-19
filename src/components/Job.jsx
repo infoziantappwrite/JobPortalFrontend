@@ -9,11 +9,14 @@ import {
   FiBookmark,
 } from 'react-icons/fi';
 import { Banknote } from 'lucide-react';
+import ApplyButton from '../candidate/jobs/ApplyButton';
+import { useUser } from '../contexts/UserContext';
 
 const Job = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { jobdetails, relatedJobs = [] } = location.state || {};
+   const { user} = useUser();
 
   if (!jobdetails) {
     return (
@@ -40,13 +43,18 @@ const Job = () => {
     applicationDeadline,
     country,
     city,
+     applicants
   } = jobdetails;
 
   const initial = title?.trim()?.charAt(0)?.toUpperCase() || 'J';
 
   // When clicking on related job card
   const handleCardClick = (job) => {
-    const formattedTitle = job.title.toLowerCase().replace(/\s+/g, '-');
+   const formattedTitle = job.title
+  .toLowerCase()
+  .replace(/[^a-z0-9\s-]/g, '')   // Remove special characters like /, &, etc.
+  .replace(/\s+/g, '-')           // Replace spaces with hyphens
+  .trim();
 
     const newRelatedJobs = [jobdetails, ...relatedJobs].filter(
       (j) => j.company === job.company && j._id !== job._id
@@ -62,7 +70,7 @@ const Job = () => {
 
   return (
     <div className="">
-      <div className="bg-white shadow-md w-full">
+      <div className="bg-white  w-full">
         <div className="bg-blue-100 px-10 py-16 mx-auto shadow-md space-y-10">
           {/* Top Section */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -98,6 +106,21 @@ const Job = () => {
                 </div>
               </div>
             </div>
+            {/* Right */}
+        
+       {!user ? (
+  <button
+    onClick={() => navigate('/login')}
+    className="mt-6 bg-gradient-to-r from-teal-500 to-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-md shadow transition"
+  >
+    Login to Apply
+  </button>
+) : user?.userType?.toLowerCase() === 'candidate' ? (
+  <ApplyButton jobId={_id} jobTitle={title} applications={applicants} />
+) : null}
+
+            
+
           </div>
         </div>
 
@@ -122,7 +145,12 @@ const Job = () => {
                 </ul>
               </div>
             )}
+
+            
+
+            
           </div>
+          
 
           {/* Right Column */}
           <div className="bg-blue-100 rounded-xl p-6 shadow-md space-y-6">
@@ -190,46 +218,75 @@ const Job = () => {
           </div>
         </div>
 
-        {/* Related Jobs Section */}
-        {relatedJobs?.length > 0 && (
-          <div className="mt-10 px-2">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              More Jobs from {company}
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {relatedJobs.map((job) => (
-                <div
-                  key={job._id}
-                  onClick={() => handleCardClick(job)}
-                  className="cursor-pointer bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
-                      {job.company?.[0] || 'C'}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-800">
-                        {job.title}
-                      </h3>
-                      <p className="text-xs text-gray-500">
-                        {job.location || 'Remote'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    <span className="inline-block bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded mr-2">
-                      {job.jobType}
-                    </span>
-                    <span className="inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
-                      {job.specialisms?.[0]}
-                    </span>
-                  </div>
-                </div>
-              ))}
+        
+        
+      </div>
+      {/* Related Jobs Section */}
+      {relatedJobs?.length > 0 && (
+  <div className="mt-14 px-4 md:px-10 pb-5">
+    <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">
+      More Jobs from {company}
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {relatedJobs.map((job) => (
+        <div
+          key={job._id}
+          onClick={() => handleCardClick(job)}
+          className="cursor-pointer bg-blue-50/70 backdrop-blur-md p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-blue-100 hover:-translate-y-1"
+        >
+          {/* Header */}
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-14 h-14 bg-gradient-to-tr from-teal-100 to-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700 text-lg uppercase shadow">
+              {job.company?.[0] || 'C'}
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">{job.title}</h3>
+              <p className="text-sm text-gray-600">{job.company}</p>
+              <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                <FiMapPin className="text-blue-500" /> {job.location || 'Remote'}
+              </div>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 text-xs font-medium mb-4">
+            <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">{job.jobType || 'Full Time'}</span>
+            {job.specialisms?.[0] && (
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{job.specialisms[0]}</span>
+            )}
+            {job.experience && (
+              <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">{job.experience}</span>
+            )}
+          </div>
+
+          {/* Extra Info */}
+          <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <FiUser className="text-blue-600" />
+              <span>{job.careerLevel || 'Any Level'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiBriefcase className="text-blue-600" />
+              <span>{job.industry || 'Industry'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiBookmark className="text-blue-600" />
+              <span>{job.qualification || 'Not Specified'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiCalendar className="text-blue-600" />
+              <span>{new Date(job.applicationDeadline).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+        
+
+      
     </div>
   );
 };
