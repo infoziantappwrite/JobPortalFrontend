@@ -49,19 +49,19 @@ const Applicants = () => {
     if (!selectedJob?._id) return;
     setLoadingAppDetail(true);
     try {
-      const res = await apiClient.get('/candidate/info/get-profile', {
-        params: {
-          applicantID: applicationID,
-          jobID: selectedJob._id
-        }
+      const res = await apiClient.post('/employee/job/get-detail', {
+        IDs: [applicationID],
+        jobID: selectedJob._id,
+        type: 'jobApplication', // or 'jobApplicant' depending on your use case
       });
-      setSelectedApplication(res?.data?.applicant || null);
+      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
     } catch (err) {
       setErrorAppDetail(err.response?.data?.error || 'Failed to load application details.');
     } finally {
       setLoadingAppDetail(false);
     }
   };
+
 
   const handleShortlist = async (applicant, jobID) => {
     let applicantID = applicant?.candidateID?._id || applicant?.candidateID || applicant?._id;
@@ -230,8 +230,8 @@ const Applicants = () => {
       )}
 
       {selectedApplication && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border border-gray-200">
             <button
               onClick={() => setSelectedApplication(null)}
               className="absolute top-3 right-3 text-gray-600 hover:text-black"
@@ -239,31 +239,60 @@ const Applicants = () => {
             >
               <X size={20} />
             </button>
+
             {loadingAppDetail ? (
               <p className="text-center text-gray-600">Loading...</p>
             ) : errorAppDetail ? (
               <p className="text-center text-red-500">{errorAppDetail}</p>
             ) : (
               <>
-                <h2 className="text-xl font-bold text-indigo-700 mb-4">Application Details</h2>
-                <div className="space-y-2 text-sm text-gray-700">
-                  <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
-                  <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
-                  <p><strong>Status:</strong> {selectedApplication.status}</p>
+                <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
+
+                {/* Applicant Info */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
+                    <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
+                    <p><strong>Status:</strong> 
+                      <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
+                        {selectedApplication.status}
+                      </span>
+                    </p>
+                  </div>
                 </div>
-                <a
-                  href={selectedApplication.resumeURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline block mt-4"
-                >
-                  View Resume
-                </a>
+
+                {/* Job Info */}
+                <div className="mb-4 border-t pt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p><strong>Title:</strong> {selectedApplication.jobID?.title}</p>
+                    <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
+                    <p><strong>Location:</strong> {selectedApplication.jobID?.location}, {selectedApplication.jobID?.city}, {selectedApplication.jobID?.country}</p>
+                    <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
+                    <p><strong>Posted At:</strong> {new Date(selectedApplication.jobID?.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                {/* Resume */}
+                <div className="mb-6 border-t pt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
+                  <a
+                    href={selectedApplication.resumeURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View Resume PDF
+                  </a>
+                </div>
+
+                {/* Shortlist Button */}
                 {selectedApplication.status !== 'shortlisted' && (
                   <button
                     onClick={() => handleShortlist(selectedApplication, selectedJob._id)}
                     disabled={shortlisting}
-                    className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
+                    className="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
                   >
                     {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
                   </button>
@@ -272,6 +301,7 @@ const Applicants = () => {
             )}
           </div>
         </div>
+
       )}
     </div>
   );
