@@ -51,6 +51,7 @@ import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateVie
 // Company Details
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
+import Dashboard from './pages/CompanyProfileSection/Dashboard';
 import CompanyDetails from './pages/CompanyDetails';
 
 
@@ -154,7 +155,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="dashboard" element={<div>Admin Dashboard</div>} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
