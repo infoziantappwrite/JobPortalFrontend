@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   FiEdit, FiTrash2, FiEye, FiCheckSquare,
-  FiSquare, FiBriefcase, FiFilter
+  FiSquare, FiBriefcase, FiFilter, FiCheck, FiX
 } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
 import { fetchCurrentUser } from '../api/fetchuser';
@@ -172,71 +172,93 @@ const JobList = () => {
         </select>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded shadow-md">
-        <table className="min-w-full">
+      <div className="overflow-x-auto bg-white rounded-md shadow-md border">
+        <table className="min-w-full table-auto border-collapse">
           <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
             <tr>
-              <th className="py-2 px-4">
+              <th className="text-left py-3 px-5 border-b w-12">
                 <button onClick={handleSelectAll}>
                   {selectedIds.length === filteredJobs.length ? <FiCheckSquare /> : <FiSquare />}
                 </button>
               </th>
-              <th className="py-2 px-4">Title</th>
-              <th className="py-2 px-4">Application</th>
-              <th className="py-2 px-4">Created & Expired</th>
-              <th className="py-2 px-4">Status</th>
-              <th className="py-2 px-4">Actions</th>
+              <th className="text-left py-3 px-5 border-b">Title</th>
+              <th className="text-left py-3 px-5 border-b">Application</th>
+              <th className="text-left py-3 px-5 border-b">Created & Expired</th>
+              <th className="text-left py-3 px-5 border-b">Status</th>
+              <th className="text-left py-3 px-5 border-b">Actions</th>
             </tr>
           </thead>
           <tbody className="text-sm text-gray-800">
-            {filteredJobs.map(job => {
+            {filteredJobs.map((job) => {
               const postedById = String(job.postedBy?._id || job.postedBy?.id || '').trim();
               const canEdit = role !== 'candidate' && userId === postedById;
 
               return (
-                <tr key={job._id} className="border-t hover:bg-gray-50">
-                  <td className="px-4">
+                <tr key={job._id} className="hover:bg-gray-50 border-t">
+                  <td className="py-3 px-5">
                     <button onClick={() => handleCheckbox(job._id)}>
                       {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
                     </button>
                   </td>
-                  <td className="py-3 px-4">{job.title}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${job.isActive ? 'bg-teal-100 text-teal-800' : 'bg-red-100 text-red-700'}`}>
+                  <td className="py-3 px-5 font-medium text-indigo-700">{job.title}</td>
+                  <td className="py-3 px-5">
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        job.isActive
+                          ? 'bg-teal-100 text-teal-800'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
                       {job.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    {new Date(job.postedAt).toLocaleDateString()} & {new Date(job.applicationDeadline).toLocaleDateString()}
+                  <td className="py-3 px-5">
+                    {new Date(job.postedAt).toLocaleDateString()} →{' '}
+                    {new Date(job.applicationDeadline).toLocaleDateString()}
                   </td>
-                  <td className="py-3 px-4">{job.isActive ? '✔' : '❌'}</td>
-                  <td className="py-3 px-4 flex gap-3">
-                    <button onClick={() => handleViewJob(job)} title="View" className="text-indigo-600 hover:text-indigo-800">
-                      <FiEye />
-                    </button>
-                      <>
-                        <button
-                          onClick={() => canEdit && navigate('/employee/jobs-edit', { state: job })}
-                          title="Edit"
-                          disabled={!canEdit}
-                          className={`text-yellow-600 hover:text-yellow-800 ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <FiEdit />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (canEdit) {
-                              setSelectedIds([job._id]);
-                              setConfirmDelete(true);
-                            }
-                          }}
-                          title="Delete"
-                          disabled={!canEdit}
-                          className={`text-red-500 hover:text-red-700 ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </>
+                    <td className="py-3 px-5 text-lg flex justify-start items-center">
+                      {job.isActive ? (
+                        <FiCheck className="text-green-600" size={20} />
+                      ) : (
+                        <FiX className="text-red-600" size={20} />
+                      )}
+                    </td>
+
+                  <td className="py-3 px-5">
+                    <div className="flex gap-3 items-center">
+                      <button
+                        onClick={() => handleViewJob(job)}
+                        title="View"
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        <FiEye />
+                      </button>
+                      <button
+                        onClick={() => canEdit && navigate('/employee/jobs-edit', { state: job })}
+                        title="Edit"
+                        disabled={!canEdit}
+                        className={`text-yellow-600 hover:text-yellow-800 ${
+                          !canEdit ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <FiEdit />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (canEdit) {
+                            setSelectedIds([job._id]);
+                            setConfirmDelete(true);
+                          }
+                        }}
+                        title="Delete"
+                        disabled={!canEdit}
+                        className={`text-red-500 hover:text-red-700 ${
+                          !canEdit ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
