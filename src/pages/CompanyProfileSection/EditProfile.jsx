@@ -73,22 +73,22 @@ const EditCompanyProfile = () => {
     }
   };
 
-const handleSave = async () => {
-  try {
-    const updated = { ...form, socials };
+  const handleSave = async () => {
+    try {
+      const updated = { ...form, socials };
 
-    if (isNewProfile) {
-      await apiClient.post('/company/info', updated); // create
-      toast.success('Company profile created successfully!');
-      setIsNewProfile(false); // Switch to update mode
-    } else {
-      await apiClient.put('/company/info', updated); // update
-      toast.success('Company profile updated successfully!');
+      if (isNewProfile) {
+        await apiClient.post('/company/info', updated); // create
+        toast.success('Company profile created successfully!');
+        setIsNewProfile(false); // Switch to update mode
+      } else {
+        await apiClient.put('/company/info', updated); // update
+        toast.success('Company profile updated successfully!');
+      }
+    } catch (err) {
+      toast.error('Failed to save profile');
     }
-  } catch (err) {
-    toast.error('Failed to save profile');
-  }
-};
+  };
 
 
   const handleImageUpload = async (e) => {
@@ -150,7 +150,10 @@ const handleSave = async () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {renderInput('Company Name', 'name', <FiUser />, form.name)}
-          {renderInput('Email', 'email', <FiMail />, form.email)}
+          <div className="flex flex-col gap-1">
+            {renderInput('Email', 'email', <FiMail />, form.email)}
+            <p className="text-xs text-indigo-500 italic ml-10">This information is visible publicly.</p>
+          </div>
           {renderInput('Phone', 'phone', <FiPhone />, form.phone)}
           {renderInput('Website', 'website', <FiGlobe />, form.website)}
           {renderInput('Location', 'location', <FiMapPin />, form.location)}
