@@ -52,6 +52,7 @@ import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateVie
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
 import CompanyDetails from './pages/CompanyDetails';
+import CandidateDashboard from './candidate/CandidateDashboard';
 
 
 function App() {
@@ -193,7 +194,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="dashboard" element={<div>candidate Dashboard</div>} />
+            <Route path="dashboard" element={<CandidateDashboard/>} />
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
             <Route path='jobdetails' element={<JobDetails />}/>
@@ -261,7 +262,7 @@ function App() {
           {/* Add PostJob page route if you have one */}
         </Routes>
       </div>
-      <Footer />
+     
       <ToastContainer
         position="top-right"
         autoClose={3000}

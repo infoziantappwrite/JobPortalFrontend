@@ -40,7 +40,12 @@ const JobDetails = () => {
 
 
    if (loading) {
-    return <div className="text-center mt-10 text-indigo-600">Loading job details...</div>;
+    return <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-blue-700 font-medium text-lg">Loading Job Details...</p>
+      </div>
+    </div>;
   }
 
   if (!jobdetails) {
@@ -75,14 +80,14 @@ const JobDetails = () => {
   const initial = title?.trim()?.charAt(0)?.toUpperCase() || 'J';
 
   return (
-    <div className='bg-blue-50 min-h-screen p-10 '>
-       <div className="bg-white p-6 rounded-xl shadow-md w-full ">
-    <div className="bg-blue-100 px-10 py-16 mx-auto shadow-md rounded-lg  space-y-10">
+    <div className='p-6 bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen '>
+       <div className=" ">
+    <div className="bg-blue-100 p-10 mx-auto shadow rounded-xl  space-y-10">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         {/* Left */}
         <div className="flex items-start gap-6">
-          <div className="w-20 h-20 rounded-xl bg-gradient-to-r from-teal-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-r from-teal-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl">
             {initial}
           </div>
 
@@ -117,7 +122,7 @@ const JobDetails = () => {
     <div className="container mx-auto px-0 py-10 grid md:grid-cols-3 gap-10">
       
       {/* Left Column */}
-      <div className="md:col-span-2 space-y-8">
+      <div className="md:col-span-2 space-y-8 bg-white p-8 rounded-lg shadow-lg">
         {/* Job Description */}
         <div>
           <h2 className="text-xl font-bold mb-2">Job Description</h2>
@@ -141,7 +146,7 @@ const JobDetails = () => {
       </div>
 
       {/* Right Column */}
-     <div className="bg-blue-100 rounded-xl p-6 shadow-md space-y-6">
+     <div className="bg-blue-100 rounded-2xl p-6 shadow-md space-y-6">
   <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Job Overview</h3>
 
   <div className="space-y-4 text-gray-700 text-sm">

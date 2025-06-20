@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { FiUser, FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
+import DFooter from './DFooter';
 
 
 import { useUser } from '../contexts/UserContext';
@@ -181,6 +182,7 @@ const DashboardLayout = () => {
             </div>
           </div>
         </div>
+        <DFooter></DFooter>
       </div>
     </div>
   );
