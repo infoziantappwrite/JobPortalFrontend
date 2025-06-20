@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiMapPin, FiBriefcase } from 'react-icons/fi';
 
+
 const CompanyGrid = ({ companies, handleClick }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;

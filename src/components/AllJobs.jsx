@@ -1,235 +1,242 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from 'react';
-import { FiMapPin, FiSearch, FiBriefcase } from 'react-icons/fi';
-import apiClient from '../api/apiClient';
-import JobCards from './JobCards';
+import { useEffect, useState } from "react";
+import { FiMapPin, FiSearch, FiBriefcase } from "react-icons/fi";
+import apiClient from "../api/apiClient";
+import JobCards from "./JobCards";
 
+import Pagination from '../pages/hooks/Pagination';
+
+
+const predefinedOptions = {
+  gender: ["Any", "Male", "Female", "Other"],
+  location: ["Remote", "In-person", "Hybrid"],
+  experience: ["0-1 Years", "1-2 Years", "5-10 Years", "10+ Years"],
+  jobType: ["Full-time", "Part-time", "Contract", "Internship"],
+  qualification: [
+    "Bachelor’s Degree",
+    "Master’s Degree",
+    "Doctorate (Ph.D.)",
+    "Professional Certification",
+    "Associate Degree",
+  ],
+  industry: [
+    "Information Technology",
+    "Healthcare",
+    "Finance/Banking",
+    "Education",
+    "Manufacturing",
+    "Retail",
+    "Telecommunications",
+    "Construction",
+    "Energy",
+    "Transportation/Logistics",
+  ],
+};
 
 const AllJobs = () => {
+
+
   const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [perPage, setPerPage] = useState(10);
-  const [lastSeenId, setLastSeenId] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [totalJobs, setTotalJobs] = useState(944);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setlimit] = useState(8);
+  const [totaljobs, setTotaljobs] = useState();
 
+  const [filters, setFilters] = useState({
+    title: "",
+    location: "",
+    gender: "",
+    experience: "",
+    qualification: "",
+    jobType: "",
+    careerLevel: "",
+    industry: "",
+    city: "",
+    specialisms: "",
+    sortBy: "postedAt",
+    sortOrder: "desc",
+  });
 
-  // Filters
-  const [searchText, setSearchText] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [jobType, setJobType] = useState('');
-  const [datePosted, setDatePosted] = useState('');
-  const [experienceLevel, setExperienceLevel] = useState('');
-  const [salaryEstimate, setSalaryEstimate] = useState('');
-  const [industry, setIndustry] = useState('');
-
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    resetAndFetch();
-  }, [perPage]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [jobs, searchText, locationFilter, jobType, experienceLevel, datePosted, salaryEstimate, industry]);
-
-  const resetAndFetch = () => {
-    setJobs([]);
-    setLastSeenId(null);
-    setHasMore(true);
-    fetchPublicJobs(true);
-  };
-
-  const fetchPublicJobs = async (reset = false) => {
-    if (loading) return;
-    setLoading(true);
+  const fetchJobs = async () => {
     try {
-      const payload = { perPage };
-      if (!reset && lastSeenId) payload.lastSeenId = lastSeenId;
-
-      const res = await apiClient.post('common/job/public/all', payload);
-      const newJobs = res.data.jobs || [];
-      setTotalJobs(res.data.count || totalJobs);
-
-      setJobs((prev) => {
-        if (reset) return newJobs;
-        const existingIds = new Set(prev.map((j) => j._id));
-        const filtered = newJobs.filter((job) => !existingIds.has(job._id));
-        return [...prev, ...filtered];
+      const res = await apiClient.get("/common/job/public/all", {
+        params: { ...filters, page, limit },
       });
-
-      if (newJobs.length < perPage) {
-        setHasMore(false);
-      } else {
-        setLastSeenId(newJobs[newJobs.length - 1]._id);
-      }
-    } catch (error) {
-      console.error('Failed to fetch public jobs:', error);
-    } finally {
-      setLoading(false);
+      //console.log(res.data);
+      setJobs(res.data.jobs || []);
+      setTotalPages(res.data.pagination?.totalPages || 1);
+      setTotaljobs(res.data.pagination?.total || 1);
+    } catch (err) {
+      console.error("Error fetching jobs:", err);
     }
   };
 
-  const applyFilters = () => {
-    let result = [...jobs];
-    if (searchText) {
-      result = result.filter((job) =>
-        job.title?.toLowerCase().includes(searchText.toLowerCase()) ||
-        job.company?.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-    if (locationFilter) {
-      result = result.filter((job) =>
-        job.location?.toLowerCase().includes(locationFilter.toLowerCase())
-      );
-    }
-    if (jobType) result = result.filter((job) => job.jobType === jobType);
-    if (experienceLevel) result = result.filter((job) => job.experience === experienceLevel);
-    if (industry) result = result.filter((job) => job.industry === industry);
+  useEffect(() => {
+    fetchJobs();
+  }, [filters, page, limit]);
 
-    // Date posted filter (assumes createdAt is ISO date string)
-    if (datePosted) {
-      const now = new Date();
-      result = result.filter((job) => {
-        const created = new Date(job.createdAt);
-        const diff = (now - created) / (1000 * 60 * 60 * 24); // in days
-        if (datePosted === '1d') return diff <= 1;
-        if (datePosted === '1w') return diff <= 7;
-        if (datePosted === '1m') return diff <= 30;
-        if (datePosted === '6m') return diff <= 180;
-        return true;
-      });
-    }
-
-    setFilteredJobs(result);
-    setCurrentPage(1);
+  const handleChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+    setPage(1);
   };
 
- 
 
-  const paginatedJobs = filteredJobs.slice((currentPage - 1) * perPage, currentPage * perPage);
-  const totalPages = Math.ceil(filteredJobs.length / perPage);
 
   return (
-    <div className='bg-white pt-10'>
+    <div className="bg-white pt-10">
       <div className="text-center mb-10">
-        <h1 className="text-4xl pb-2 font-extrabold bg-gradient-to-r from-blue-600  to-teal-600 text-transparent bg-clip-text mb-4">
-          Find the Perfect Job That Fits Your Career
-        </h1>
-        <p className="text-gray-600 text-lg">
-          Search. Filter. Apply. Your next opportunity starts here. 🚀
-        </p>
-      </div>
+  <h1 className="text-4xl font-extrabold pb-2 text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text mb-2">
+    Find the Perfect Job That Fits Your Career
+  </h1>
+  <p className="text-gray-600 text-lg">
+    Search. Filter. Apply. Your next opportunity starts here. 🚀
+  </p>
+</div>
 
-      {/* Search + Filters UI */}
-      <div className="bg-white shadow-md rounded-xl mx-10 p-6 flex flex-wrap gap-4 items-center border border-gray-200 justify-between">
-        <div className="flex flex-grow items-center bg-gray-100 px-3 py-2 rounded-md w-full sm:w-auto">
-          <FiSearch className="text-gray-500 mr-2" />
-          <input
-            type="text"
-            placeholder="Job title, keywords, or company"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="bg-transparent w-full outline-none"
-          />
-        </div>
-        <input
-          type="text"
-          placeholder="City or postcode"
-          value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value)}
-          className="bg-gray-100 px-3 py-2 rounded-md w-full sm:w-auto"
-        />
-        <select
-          className="bg-gray-100 px-3 py-2 rounded-md w-full sm:w-auto"
-          value={industry}
-          onChange={(e) => setIndustry(e.target.value)}
-        >
-          <option value="">All Industries</option>
-          {["Information Technology", "Healthcare", "Finance/Banking", "Education", "Manufacturing", "Retail", "Telecommunications", "Construction", "Energy", "Transportation/Logistics"].map((i) => (
-            <option key={i} value={i}>{i}</option>
-          ))}
-        </select>
-        <button
-          className="bg-gradient-to-r from-teal-500 to-blue-800 text-white px-6 py-2 rounded-md"
-          onClick={applyFilters}
-        >
-          Find Jobs
-        </button>
-      </div>
+{/* Primary Filters Section */}
+<div className="bg-white shadow-lg rounded-xl mx-4 md:mx-10 p-6 flex flex-col md:flex-row flex-wrap gap-4 items-center justify-between border border-blue-100">
+  {/* Title Search */}
+  <div className="flex items-center bg-gray-100 px-3 py-2 rounded-md flex-grow w-full md:w-auto">
+    <FiSearch className="text-gray-500 mr-2" />
+    <input
+      type="text"
+      placeholder="Job title, keywords, or company"
+      value={filters.title}
+      onChange={(e) => handleChange("title", e.target.value)}
+      className="bg-transparent w-full outline-none text-gray-700 placeholder-gray-400"
+    />
+  </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap justify-center gap-4 px-10 py-4 mt-6">
-        <select value={jobType} onChange={(e) => setJobType(e.target.value)} className="bg-blue-50 text-blue-700 px-4 py-2 rounded">
-          <option value="">Job Type</option>
-          {["Full-time", "Part-time", "Contract", "Internship"].map((opt) => <option key={opt}>{opt}</option>)}
-        </select>
+  {/* City Input */}
+  <input
+    type="text"
+    placeholder="City"
+    value={filters.city}
+    onChange={(e) => handleChange("city", e.target.value)}
+    className="bg-gray-100 text-gray-700 px-3 py-2 rounded-md w-full md:w-auto placeholder-gray-500"
+  />
 
-        <select value={datePosted} onChange={(e) => setDatePosted(e.target.value)} className="bg-blue-50 text-blue-700 px-4 py-2 rounded">
-          <option value="">Date Posted</option>
-          <option value="1d">1 Day</option>
-          <option value="1w">1 Week</option>
-          <option value="1m">1 Month</option>
-          <option value="6m">6 Months</option>
-        </select>
+  {/* Specialisms Input */}
+  <input
+    type="text"
+    placeholder="Specialisms"
+    value={filters.specialisms}
+    onChange={(e) => handleChange("specialisms", e.target.value)}
+    className="bg-gray-100 text-gray-700 px-3 py-2 rounded-md w-full md:w-auto placeholder-gray-500"
+  />
 
-        <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} className="bg-blue-50 text-blue-700 px-4 py-2 rounded">
-          <option value="">Experience Level</option>
-          {["Entry Level", "Mid-Level (Experienced)", "Senior-Level", "Manager", "Executive (C-Level)"].map((opt) => <option key={opt}>{opt}</option>)}
-        </select>
+  {/* Search Button */}
+  <button
+    onClick={fetchJobs}
+    className="bg-gradient-to-r from-teal-500 to-blue-700 text-white font-semibold px-6 py-2 rounded-md hover:shadow-md transition"
+  >
+    Find Jobs
+  </button>
+</div>
 
-        <select value={salaryEstimate} onChange={(e) => setSalaryEstimate(e.target.value)} className="bg-blue-50 text-blue-700 px-4 py-2 rounded">
-          <option value="">Salary Estimate (Rand)</option>
-          <option>10k - 20k</option>
-          <option>20k - 40k</option>
-          <option>40k - 60k</option>
-          <option>60k - 80k</option>
-          <option>80k - Above</option>
-        </select>
-      </div>
-
-      {/* Jobs List */}
+{/* Additional Filters Dropdowns */}
+<div className="flex flex-wrap justify-center gap-4 px-6 md:px-10 py-6">
+  {[
+    "jobType",
+    "gender",
+    "experience",
+    "qualification",
+    "location",
+    "industry"
+  ].map((field) => (
+    <select
+      key={field}
+      value={filters[field]}
+      onChange={(e) => handleChange(field, e.target.value)}
+      className="bg-blue-50 text-blue-800 px-4 py-2 rounded-md border border-blue-100 text-sm shadow-sm"
+    >
+      <option value="">{field.charAt(0).toUpperCase() + field.slice(1)}</option>
+      {predefinedOptions[field]?.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
+  ))}
+</div>
 
 
-      <div className="px-20  bg-blue-100 min-h-screen">
-
-
-        <div className="flex flex-col sm:flex-row justify-between  mt-8 gap-4 py-6 ">
-          <p className="text-sm text-gray-600">
-            Showing{' '}
-            <strong>{filteredJobs.length > 0 ? (currentPage - 1) * perPage + 1 : 0}</strong>–<strong>
-              {Math.min(currentPage * perPage, filteredJobs.length)}
-            </strong>{' '}
-            of <strong>{filteredJobs.length}</strong> jobs
+      {/* Pagination Header */}
+      <div className="px-20 bg-blue-100 min-h-screen">
+        <div className="flex flex-col sm:flex-row justify-between mt-8 gap-4 py-6">
+          <p className="text-sm text-blue-800 font-medium bg-white px-4 py-2 border-blue-200 rounded-md shadow-sm border ">
+            Showing{" "}
+            <span className="font-semibold text-teal-600">
+              {jobs.length > 0 ? (page - 1) * limit + 1 : 0}
+            </span>
+            {" "}to{" "}
+            <span className="font-semibold text-teal-600">
+              {(page - 1) * limit + jobs.length}
+            </span>{" "}
+            of{" "}
+            <span className="font-semibold text-blue-600">{totaljobs}</span> jobs
           </p>
-          <div className="flex gap-2 items-center">
-            <span className="text-sm text-gray-600">Show</span>
+
+
+          <div className="flex flex-wrap gap-3 items-center  rounded-lg font-semibold">
+            {/* Sort By */}
             <select
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm"
-              value={perPage}
-              onChange={(e) => {
-                setPerPage(parseInt(e.target.value));
-                setCurrentPage(1);
-              }}
+              value={filters.sortBy}
+              onChange={(e) => handleChange("sortBy", e.target.value)}
+              className="px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={30}>30</option>
-              <option value={40}>40</option>
-              <option value={40}>50</option>
+              <option value="postedAt">Sort by Date</option>
+              <option value="offeredSalary">Sort by Salary</option>
+              <option value="title">Sort by Title</option>
             </select>
+
+            {/* Sort Order */}
+            <select
+              value={filters.sortOrder}
+              onChange={(e) => handleChange("sortOrder", e.target.value)}
+              className="px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
+            </select>
+
+            {/* Items Per Page */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Show</span>
+              <select
+                className="px-3 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={limit}
+                onChange={(e) => {
+                  setlimit(parseInt(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {[8, 12, 16, 20].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
         </div>
 
+        {/* Job Cards */}
+        {jobs.length === 0 ? (
+          <div className="text-center text-red-500 mt-10">No jobs found.</div>
+        ) : (
+          <JobCards paginatedJobs={jobs} />
+        )}
 
-        {loading && jobs.length === 0 && <div className="text-center text-gray-500 mt-10">Loading jobs...</div>}
-        {!loading && filteredJobs.length === 0 && <div className="text-center text-red-500 mt-10">No jobs found.</div>}
-              <JobCards paginatedJobs={paginatedJobs} />
+        {/* Pagination Controls */}
+        {/* Pagination Controls */}
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
 
-
-        {/* Pagination */}
-       
       </div>
     </div>
   );
