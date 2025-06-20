@@ -4,6 +4,7 @@ import { useUser } from "../../contexts/UserContext";
 import { FiMapPin, FiBriefcase } from "react-icons/fi";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import JobAlertHeader from "./JobAlertHeader";
 
 const predefinedOptions = {
   gender: ["Any", "Male", "Female", "Other"],
@@ -84,72 +85,16 @@ const Jobalerts = () => {
 
   return (
     <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-6">
+      <JobAlertHeader
+  filters={filters}
+  handleChange={handleChange}
+  user={user}
+  predefinedOptions={predefinedOptions}
+/>
+
       <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-            <Bell className="text-blue-600 w-5 h-5" />
-            {user?.userType?.toLowerCase() === "candidate"
-              ? "My Job Alerts"
-              : "Posted Jobs"}
-          </h2>
-        </div>
-
-        {/* Filters */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-          {/* Dynamic filters */}
-          {[
-            "title",
-            "city",
-            "specialisms",
-          ].map((field) => (
-            <input
-              key={field}
-              type="text"
-              value={filters[field]}
-              onChange={(e) => handleChange(field, e.target.value)}
-              placeholder={`Search by ${field}`}
-              className="bg-blue-50 px-4 py-2 rounded-md text-sm text-gray-700 border border-blue-100"
-            />
-          ))}
-
-          {/* Dropdowns */}
-          {Object.entries(predefinedOptions).map(([field, options]) => (
-            <select
-              key={field}
-              value={filters[field]}
-              onChange={(e) => handleChange(field, e.target.value)}
-              className="bg-blue-50 px-4 py-2 rounded-md text-sm text-gray-700 border border-blue-100"
-            >
-              <option value="">{`All ${field.charAt(0).toUpperCase() + field.slice(1)}`}</option>
-              {options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          ))}
-
-          {/* Sorting */}
-          <select
-            value={filters.sortBy}
-            onChange={(e) => handleChange("sortBy", e.target.value)}
-            className="bg-blue-50 px-4 py-2 rounded-md text-sm text-gray-700 border border-blue-100"
-          >
-            <option value="postedAt">Sort by Date</option>
-            <option value="offeredSalary">Sort by Salary</option>
-            <option value="title">Sort by Title</option>
-          </select>
-
-          <select
-            value={filters.sortOrder}
-            onChange={(e) => handleChange("sortOrder", e.target.value)}
-            className="bg-blue-50 px-4 py-2 rounded-md text-sm text-gray-700 border border-blue-100"
-          >
-            <option value="desc">Descending</option>
-            <option value="asc">Ascending</option>
-          </select>
-        </div>
+        
 
         {/* Job List Header */}
         <div className="hidden sm:grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 px-6 py-3 rounded-t-lg">
