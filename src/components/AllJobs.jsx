@@ -135,7 +135,7 @@ const AllJobs = () => {
 </div>
 
 {/* Additional Filters Dropdowns */}
-<div className="flex flex-wrap justify-center gap-4 px-6 md:px-10 py-6">
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-6 md:px-10 py-6">
   {[
     "jobType",
     "gender",
@@ -148,7 +148,7 @@ const AllJobs = () => {
       key={field}
       value={filters[field]}
       onChange={(e) => handleChange(field, e.target.value)}
-      className="bg-blue-50 text-blue-800 px-4 py-2 rounded-md border border-blue-100 text-sm shadow-sm"
+      className="w-full bg-blue-50 text-blue-800 px-4 py-2 rounded-md border border-blue-100 text-sm shadow-sm"
     >
       <option value="">{field.charAt(0).toUpperCase() + field.slice(1)}</option>
       {predefinedOptions[field]?.map((opt) => (
@@ -161,83 +161,84 @@ const AllJobs = () => {
 </div>
 
 
+
       {/* Pagination Header */}
-      <div className="px-20 bg-blue-100 min-h-screen">
-        <div className="flex flex-col sm:flex-row justify-between mt-8 gap-4 py-6">
-          <p className="text-sm text-blue-800 font-medium bg-white px-4 py-2 border-blue-200 rounded-md shadow-sm border ">
-            Showing{" "}
-            <span className="font-semibold text-teal-600">
-              {jobs.length > 0 ? (page - 1) * limit + 1 : 0}
-            </span>
-            {" "}to{" "}
-            <span className="font-semibold text-teal-600">
-              {(page - 1) * limit + jobs.length}
-            </span>{" "}
-            of{" "}
-            <span className="font-semibold text-blue-600">{totaljobs}</span> jobs
-          </p>
+      <div className="px-4 sm:px-10 lg:px-20 bg-blue-100 min-h-screen">
+  {/* Header: Showing + Sorting */}
+ <div className="mt-8 py-6 grid grid-cols-1 sm:grid-cols-2 gap-4 md:flex md:justify-between md:items-center">
+  {/* Job Count + Show Limit */}
+  <div className="flex flex-wrap items-center gap-3 rounded-lg w-full md:w-auto">
+    <p className="text-sm text-blue-800 font-medium bg-white px-4 py-2.5 border-blue-200 rounded-md shadow-sm border w-2/3  md:w-auto">
+      Showing{" "}
+      <span className="font-semibold text-teal-600">
+        {jobs.length > 0 ? (page - 1) * limit + 1 : 0}
+      </span>{" "}
+      to{" "}
+      <span className="font-semibold text-teal-600">
+        {(page - 1) * limit + jobs.length}
+      </span>{" "}
+      of{" "}
+      <span className="font-semibold text-blue-600">{totaljobs}</span> jobs
+    </p>
+
+    <div className="flex items-center gap-2 ">
+      <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Show</span>
+      <select
+        className="px-3 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        value={limit}
+        onChange={(e) => {
+          setlimit(parseInt(e.target.value));
+          setPage(1);
+        }}
+      >
+        {[8, 12, 16, 20].map((n) => (
+          <option key={n} value={n}>
+            {n}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* Sort By + Sort Order */}
+  <div className="flex flex-wrap items-center gap-3 rounded-lg w-full md:w-auto">
+    <select
+      value={filters.sortBy}
+      onChange={(e) => handleChange("sortBy", e.target.value)}
+      className="flex-1 min-w-[140px] px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="postedAt">Sort by Date</option>
+      <option value="offeredSalary">Sort by Salary</option>
+      <option value="title">Sort by Title</option>
+    </select>
+
+    <select
+      value={filters.sortOrder}
+      onChange={(e) => handleChange("sortOrder", e.target.value)}
+      className="flex-1 min-w-[120px] px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+    >
+      <option value="desc">Descending</option>
+      <option value="asc">Ascending</option>
+    </select>
+  </div>
+</div>
 
 
-          <div className="flex flex-wrap gap-3 items-center  rounded-lg font-semibold">
-            {/* Sort By */}
-            <select
-              value={filters.sortBy}
-              onChange={(e) => handleChange("sortBy", e.target.value)}
-              className="px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="postedAt">Sort by Date</option>
-              <option value="offeredSalary">Sort by Salary</option>
-              <option value="title">Sort by Title</option>
-            </select>
+  {/* Job Cards */}
+  {jobs.length === 0 ? (
+    <div className="text-center text-red-500 mt-10">No jobs found.</div>
+  ) : (
+    <JobCards paginatedJobs={jobs} />
+  )}
 
-            {/* Sort Order */}
-            <select
-              value={filters.sortOrder}
-              onChange={(e) => handleChange("sortOrder", e.target.value)}
-              className="px-4 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-            >
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
+  {/* Pagination */}
+  <Pagination
+    currentPage={page}
+    totalPages={totalPages}
+    onPageChange={(newPage) => setPage(newPage)}
+  />
+</div>
 
-            {/* Items Per Page */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Show</span>
-              <select
-                className="px-3 py-2 text-sm text-blue-700 bg-white border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={limit}
-                onChange={(e) => {
-                  setlimit(parseInt(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[8, 12, 16, 20].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Job Cards */}
-        {jobs.length === 0 ? (
-          <div className="text-center text-red-500 mt-10">No jobs found.</div>
-        ) : (
-          <JobCards paginatedJobs={jobs} />
-        )}
-
-        {/* Pagination Controls */}
-        {/* Pagination Controls */}
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setPage(newPage)}
-        />
-
-      </div>
     </div>
   );
 };
