@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { toast } from 'react-toastify';
+import Pagination from './hooks/Pagination'; // ✅ import reusable pagination
 
 const SuperEmployeeManage = () => {
   const [employees, setEmployees] = useState([]);
@@ -11,6 +12,10 @@ const SuperEmployeeManage = () => {
   const [companyFilter, setCompanyFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -48,6 +53,7 @@ const SuperEmployeeManage = () => {
     }
 
     setFilteredEmployees(filtered);
+    setCurrentPage(1); // reset to first page
   }, [statusFilter, companyFilter, startDate, endDate, employees]);
 
   const handleDelete = async (id) => {
@@ -75,6 +81,11 @@ const SuperEmployeeManage = () => {
     pending: 'bg-yellow-100 text-yellow-700',
     rejected: 'bg-red-100 text-red-700',
   };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
   if (loading) {
     return (
@@ -156,21 +167,25 @@ const SuperEmployeeManage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.length > 0 ? (
-              filteredEmployees.map((emp, i) => (
+            {currentEmployees.length > 0 ? (
+              currentEmployees.map((emp, i) => (
                 <tr
                   key={emp._id}
-                  className={`border-t ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-indigo-50`}
+                  className={`border-t ${
+                    (indexOfFirstItem + i) % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  } hover:bg-indigo-50`}
                 >
                   <td className="py-3 px-4">{emp.name}</td>
                   <td className="py-3 px-4">{emp.email}</td>
                   <td className="py-3 px-4">{emp.position}</td>
-                  <td className="py-3 px-4 text-sm text-gray-600">{emp.companyId?.name || '—'}</td>
-
+                  <td className="py-3 px-4 text-sm text-gray-600">
+                    {emp.companyId?.name || '—'}
+                  </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[emp.status] || 'bg-gray-200 text-gray-700'
-                        }`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        statusColors[emp.status] || 'bg-gray-200 text-gray-700'
+                      }`}
                     >
                       {emp.status}
                     </span>
@@ -204,6 +219,13 @@ const SuperEmployeeManage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* ✅ Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
   );
 };
