@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
 
 const SuperCompanyManage = () => {
   const [allCompanies, setAllCompanies] = useState([]);
   const [activeTab, setActiveTab] = useState('pending');
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', password: '' });
-  const [modalMode, setModalMode] = useState('view'); // 'view' or 'edit'
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCompanies();
@@ -39,37 +39,15 @@ const SuperCompanyManage = () => {
     }
   };
 
-  const openCompanyModal = async (companyID, mode) => {
+  const openCompanyModal = async (companyID) => {
     try {
       const token = localStorage.getItem('token');
       const res = await apiClient.get(`/superadmin/company/${companyID}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedCompany(res.data.company);
-      setEditForm({
-        name: res.data.company.name,
-        email: res.data.company.email,
-        password: '',
-      });
-      setModalMode(mode); // view or edit
     } catch (err) {
       toast.error('Failed to fetch company');
-    }
-  };
-
-  const handleEdit = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await apiClient.put(
-        `/superadmin/company/update-credentials/${selectedCompany._id}`,
-        editForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success('Company updated');
-      setSelectedCompany(null);
-      fetchCompanies();
-    } catch (err) {
-      toast.error('Update failed');
     }
   };
 
@@ -125,17 +103,12 @@ const SuperCompanyManage = () => {
                   </td>
                   <td className="px-6 py-4 text-left space-x-2">
                     <button
-                      onClick={() => openCompanyModal(company._id, 'view')}
+                      onClick={() => navigate(`/superadmin/view-company/${company._id}`)}
                       className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
                     >
                       View
                     </button>
-                    <button
-                      onClick={() => openCompanyModal(company._id, 'edit')}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-xs"
-                    >
-                      Edit
-                    </button>
+
                     <button
                       onClick={() => handleDelete(company._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
@@ -150,55 +123,32 @@ const SuperCompanyManage = () => {
         </div>
       )}
 
-      {/* Modal for View/Edit */}
+      {/* Modal for View Only */}
       {selectedCompany && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-bold mb-4">
-              {modalMode === 'view' ? 'View Company' : 'Edit Company'}
-            </h3>
+            <h3 className="text-xl font-bold mb-4">View Company</h3>
             <div className="space-y-3">
               <input
                 className="w-full border p-2 rounded"
                 type="text"
-                placeholder="Name"
-                value={editForm.name}
-                readOnly={modalMode === 'view'}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                readOnly
+                value={selectedCompany.name}
               />
               <input
                 className="w-full border p-2 rounded"
                 type="email"
-                placeholder="Email"
-                value={editForm.email}
-                readOnly={modalMode === 'view'}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                readOnly
+                value={selectedCompany.email}
               />
-              {modalMode === 'edit' && (
-                <input
-                  className="w-full border p-2 rounded"
-                  type="password"
-                  placeholder="New Password (optional)"
-                  value={editForm.password}
-                  onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                />
-              )}
             </div>
-            <div className="mt-4 flex justify-end gap-3">
+            <div className="mt-4 flex justify-end">
               <button
                 onClick={() => setSelectedCompany(null)}
                 className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
               >
                 Close
               </button>
-              {modalMode === 'edit' && (
-                <button
-                  onClick={handleEdit}
-                  className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-                >
-                  Save
-                </button>
-              )}
             </div>
           </div>
         </div>
