@@ -5,165 +5,126 @@ import { Eye, X } from 'lucide-react';
 const ShortlistedJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [loadingJobs, setLoadingJobs] = useState(true);
-  const [errorJobs, setErrorJobs] = useState(null);
-
   const [selectedJobDetail, setSelectedJobDetail] = useState(null);
-  const [loadingJobDetail, setLoadingJobDetail] = useState(false);
-  const [errorJobDetail, setErrorJobDetail] = useState('');
-
-  const fetchShortlistedJobs = async () => {
-    try {
-      setLoadingJobs(true);
-      const res = await apiClient.get('/candidate/job/get-shortlisted-jobs', { withCredentials: true });
-      setJobs(res.data.jobs || []);
-    } catch (err) {
-      setErrorJobs(err.response?.data?.error || 'Failed to load shortlisted jobs.');
-    } finally {
-      setLoadingJobs(false);
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchShortlistedJobs();
+    const fetch = async () => {
+      try {
+        const res = await apiClient.get('/candidate/job/get-shortlisted-jobs', { withCredentials: true });
+        setJobs(res.data.jobs || []);
+      } catch {
+        setError('Failed to load shortlisted jobs.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
   }, []);
 
-  const handleJobClick = (job) => setSelectedJob(job);
-  const closeJobModal = () => setSelectedJob(null);
-
-  const openJobDetail = async (jobID) => {
-    setLoadingJobDetail(true);
-    setErrorJobDetail('');
+  const openDetail = async (jobID) => {
+    setDetailLoading(true);
     setSelectedJobDetail(null);
     try {
       const res = await apiClient.post('/jobs/get-job-detail', { jobID });
-      const data = res?.data?.job;
-      if (data) setSelectedJobDetail(data);
-      else setErrorJobDetail('No job details found.');
+      setSelectedJobDetail(res.data.job);
     } catch {
-      setErrorJobDetail('Failed to load job details.');
+      setSelectedJobDetail(null);
     } finally {
-      setLoadingJobDetail(false);
+      setDetailLoading(false);
     }
   };
 
-  const closeJobDetailModal = () => {
-    setSelectedJobDetail(null);
-    setErrorJobDetail('');
-  };
-
-  if (loadingJobs) return <div className="text-center p-10 text-indigo-600 font-medium">Loading shortlisted jobs...</div>;
-  if (errorJobs) return <div className="text-red-600 text-center p-8">{errorJobs}</div>;
-
-  if (jobs.length === 0) {
-    return (
-      <div className="text-center text-gray-500 p-8">
-        You haven’t been shortlisted for any jobs yet.
-      </div>
-    );
-  }
+  if (loading) return (<div className="text-center py-20 text-blue-600">Loading shortlisted jobs...</div>);
+  if (error) return (<div className="text-red-600 text-center">{error}</div>);
+  if (jobs.length === 0) return (<div className="text-center text-gray-500 py-20">No shortlisted jobs yet.</div>);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <h2 className="text-3xl font-bold text-center text-gradient mb-8">
-        Shortlisted Jobs
-      </h2>
+    <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-6 sm:p-8">
+      <h2 className="text-3xl font-semibold text-center text-blue-800 mb-8">Shortlisted Jobs</h2>
 
-      <ul className="grid sm:grid-cols-2 gap-6">
-        {jobs.map((job) => (
-          <li
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jobs.map((job, i) => (
+          <div
             key={job._id}
-            className="bg-white border rounded-xl shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer p-5 group"
-            onClick={() => handleJobClick(job)}
+            onClick={() => setSelectedJob(job)}
+            className={`
+              relative group p-6 rounded-2xl border
+              ${i % 2 === 0 ? 'bg-white/30 border-white/20' : 'bg-white/20 border-white/10'}
+              backdrop-blur-md shadow-inner shadow-white/20 cursor-pointer
+            `}
           >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-indigo-700 group-hover:text-indigo-900">
-                {job.title}
-              </h3>
-              <Eye size={20} className="text-teal-500" />
-            </div>
+            <Eye className="absolute top-4 right-4 text-teal-600 opacity-70 group-hover:opacity-100" size={20} />
+            <h3 className="text-lg font-bold text-blue-800 mb-1">{job.title}</h3>
             <p className="text-sm text-gray-600">{job.company}</p>
-            <p className="text-sm text-gray-600 mt-1">📍 {job.location}</p>
-            <p className="text-sm mt-2 text-gray-800">
-              {(job.description && job.description.length > 100)
-                ? job.description.slice(0, 100) + '...'
-                : job.description || 'N/A'}
+            <p className="text-sm text-gray-600 mt-2">📍 {job.location}</p>
+            <p className="text-gray-700 text-sm mt-4 line-clamp-3">
+              {job.description?.slice(0, 120)}...
             </p>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
 
-      {/* Modal: Job Summary */}
+      {/* Summary Modal */}
       {selectedJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
+        <div className="fixed inset-0 z-50 bg-black/30 flex justify-center items-center">
+          <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-lg w-full max-w-xl p-6 relative">
             <button
-              onClick={closeJobModal}
-              className="absolute top-4 right-4 text-gray-600 hover:text-black"
-              aria-label="Close modal"
+              onClick={() => setSelectedJob(null)}
+              className="absolute top-4 right-4 bg-white/70 p-2 rounded-full"
             >
-              <X size={24} />
+              <X size={20} className="text-gray-600" />
             </button>
-            <h3 className="text-2xl font-semibold text-indigo-700 mb-4">
-              {selectedJob.title}
-            </h3>
-            <div className="space-y-3 text-sm text-gray-800">
-              <p><strong>Company:</strong> {selectedJob.company}</p>
-              <p><strong>Location:</strong> {selectedJob.location}</p>
-              <p><strong>Description:</strong> {selectedJob.description}</p>
-              {selectedJob.applicationDeadline && (
-                <p><strong>Deadline:</strong> {selectedJob.applicationDeadline}</p>
-              )}
-              <button
-                className="mt-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-teal-500 text-white rounded-lg shadow hover:scale-105 transition"
-                onClick={() => openJobDetail(selectedJob._id)}
-              >
-                View Full Details
-              </button>
+            <div className="mb-4">
+              <h3 className="text-2xl font-bold text-blue-800">{selectedJob.title}</h3>
+              <p className="text-sm text-gray-700 mt-1">📍 {selectedJob.location}</p>
             </div>
+            <p className="text-gray-800 text-sm mb-4">{selectedJob.description}</p>
+            <button
+              onClick={() => openDetail(selectedJob._id)}
+              className="px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg"
+            >
+              View Full Details
+            </button>
           </div>
         </div>
       )}
 
-      {/* Modal: Full Job Details */}
+      {/* Detail Modal */}
       {selectedJobDetail && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-lg max-w-xl w-full p-6 relative max-h-[90vh] overflow-auto">
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-center items-center px-4">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-xl w-full max-w-xl p-6 overflow-auto relative">
             <button
-              onClick={closeJobDetailModal}
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              aria-label="Close job detail modal"
+              onClick={() => setSelectedJobDetail(null)}
+              className="absolute top-4 right-4 bg-white/70 p-2 rounded-full"
             >
-              <X size={22} />
+              <X size={20} className="text-gray-600" />
             </button>
-
-            {loadingJobDetail && (
-              <p className="text-gray-700">Loading job details...</p>
-            )}
-
-            {errorJobDetail && (
-              <p className="text-red-500">{errorJobDetail}</p>
-            )}
-
-            {!loadingJobDetail && !errorJobDetail && (
-              <div className="space-y-4 text-sm text-gray-800">
-                <h2 className="text-xl font-semibold text-indigo-700">Job Details</h2>
-                <p><strong>Title:</strong> {selectedJobDetail.title}</p>
-                <p><strong>Company:</strong> {selectedJobDetail.company}</p>
-                <p><strong>Location:</strong> {selectedJobDetail.location}</p>
-                <p><strong>Description:</strong> {selectedJobDetail.description}</p>
-                <p><strong>Salary Range:</strong> {selectedJobDetail.salaryRange || 'N/A'}</p>
-                <p><strong>Deadline:</strong> {selectedJobDetail.applicationDeadline || 'N/A'}</p>
-                {selectedJobDetail.applicationInstructions && (
-                  <p><strong>How to Apply:</strong> {selectedJobDetail.applicationInstructions}</p>
-                )}
-              </div>
-            )}
+            <h2 className="text-2xl font-semibold text-blue-800 mb-4">Job Details</h2>
+            {detailLoading
+              ? <p className="text-gray-600">Loading details...</p>
+              : (
+                <div className="space-y-3 text-sm text-gray-800">
+                  <Detail label="Title" value={selectedJobDetail.title} />
+                  <Detail label="Company" value={selectedJobDetail.company} />
+                  <Detail label="Location" value={selectedJobDetail.location} />
+                  <Detail label="Description" value={selectedJobDetail.description} />
+                  <Detail label="Salary" value={selectedJobDetail.salaryRange || 'N/A'} />
+                  <Detail label="Deadline" value={selectedJobDetail.applicationDeadline || 'N/A'} />
+                  <Detail label="Apply Instructions" value={selectedJobDetail.applicationInstructions || 'N/A'} />
+                </div>
+              )}
           </div>
         </div>
       )}
     </div>
   );
 };
+
+const Detail = ({ label, value }) => (
+  <p><strong>{label}:</strong> {value}</p>
+);
 
 export default ShortlistedJobs;
