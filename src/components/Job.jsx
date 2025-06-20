@@ -134,18 +134,18 @@ const Job = () => {
         </div>
 
         {/* Content Section */}
-        <div className="container mx-auto px-0 py-10 grid md:grid-cols-3 gap-10">
+        <div className="container mx-auto px-4 md:px-10 py-10 grid md:grid-cols-3 gap-10">
           {/* Left Column */}
           <div className="md:col-span-2 space-y-8">
             {/* Job Description */}
-            <div>
+            <div className="px-4 md:px-8">
               <h2 className="text-xl font-bold mb-2">Job Description</h2>
               <p className="text-gray-700 leading-relaxed">{description}</p>
             </div>
 
             {/* Key Responsibilities */}
             {specialisms?.length > 0 && (
-              <div>
+              <div className="px-4 md:px-8">
                 <h2 className="text-xl font-bold mb-2">Skill Required</h2>
                 <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {specialisms.map((skill, i) => (
@@ -162,7 +162,7 @@ const Job = () => {
           
 
           {/* Right Column */}
-          <div className="bg-blue-100 rounded-xl p-6 shadow-md space-y-6">
+          <div className="bg-blue-100 rounded-xl p-6 md:p-8 shadow-md space-y-6">
             <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">
               Job Overview
             </h3>

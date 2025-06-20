@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
-import { FiMapPin, FiBriefcase, FiClock } from 'react-icons/fi';
+import {
+  FiMapPin,
+  FiBriefcase,
+  FiUser,
+  FiBookmark,
+  FiCalendar,
+} from 'react-icons/fi';
+import { Banknote } from 'lucide-react';
+import apiClient from '../api/apiClient';
 
 const JobsAtCompany = ({ companyId }) => {
   const [jobs, setJobs] = useState([]);
@@ -21,65 +28,95 @@ const JobsAtCompany = ({ companyId }) => {
   }, [companyId]);
 
   const handleNavigate = (job) => {
-    const formattedTitle = job.title.toLowerCase().replace(/\s+|\/+/g, '-');
-    const relatedJobs = jobs.filter(j => j.company === job.company && j._id !== job._id);
+    const formattedTitle = job.title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .trim();
+    const relatedJobs = jobs.filter(
+      (j) => j.company === job.company && j._id !== job._id
+    );
+
     navigate(`/job/${formattedTitle}`, {
       state: {
         jobdetails: job,
-        relatedJobs
-      }
+        relatedJobs,
+      },
     });
   };
 
+  if (jobs.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
+        No active job postings found.
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h2 className="text-xl font-bold text-indigo-700 mb-6">Jobs at this Company</h2>
-
-      {jobs.length === 0 ? (
-        <p className="text-gray-500">No active job postings found.</p>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {jobs.map((job) => (
-            <div
-              key={job._id}
-              className="border rounded-xl p-4 bg-gray-50 hover:shadow-lg transition cursor-pointer"
-              onClick={() => handleNavigate(job)}
-            >
-              <h3 className="text-lg font-semibold text-blue-800 mb-1">
-                {job.title}
-              </h3>
-
-              <p className="text-sm text-gray-600 flex items-center gap-1">
-                <FiMapPin className="text-indigo-500" />
-                {job.location} • {job.jobType}
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                <FiBriefcase className="inline-block mr-1" />
-                {job.careerLevel} | {job.experience}
-              </p>
-
-              <p className="text-sm mt-2 text-green-600 font-medium">
-                💰 {job.offeredSalary}
-              </p>
-
-              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                <FiClock className="text-gray-400" />
-                Apply before {new Date(job.applicationDeadline).toDateString()}
-              </p>
-
-              <div className="mt-4">
-                <button
-                  onClick={() => handleNavigate(job)}
-                  className="text-sm bg-indigo-600 text-white px-4 py-1.5 rounded hover:bg-indigo-700 transition"
-                >
-                  View Details
-                </button>
+    <div className="mt-12 px-4 md:px-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {jobs.map((job) => (
+          <div
+            key={job._id}
+            onClick={() => handleNavigate(job)}
+            className="cursor-pointer bg-blue-50/70 backdrop-blur-md p-6 rounded-xl shadow-md hover:shadow-lg transition-all border border-blue-100 hover:-translate-y-1"
+          >
+            {/* Header */}
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 bg-gradient-to-tr from-teal-100 to-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700 text-lg uppercase shadow">
+                {job.company?.[0] || 'C'}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                  {job.title}
+                </h3>
+                <p className="text-sm text-gray-600">{job.company}</p>
+                <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                  <FiMapPin className="text-blue-500" /> {job.location || 'Remote'}
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 text-xs font-medium mb-4">
+              <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
+                {job.jobType || 'Full Time'}
+              </span>
+              {job.specialisms?.[0] && (
+                <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                  {job.specialisms[0]}
+                </span>
+              )}
+              {job.experience && (
+                <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">
+                  {job.experience}
+                </span>
+              )}
+            </div>
+
+            {/* Extra Info */}
+            <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <FiUser className="text-blue-600" />
+                <span>{job.careerLevel || 'Any Level'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FiBriefcase className="text-blue-600" />
+                <span>{job.industry || 'Industry'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FiBookmark className="text-blue-600" />
+                <span>{job.qualification || 'Not Specified'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FiCalendar className="text-blue-600" />
+                <span>{new Date(job.applicationDeadline).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
