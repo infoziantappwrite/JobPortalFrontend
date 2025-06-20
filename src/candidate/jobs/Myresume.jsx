@@ -1,228 +1,149 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import {
-    FiPhone, FiMapPin, FiHome, FiBriefcase, FiBookOpen,
-    FiDollarSign, FiGlobe, FiLinkedin, FiTwitter,
-    FiFacebook, FiInstagram, FiUser, FiGithub, FiMail
+  FiPhone, FiMapPin, FiHome, FiBriefcase, FiBookOpen, FiDollarSign,
+  FiGlobe, FiLinkedin, FiTwitter, FiFacebook, FiInstagram, FiUser,
+  FiGithub, FiMail
 } from 'react-icons/fi';
 import { HiOutlineDocumentText } from 'react-icons/hi';
-import SectionTimeline from './SectionTimeline'; // Adjust path if needed
+import SectionTimeline from './SectionTimeline';
 import apiClient from '../../api/apiClient';
 
-
 const Myresume = () => {
-    const [candidateInfo, setCandidateInfo] = useState(null);
+  const [candidateInfo, setCandidateInfo] = useState(null);
 
-    const fetchProfile = async () => {
-        try {
-            const res = await apiClient.get('/candidate/info/get-profile');
-            setCandidateInfo(res.data.candidateInfo);
-        } catch (error) {
-            console.error('Error fetching candidate profile:', error);
-        }
-    };
+  const fetchProfile = async () => {
+    try {
+      const res = await apiClient.get('/candidate/info/get-profile');
+      setCandidateInfo(res.data.candidateInfo);
+    } catch (error) {
+      console.error('Error fetching candidate profile:', error);
+    }
+  };
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-    const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-    const getColorFromName = (name) => {
-        if (!name) return 'bg-gray-500';
-        const index = name.charCodeAt(0) % colors.length;
-        return colors[index];
-    };
+  const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+  const getColorFromName = (name) => name ? colors[name.charCodeAt(0) % colors.length] : 'bg-gray-500';
 
-
-
-    if (!candidateInfo) return <div className="text-center p-10">Loading profile...</div>;
-
-    const {
-        name, profileDescription, email, phone, age, country, city, fullAddress,
-        jobTitle, currentSalary, expectedSalary, education, yearsOfExp,
-        languages, categories, socials
-    } = candidateInfo;
-
-    return (
-        <div className="bg-blue-50 min-h-screen p-10">
-            <div className="p-6 bg-white rounded-2xl shadow-lg max-w-6xl mx-auto space-y-10">
-                <h2 className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-semibold text-gray-800 mb-8">
-                    <HiOutlineDocumentText className="text-blue-600 text-3xl" />
-                    <span className="border-b-2 border-blue-600 pb-1">My Resume</span>
-                </h2>
-
-                {/* Profile Header */}
-                <div className="flex items-center gap-6 bg-blue-100 p-6 rounded-xl shadow-lg">
-
-                    <div className={`w-24 h-24 rounded-full ${getColorFromName(name)} text-white flex items-center justify-center text-3xl font-bold border-2`}>
-                        {name?.charAt(0).toUpperCase() || "?"}
-                    </div>
+  if (!candidateInfo) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-blue-700 font-medium text-lg">Loading your profile...</p>
+      </div>
+    </div>
+  );
+}
 
 
+  const {
+    name, profileDescription, email, phone, age, country, city, fullAddress,
+    jobTitle, currentSalary, expectedSalary, education, yearsOfExp,
+    languages, categories, socials
+  } = candidateInfo;
 
-                    {/* Name, Job Title & Description */}
-                    <div className="flex-1">
-                        {/* Name + Job Title */}
-
-                        <h1 className="text-2xl font-bold text-gray-800 ">{name}</h1>
-                        <h2 className="text-lg font-semibold text-blue-600">{jobTitle}</h2>
-                        <div className="md:col-span-2 mt-2 border-l-4 border-indigo-400 pl-2">
-                            <p className="text-gray-600 text-sm">{profileDescription}</p>
-                        </div>
-
-
-                        {/* Description */}
-
-                    </div>
-                </div>
-
-                <hr />
-
-                {/* Contact Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-gray-800">
-
-                    {/* Phone */}
-                    <div className="flex items-center gap-2">
-                        <FiPhone className="text-teal-600" />
-                        <strong>Phone:</strong> {phone}
-                    </div>
-
-                    {/* Email */}
-                    <div className="flex items-center gap-2">
-                        <FiMail className="text-blue-600" />
-                        <strong>Email:</strong> {email}
-                    </div>
-
-                    {/* Age */}
-                    <div className="flex items-center gap-2">
-                        <FiUser className="text-blue-600" />
-                        <strong>Age:</strong> {age}
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex items-center gap-2">
-                        <FiMapPin className="text-teal-600" />
-                        <strong>Location:</strong> {city}, {country}
-                    </div>
-
-                    {/* Address */}
-                    <div className="flex items-center gap-2">
-                        <FiHome className="text-blue-600" />
-                        <strong>Address:</strong> {fullAddress}
-                    </div>
-
-                    {/* Current Salary */}
-                    <div className="flex items-center gap-2">
-                        <FiDollarSign className="text-teal-600" />
-                        <strong>Current Salary:</strong> {currentSalary}
-                    </div>
-
-                    {/* Expected Salary */}
-                    <div className="flex items-center gap-2">
-                        <FiDollarSign className="text-blue-600" />
-                        <strong>Expected Salary:</strong> {expectedSalary}
-                    </div>
-
-                    {/* Education */}
-                    <div className="flex items-center gap-2">
-                        <FiBookOpen className="text-teal-600" />
-                        <strong>Education:</strong> {education}
-                    </div>
-
-                    {/* Experience */}
-                    <div className="flex items-center gap-2">
-                        <FiBriefcase className="text-blue-600" />
-                        <strong>Experience:</strong> {yearsOfExp} years
-                    </div>
-
-                    {/* Profile Description */}
-
-
-                </div>
-
-
-                {/* Skills and Socials */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-100 p-6 rounded-lg mt-8">
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-2">Languages</h3>
-                        <div className="flex gap-2 flex-wrap">
-                            {languages.map((lang, idx) => (
-                                <span key={idx} className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-full">{lang}</span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-2">Categories</h3>
-                        <div className="flex gap-2 flex-wrap">
-                            {categories.map((cat, idx) => (
-                                <span key={idx} className="px-3 py-1 text-sm bg-gray-100 text-gray-800 rounded-full">{cat}</span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <h3 className="font-semibold text-gray-800 mb-2">Social Links</h3>
-                        <div className="flex flex-wrap gap-4 items-center">
-                            {socials.linkedin && (
-                                <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-700 hover:underline">
-                                    <FiLinkedin className="text-xl" /> LinkedIn
-                                </a>
-                            )}
-                            {socials.twitter && (
-                                <a href={socials.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sky-500 hover:underline">
-                                    <FiTwitter className="text-xl" /> Twitter
-                                </a>
-                            )}
-                            {socials.facebook && (
-                                <a href={socials.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
-                                    <FiFacebook className="text-xl" /> Facebook
-                                </a>
-                            )}
-                            {socials.instagram && (
-                                <a href={socials.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-pink-500 hover:underline">
-                                    <FiInstagram className="text-xl" /> Instagram
-                                </a>
-                            )}
-                            {socials.website && (
-                                <a href={socials.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-teal-600 hover:underline">
-                                    <FiGlobe className="text-xl" /> Website
-                                </a>
-                            )}
-                            {socials.github && (
-                                <a href={socials.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:underline">
-                                    <FiGithub className="text-xl" /> Github
-                                </a>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Education, Experience, Awards */}
-                <SectionTimeline
-                    title="Education"
-                    items={candidateInfo.educationHistory}
-                    type="education"
-                    fetchData={fetchProfile}
-                />
-                <hr />
-                <SectionTimeline
-                    title="Experience"
-                    items={candidateInfo.workExperience}
-                    type="experience"
-                    fetchData={fetchProfile}
-                />
-                <hr />
-                <SectionTimeline
-                    title="Awards"
-                    items={candidateInfo.awards}
-                    type="awards"
-                    fetchData={fetchProfile}
-                />
-
-            </div>
-
+  return (
+    <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-6 sm:p-6 ">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="flex justify-center items-center gap-2 text-3xl font-bold text-blue-700">
+            <HiOutlineDocumentText className="text-blue-600 text-4xl" />
+            My Resume
+          </h2>
+          <div className="h-1 w-24 mx-auto bg-blue-600 mt-2 rounded-full" />
         </div>
-    );
+
+        {/* Profile Card */}
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row items-center gap-6">
+          <div className={`w-24 h-24 rounded-full ${getColorFromName(name)} text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-md`}>
+            {name?.charAt(0).toUpperCase() || "?"}
+          </div>
+          <div className="flex-1 space-y-2 text-center sm:text-left">
+            <h1 className="text-2xl font-bold text-gray-800">{name}</h1>
+            <h2 className="text-lg text-blue-600 font-medium">{jobTitle}</h2>
+            <p className="text-sm text-gray-600 border-l-4 border-indigo-500 pl-4 mt-2">{profileDescription}</p>
+          </div>
+        </div>
+
+        {/* Contact Info */}
+        <div className="bg-white rounded-xl shadow p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-800">
+          {[
+            { icon: FiPhone, label: "Phone", value: phone },
+            { icon: FiMail, label: "Email", value: email },
+            { icon: FiUser, label: "Age", value: age },
+            { icon: FiMapPin, label: "Location", value: `${city}, ${country}` },
+            { icon: FiHome, label: "Address", value: fullAddress },
+            { icon: FiDollarSign, label: "Current Salary", value: currentSalary },
+            { icon: FiDollarSign, label: "Expected Salary", value: expectedSalary },
+            { icon: FiBookOpen, label: "Education", value: education },
+            { icon: FiBriefcase, label: "Experience", value: `${yearsOfExp} years` },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3">
+              <item.icon className="text-blue-600" />
+              <strong>{item.label}:</strong> {item.value}
+            </div>
+          ))}
+        </div>
+
+        {/* Skills & Categories */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white p-6 shadow rounded-xl">
+            <h3 className="text-lg font-semibold text-blue-700 mb-2">Languages</h3>
+            <div className="flex flex-wrap gap-2">
+              {languages.map((lang, i) => (
+                <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">{lang}</span>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white p-6 shadow rounded-xl">
+            <h3 className="text-lg font-semibold text-blue-700 mb-2">Categories</h3>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat, i) => (
+                <span key={i} className="px-3 py-1 bg-teal-100 text-teal-800 text-sm rounded-full">{cat}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className="bg-white p-6 shadow rounded-xl">
+          <h3 className="text-lg font-semibold text-blue-700 mb-4">Social Links</h3>
+          <div className="flex flex-wrap gap-4">
+            {socials.linkedin && <SocialLink href={socials.linkedin} icon={FiLinkedin} label="LinkedIn" color="text-blue-700" />}
+            {socials.twitter && <SocialLink href={socials.twitter} icon={FiTwitter} label="Twitter" color="text-sky-500" />}
+            {socials.facebook && <SocialLink href={socials.facebook} icon={FiFacebook} label="Facebook" color="text-blue-600" />}
+            {socials.instagram && <SocialLink href={socials.instagram} icon={FiInstagram} label="Instagram" color="text-pink-500" />}
+            {socials.website && <SocialLink href={socials.website} icon={FiGlobe} label="Website" color="text-teal-600" />}
+            {socials.github && <SocialLink href={socials.github} icon={FiGithub} label="Github" color="text-gray-600" />}
+          </div>
+        </div>
+
+        {/* Timeline Sections */}
+        <div className="space-y-10 bg-white p-6 rounded-xl shadow">
+          <SectionTimeline title="Education" items={candidateInfo.educationHistory} type="education" fetchData={fetchProfile} />
+          <SectionTimeline title="Experience" items={candidateInfo.workExperience} type="experience" fetchData={fetchProfile} />
+          <SectionTimeline title="Awards" items={candidateInfo.awards} type="awards" fetchData={fetchProfile} />
+        </div>
+      </div>
+    </div>
+  );
 };
+
+// Reusable social link component
+const SocialLink = ({ href, icon: Icon, label, color }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`flex items-center gap-2 ${color} hover:underline text-sm sm:text-base`}
+  >
+    <Icon className="text-lg" /> {label}
+  </a>
+);
 
 export default Myresume;

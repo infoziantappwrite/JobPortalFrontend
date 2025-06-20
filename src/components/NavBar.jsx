@@ -220,7 +220,7 @@ export default function Navbar() {
                   {[
                     { path: '/', label: 'Home', icon: <FiHome /> },
                     { path: '/about', label: 'About', icon: <FiInfo /> },
-                    { path: '/all-jobs', label: 'All Jobs', icon: <FiBriefcase /> },
+                    { path: '/jobs', label: 'All Jobs', icon: <FiBriefcase /> },
                     { path: '/companies', label: 'Companies', icon: <FiLayers /> },
                     { path: '/courses', label: 'Courses', icon: <FiBookOpen /> },
                   ].map(({ path, label, icon }) => (

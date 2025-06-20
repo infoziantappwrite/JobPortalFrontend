@@ -30,6 +30,7 @@ import avatar2 from "../assets/avatars/testi-img2.png";
 import avatar3 from "../assets/avatars/testi-img3.png";
 import avatar4 from "../assets/avatars/testi-img1.png";
 import avatar5 from "../assets/avatars/testi-img1.png";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -836,6 +837,7 @@ const testimonials = [
 </section>
 
       </div>
+      <Footer/>
     </div>
   );
 };
