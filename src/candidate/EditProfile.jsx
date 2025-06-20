@@ -30,7 +30,8 @@ const EditProfile = () => {
       try {
         const res = await apiClient.get('/candidate/info/get-profile');
         const data = res.data;
-        const { _id, createdAt, updatedAt, __v, ...filteredCandidateInfo } = data.candidateInfo;
+        console.log(data);
+        const {workExperience,awards,educationHistory, _id, createdAt, updatedAt, __v, ...filteredCandidateInfo } = data.candidateInfo;
 
         setForm({
           ...filteredCandidateInfo,

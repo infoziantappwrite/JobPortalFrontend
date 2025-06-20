@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
+import Pagination from './hooks/Pagination'; // Import it
 
 const SuperCompanyManage = () => {
   const [allCompanies, setAllCompanies] = useState([]);
   const [activeTab, setActiveTab] = useState('pending');
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', password: '' });
-  const [modalMode, setModalMode] = useState('view'); // 'view' or 'edit'
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCompanies();
@@ -39,41 +42,12 @@ const SuperCompanyManage = () => {
     }
   };
 
-  const openCompanyModal = async (companyID, mode) => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await apiClient.get(`/superadmin/company/${companyID}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSelectedCompany(res.data.company);
-      setEditForm({
-        name: res.data.company.name,
-        email: res.data.company.email,
-        password: '',
-      });
-      setModalMode(mode); // view or edit
-    } catch (err) {
-      toast.error('Failed to fetch company');
-    }
-  };
-
-  const handleEdit = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await apiClient.put(
-        `/superadmin/company/update-credentials/${selectedCompany._id}`,
-        editForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success('Company updated');
-      setSelectedCompany(null);
-      fetchCompanies();
-    } catch (err) {
-      toast.error('Update failed');
-    }
-  };
-
   const filteredCompanies = allCompanies.filter(c => c.status === activeTab);
+  const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
+  const paginatedCompanies = filteredCompanies.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const statusColors = {
     approved: 'text-green-600 bg-green-100',
@@ -89,11 +63,15 @@ const SuperCompanyManage = () => {
         {['pending', 'approved', 'rejected'].map(status => (
           <button
             key={status}
-            onClick={() => setActiveTab(status)}
-            className={`px-4 py-2 rounded-lg font-medium shadow ${activeTab === status
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+            onClick={() => {
+              setActiveTab(status);
+              setCurrentPage(1); // Reset page when tab changes
+            }}
+            className={`px-4 py-2 rounded-lg font-medium shadow ${
+              activeTab === status
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
@@ -103,105 +81,57 @@ const SuperCompanyManage = () => {
       {filteredCompanies.length === 0 ? (
         <p className="text-center text-gray-500">No {activeTab} companies found.</p>
       ) : (
-        <div className="overflow-x-auto shadow border rounded-xl">
-          <table className="min-w-full bg-white text-sm">
-            <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-left">
-              <tr>
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Email</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCompanies.map((company, idx) => (
-                <tr key={company._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-6 py-4 font-medium text-left">{company.name}</td>
-                  <td className="px-6 py-4 text-left">{company.email}</td>
-                  <td className="px-6 py-4 text-left">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[company.status]}`}>
-                      {company.status.toUpperCase()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-left space-x-2">
-                    <button
-                      onClick={() => openCompanyModal(company._id, 'view')}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => openCompanyModal(company._id, 'edit')}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-xs"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(company._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
-                    >
-                      Delete
-                    </button>
-                  </td>
+        <>
+          <div className="overflow-x-auto shadow border rounded-xl">
+            <table className="min-w-full bg-white text-sm">
+              <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-left">
+                <tr>
+                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Email</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {paginatedCompanies.map((company, idx) => (
+                  <tr key={company._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-6 py-4 font-medium text-left">{company.name}</td>
+                    <td className="px-6 py-4 text-left">{company.email}</td>
+                    <td className="px-6 py-4 text-left">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[company.status]}`}
+                      >
+                        {company.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-left space-x-2">
+                      <button
+                        onClick={() => navigate(`/superadmin/view-company/${company._id}`)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+                      >
+                        View
+                      </button>
 
-      {/* Modal for View/Edit */}
-      {selectedCompany && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-bold mb-4">
-              {modalMode === 'view' ? 'View Company' : 'Edit Company'}
-            </h3>
-            <div className="space-y-3">
-              <input
-                className="w-full border p-2 rounded"
-                type="text"
-                placeholder="Name"
-                value={editForm.name}
-                readOnly={modalMode === 'view'}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-              />
-              <input
-                className="w-full border p-2 rounded"
-                type="email"
-                placeholder="Email"
-                value={editForm.email}
-                readOnly={modalMode === 'view'}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-              />
-              {modalMode === 'edit' && (
-                <input
-                  className="w-full border p-2 rounded"
-                  type="password"
-                  placeholder="New Password (optional)"
-                  value={editForm.password}
-                  onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                />
-              )}
-            </div>
-            <div className="mt-4 flex justify-end gap-3">
-              <button
-                onClick={() => setSelectedCompany(null)}
-                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-              >
-                Close
-              </button>
-              {modalMode === 'edit' && (
-                <button
-                  onClick={handleEdit}
-                  className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-                >
-                  Save
-                </button>
-              )}
-            </div>
+                      <button
+                        onClick={() => handleDelete(company._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+
+          {/* Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </>
       )}
     </div>
   );

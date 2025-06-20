@@ -5,11 +5,12 @@ import { toast } from 'react-toastify';
 import { useUser } from '../../contexts/UserContext';
 
 const ApplyButton = ({ jobId, jobTitle, applications }) => {
+  //console.log(applications)
   const [openModal, setOpenModal] = useState(false);
   const [cvs, setCvs] = useState([]);
   const [selectedURL, setSelectedURL] = useState(null);
   const { user } = useUser();
-  console.log(user, applications);
+  
 
   const fetchCVs = async () => {
     try {

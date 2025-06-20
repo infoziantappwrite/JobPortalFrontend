@@ -1,159 +1,155 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
+import { FiSearch, FiMapPin, FiBriefcase, } from 'react-icons/fi';
 
-export default function ApprovedAdmins() {
-  const [admins, setAdmins] = useState([]);
-  const [editId, setEditId] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', email: '', password: '' });
-  const [loading, setLoading] = useState(false);
+import CompanyGrid from '../components/CompanyGrid';
 
-  const token = localStorage.getItem('token');
+const Companies = () => {
+  const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [filters, setFilters] = useState({ keyword: '', location: '', category: '', size: '', founded: [1990, 2025] });
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAdmins();
+    const fetchCompanies = async () => {
+      try {
+        const res = await apiClient.get('/common/company/all');
+        const all = res.data?.companies || [];
+        setCompanies(all);
+        setFilteredCompanies(all);
+      } catch (err) {
+        console.error('Failed to fetch companies', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompanies();
   }, []);
 
-  const fetchAdmins = async () => {
-    try {
-      const res = await apiClient.get('/admins', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setAdmins(res.data.admins);
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to fetch admins');
-    }
-  };
-
-  const handleEditClick = (admin) => {
-    setEditId(admin._id);
-    setEditForm({
-      name: admin.name,
-      email: admin.email,
-      password: '', // leave password blank initially
+  useEffect(() => {
+    let filtered = [...companies];
+    if (filters.keyword)
+      filtered = filtered.filter(c => c.name?.toLowerCase().includes(filters.keyword.toLowerCase()));
+    if (filters.location)
+      filtered = filtered.filter(c => c.location?.toLowerCase().includes(filters.location.toLowerCase()));
+    if (filters.category)
+      filtered = filtered.filter(c => c.categories?.includes(filters.category));
+    if (filters.size)
+      filtered = filtered.filter(c => c.teamSize === filters.size);
+    filtered = filtered.filter(c => {
+      const year = c.since ? new Date(c.since).getFullYear() : 2000;
+      return year >= filters.founded[0] && year <= filters.founded[1];
     });
+    setFilteredCompanies(filtered);
+  }, [filters, companies]);
+
+  const formatName = name => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+  const handleClick = (c) => {
+    navigate(`/company/${formatName(c.name)}?id=${c.userID}`);
   };
 
-  const handleEditSubmit = async () => {
-    if (!editForm.name.trim() || !editForm.email.trim()) {
-      toast.error('Name and Email are required');
-      return;
-    }
+ return (
+  <div className="bg-blue-50 min-h-screen py-10 px-4 md:px-10">
+    {/* Header */}
+    <div className="pb-10 text-center">
+      <h2 className="text-3xl font-bold text-blue-800">
+        🌐 Explore Top Companies
+      </h2>
+      <div className="w-28 h-1 bg-gradient-to-r from-teal-400 via-blue-500 to-indigo-500 mx-auto mt-4 rounded-full shadow-sm" />
+    </div>
 
-    try {
-      setLoading(true);
-      const payload = { ...editForm };
-      if (!payload.password) delete payload.password;
+    {/* Main Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      {/* Filters */}
+      <div className="bg-white p-6 rounded-2xl shadow-md border border-blue-200 space-y-6">
+        <h3 className="text-xl font-semibold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-600 flex items-center justify-center gap-2">
+          Filter Companies
+        </h3>
 
-      await axios.put(`/api/admins/${editId}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        <FilterInput
+          label="Search by Keyword"
+          icon={<FiSearch className="text-blue-600" />}
+          onChange={val => setFilters({ ...filters, keyword: val })}
+        />
 
-      toast.success('Admin updated');
-      setEditId(null);
-      fetchAdmins();
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to update admin');
-    } finally {
-      setLoading(false);
-    }
-  };
+        <FilterInput
+          label="Location"
+          icon={<FiMapPin className="text-blue-600" />}
+          onChange={val => setFilters({ ...filters, location: val })}
+        />
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this admin?')) return;
+        <FilterSelect
+          label="Category"
+          options={[...new Set(companies.flatMap(c => c.categories || []))]}
+          onChange={val => setFilters({ ...filters, category: val })}
+        />
 
-    try {
-      await axios.delete(`/api/admins/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success('Admin deleted');
-      fetchAdmins();
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to delete admin');
-    }
-  };
+        <FilterSelect
+          label="Company Size"
+          options={[...new Set(companies.map(c => c.teamSize).filter(Boolean))]}
+          onChange={val => setFilters({ ...filters, size: val })}
+        />
 
-  return (
-    <div className="max-w-4xl mx-auto mt-6">
-      <h2 className="text-2xl font-bold mb-4">Approved Admins</h2>
-      <div className="bg-white shadow-md rounded p-4 space-y-4">
-        {admins.length === 0 ? (
-          <p>No approved admins found.</p>
+        <div>
+          <label className="block text-sm font-semibold mb-1 text-gray-700">Founded Year Range</label>
+          <input
+            type="range"
+            min="1990"
+            max="2025"
+            value={filters.founded[1]}
+            onChange={(e) => setFilters({ ...filters, founded: [1990, parseInt(e.target.value)] })}
+            className="w-full accent-blue-500"
+          />
+          <div className="text-xs text-gray-600 mt-1 text-center">{filters.founded[0]} - {filters.founded[1]}</div>
+        </div>
+      </div>
+
+      {/* Company Results */}
+      <div className="md:col-span-3">
+        {loading ? (
+          <p className="text-center text-indigo-600 font-medium">Loading companies...</p>
         ) : (
-          admins.map((admin) => (
-            <div key={admin._id} className="border p-4 rounded shadow-sm">
-              {editId === admin._id ? (
-                <>
-                  <div className="flex flex-col gap-2 mb-2">
-                    <label className="text-sm font-semibold">Name</label>
-                    <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="border p-2 rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 mb-2">
-                    <label className="text-sm font-semibold">Email</label>
-                    <input
-                      type="email"
-                      value={editForm.email}
-                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      className="border p-2 rounded"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 mb-4">
-                    <label className="text-sm font-semibold">New Password</label>
-                    <input
-                      type="password"
-                      value={editForm.password}
-                      onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                      className="border p-2 rounded"
-                      placeholder="Leave blank to keep current password"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      className="bg-blue-500 text-white px-4 py-1 rounded"
-                      onClick={handleEditSubmit}
-                      disabled={loading}
-                    >
-                      {loading ? 'Saving...' : 'Save'}
-                    </button>
-                    <button
-                      className="bg-gray-500 text-white px-4 py-1 rounded"
-                      onClick={() => setEditId(null)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p><strong>Name:</strong> {admin.name}</p>
-                  <p><strong>Email:</strong> {admin.email}</p>
-                  <p><strong>Joined:</strong> {new Date(admin.createdAt).toLocaleDateString()}</p>
-                  <div className="flex gap-3 mt-3">
-                    <button
-                      className="bg-yellow-500 text-white px-4 py-1 rounded"
-                      onClick={() => handleEditClick(admin)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-600 text-white px-4 py-1 rounded"
-                      onClick={() => handleDelete(admin._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))
+          <CompanyGrid companies={filteredCompanies} handleClick={handleClick} />
         )}
       </div>
     </div>
-  );
-}
+  </div>
+);
+
+};
+
+const FilterInput = ({ label, icon, onChange }) => (
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+    <div className="flex items-center gap-2 border rounded-md px-3 py-2 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-400">
+      {icon}
+      <input
+        type="text"
+        className="w-full outline-none text-sm text-gray-700"
+        onChange={e => onChange(e.target.value)}
+      />
+    </div>
+  </div>
+);
+
+const FilterSelect = ({ label, options, onChange }) => (
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+    <select
+      className="w-full border rounded-md px-3 py-2 bg-white shadow-sm text-sm text-gray-700"
+      onChange={e => onChange(e.target.value)}
+    >
+      <option value="">All</option>
+      {options.map(opt => (
+        <option key={opt} value={opt}>{opt}</option>
+      ))}
+    </select>
+  </div>
+);
+
+
+
+export default Companies;

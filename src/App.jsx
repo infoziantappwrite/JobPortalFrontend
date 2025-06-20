@@ -52,6 +52,10 @@ import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateVie
 // Company Details
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
+import Dashboard from './pages/CompanyProfileSection/Dashboard';
+import CompanyDetails from './pages/CompanyDetails';
+import SuperCompanyViewPage from './pages/SuperAdminViewPage/SuperCompanyViewPage';
+import CandidateDashboard from './candidate/CandidateDashboard';
 
 
 function App() {
@@ -113,6 +117,8 @@ function App() {
           <Route path="/jobs" element={<AllJobs />} />
           <Route path="/job/:slug" element={<Job />}/>
           <Route path="/companies" element={<Companies />} />
+          <Route path="/company/:companyName" element={<CompanyDetails />} />
+
 
 
           {/* Employee Routes */}
@@ -145,7 +151,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="dashboard" element={<div>Admin Dashboard</div>} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobList />} />
@@ -173,6 +179,8 @@ function App() {
             <Route path="manage-employee" element={<SuperEmployeeManage />} />
             <Route path="manage-candidate" element={<SuperCandidateManage />} />
             <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
+            <Route path="/superadmin/view-company/:id" element={<SuperCompanyViewPage />} />
+
           </Route>
           {/*superadmin Routes end*/}
 
@@ -185,7 +193,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="dashboard" element={<div>candidate Dashboard</div>} />
+            <Route path="dashboard" element={<CandidateDashboard/>} />
             <Route path="jobs" element={<Jobalerts />} />
             <Route path="resume" element={<Myresume />} />
             <Route path='jobdetails' element={<JobDetails />}/>
@@ -212,6 +220,7 @@ function App() {
           </Route>
 
           <Route path="/company/profileview" element={<ProfileSidebar />}>
+           <Route index element={<CompanyProfileView />} />
             <Route path="myprofile" element={<CompanyProfileView />} />
             <Route path="editprofile" element={<CompanyEditProfile />} />
             <Route path="changepassword" element={<ChangePass />} />
@@ -252,7 +261,7 @@ function App() {
           {/* Add PostJob page route if you have one */}
         </Routes>
       </div>
-      <Footer />
+     
       <ToastContainer
         position="top-right"
         autoClose={3000}

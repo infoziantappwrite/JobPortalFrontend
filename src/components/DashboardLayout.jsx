@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { FiUser, FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare } from 'react-icons/fi';
+import { FiUser, FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiList, FiClipboard, FiHome, FiShield, FiSettings  } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
+import DFooter from './DFooter';
 
 
 import { useUser } from '../contexts/UserContext';
@@ -36,12 +37,13 @@ const DashboardLayout = () => {
 
     ],
     superadmin: [
-      { key: 'company', label: 'SuperAdmin Profile', icon: <FiUser />, path: '/superadmin/profile' },
-      { key: 'add', label: 'Approve Companies', icon: <FiUsers />, path: '/superadmin/approve-companies' },
-      { key: 'manage', label: 'Manage Companies', icon: <FiUsers />, path: '/superadmin/manage-companies' },
-      { key: 'manageEmployee', label: 'Manage Employee', icon: <FiUser />, path: '/superadmin/manage-employee' },
-      { key: 'manageCandidate', label: 'Manage Candidate', icon: <FiUser />, path: '/superadmin/manage-candidate' }
+      {key: 'company',label: 'SuperAdmin Profile',icon: <FiShield />,path: '/superadmin/profile',},
+      {key: 'add',label: 'Approve Companies',icon: <FiUserCheck />,path: '/superadmin/approve-companies',},
+      {key: 'manage',label: 'Manage Companies',icon: <FiBriefcase />,path: '/superadmin/manage-companies',},
+      {key: 'manageEmployee',label: 'Manage Employee',icon: <FiSettings  />,path: '/superadmin/manage-employee',},
+      {key: 'manageCandidate',label: 'Manage Candidate',icon: <FiUsers />,path: '/superadmin/manage-candidate',},
     ],
+
     company: [
       { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
       { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/company/post-job' },
@@ -50,6 +52,7 @@ const DashboardLayout = () => {
       { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/company/create-employees' },
       { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
       { key: 'approve', label: 'Approve Employees', icon: <FiUserCheck />, path: '/company/approve-employees' },
+
     ],
     employee: [
       { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },
@@ -183,6 +186,7 @@ const DashboardLayout = () => {
             </div>
           </div>
         </div>
+        <DFooter></DFooter>
       </div>
     </div>
   );

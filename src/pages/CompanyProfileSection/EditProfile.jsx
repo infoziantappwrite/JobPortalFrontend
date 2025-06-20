@@ -1,13 +1,16 @@
+// your existing imports
 import React, { useEffect, useState } from 'react';
 import apiClient from '../../api/apiClient';
 import {
   FiMail, FiPhone, FiGlobe, FiMapPin, FiBriefcase, FiCalendar,
-  FiSave, FiFacebook, FiLinkedin, FiTwitter, FiUser, FiImage, FiEdit3
+  FiSave, FiFacebook, FiLinkedin, FiTwitter, FiUser, FiEdit3, FiImage,
+  FiLink
 } from 'react-icons/fi';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// options
 const teamSizeOptions = [
   { value: '1-10', label: '1-10' },
   { value: '11-50', label: '11-50' },
@@ -39,26 +42,39 @@ const EditCompanyProfile = () => {
   const [form, setForm] = useState({});
   const [socials, setSocials] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isNewProfile, setIsNewProfile] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await apiClient.get('/company/info');
-        const data = res.data.companyInfo;
+  const fetchProfile = async () => {
+    try {
+      const res = await apiClient.get('/company/info');
+      const data = res.data.companyInfo;
+
+      if (data) {
         setForm(data);
         setSocials(data.socials || {});
-      } catch (err) {
-        toast.error('Error loading company profile');
-      } finally {
-        setLoading(false);
+        setIsNewProfile(false); // Existing profile
       }
-    };
-    fetchProfile();
-  }, []);
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        console.info("✅ No profile found. Ready to create a new one.");
+        setIsNewProfile(true);
+        setForm({}); // Start fresh
+        setSocials({});
+      } else {
+        console.error("❌ Error fetching company profile:", err);
+        setError('Failed to fetch company profile. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name.startsWith('socials.')) {
       const key = name.split('.')[1];
       setSocials((prev) => ({ ...prev, [key]: value }));
@@ -70,10 +86,16 @@ const EditCompanyProfile = () => {
   const handleSave = async () => {
     try {
       const updated = { ...form, socials };
-      await apiClient.put('/company/info', updated);
-      toast.success('Company profile updated successfully!');
+      if (isNewProfile) {
+        await apiClient.post('/company/info', updated);
+        toast.success('Company profile created successfully!');
+        setIsNewProfile(false);
+      } else {
+        await apiClient.put('/company/info', updated);
+        toast.success('Company profile updated successfully!');
+      }
     } catch (err) {
-      toast.error('Failed to update profile');
+      toast.error('Failed to save profile');
     }
   };
 
@@ -92,8 +114,6 @@ const EditCompanyProfile = () => {
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
-
   const renderInput = (label, name, icon, value, type = 'text') => (
     <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
       <div className="text-indigo-500 mt-1">{icon}</div>
@@ -110,9 +130,12 @@ const EditCompanyProfile = () => {
     </div>
   );
 
+  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center p-5">
       <div className="w-full max-w-5xl bg-white p-10 rounded-2xl shadow-xl space-y-10">
+        {/* Header */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <img
@@ -134,9 +157,36 @@ const EditCompanyProfile = () => {
           </button>
         </div>
 
+        {/* Upload Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 mb-2 text-indigo-600 font-semibold">
+              <FiImage className="text-xl" />
+              Upload Company Logo
+            </div>
+            <input type="file" name="companyLogo" onChange={handleImageUpload} />
+          </div>
+
+          <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 mb-2 text-indigo-600 font-semibold">
+              <FiImage className="text-xl" />
+              Upload Cover Image
+            </div>
+            <input type="file" name="coverImage" onChange={handleImageUpload} />
+          </div>
+        </div>
+
+        {/* Input Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {renderInput('Company Name', 'name', <FiUser />, form.name)}
-          {renderInput('Email', 'email', <FiMail />, form.email)}
+          <div className="flex flex-col gap-1">
+            {renderInput('Company Name', 'name', <FiUser />, form.name)}
+            <p className="text-xs text-indigo-500 italic ml-10">This information is visible publicly.</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            {renderInput('Email', 'email', <FiMail />, form.email)}
+            <p className="text-xs text-indigo-500 italic ml-10">This information is visible publicly.</p>
+          </div>
+
           {renderInput('Phone', 'phone', <FiPhone />, form.phone)}
           {renderInput('Website', 'website', <FiGlobe />, form.website)}
           {renderInput('Location', 'location', <FiMapPin />, form.location)}
@@ -169,6 +219,7 @@ const EditCompanyProfile = () => {
             </div>
           </div>
 
+          {/* Team Size & Categories */}
           <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
             <div className="text-indigo-500 mt-1"><FiUser /></div>
             <div className="w-full">
@@ -182,32 +233,33 @@ const EditCompanyProfile = () => {
             </div>
           </div>
 
-          <div className="md:col-span-2">
-            <p className="text-sm text-gray-600 mb-1">Categories</p>
-            <Select
-              isMulti
-              options={categoryOptions}
-              value={(form.categories || []).map(cat => ({ value: cat, label: cat }))}
-              onChange={(selected) =>
-                setForm((prev) => ({
-                  ...prev,
-                  categories: selected.map(opt => opt.value),
-                }))
-              }
-            />
+          <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
+            <div className="text-indigo-500 mt-1"><FiBriefcase /></div>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">Categories</p>
+              <Select
+                isMulti
+                options={categoryOptions}
+                value={(form.categories || []).map(cat => ({ value: cat, label: cat }))}
+                onChange={(selected) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    categories: selected.map(opt => opt.value),
+                  }))
+                }
+              />
+            </div>
           </div>
 
-          {/* Social Links */}
-          {renderInput('Facebook', 'socials.facebook', <FiFacebook />, socials.facebook)}
-          {renderInput('LinkedIn', 'socials.linkedIn', <FiLinkedin />, socials.linkedIn)}
-          {renderInput('Twitter', 'socials.twitter', <FiTwitter />, socials.twitter)}
-
-          {/* Uploads */}
-          <div className="col-span-2">
-            <p className="text-sm text-gray-600">Company Logo</p>
-            <input type="file" name="companyLogo" onChange={handleImageUpload} className="mb-4" />
-            <p className="text-sm text-gray-600">Cover Image</p>
-            <input type="file" name="coverImage" onChange={handleImageUpload} />
+          {/* Social Links Section */}
+          <div className="md:col-span-2 mt-6">
+            <h3 className="text-lg font-semibold text-indigo-700 mb-3">Social Links</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {renderInput('Facebook', 'socials.facebook', <FiFacebook />, socials.facebook)}
+              {renderInput('LinkedIn', 'socials.linkedIn', <FiLinkedin />, socials.linkedIn)}
+              {renderInput('Twitter', 'socials.twitter', <FiTwitter />, socials.twitter)}
+             {renderInput('Google Plus', 'socials.googlePlus', <FiLink />, socials.googlePlus)}
+            </div>
           </div>
         </div>
       </div>

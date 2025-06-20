@@ -40,7 +40,7 @@ const ViewProfile = () => {
   if (loading) return <p className="text-center mt-10">Loading profile...</p>;
   if (error) return <p className="text-red-600 text-center">{error}</p>;
   if (!profile) return <p className="text-center">No profile data found.</p>;
-  console.log(profile)
+  //console.log(profile)
 
   const Section = ({ title, fields }) => (
     <div className="space-y-4">
