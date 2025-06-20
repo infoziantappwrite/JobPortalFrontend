@@ -26,6 +26,7 @@ import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
 import ShortlistedJobs from './pages/ShortlistedJobs';
+import ApplicantActions from './pages/ApplicantActions';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
@@ -139,6 +140,7 @@ function App() {
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
+            <Route path="applicant-actions" element={<ApplicantActions />} />
           </Route>
           {/* Employee Routes end */}
 
