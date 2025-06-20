@@ -1,14 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
-import { FiEye, FiUsers } from 'react-icons/fi';
-import { CheckCircle, X } from 'lucide-react';
-import { ToastContainer } from 'react-toastify';
+import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  ThumbsUp,
+  BadgeCheck,
+  X
+} from 'lucide-react';
+
 
 const bgColors = [
   'bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-yellow-500',
   'bg-indigo-500', 'bg-pink-500', 'bg-purple-500', 'bg-orange-500'
 ];
+
+const statusColors = {
+  applied: 'text-gray-600',
+  shortlisted: 'text-green-600',
+  interviewed: 'text-blue-600',
+  offered: 'text-purple-600',
+  rejected: 'text-red-600'
+};
+
+const statusIcons = {
+  applied: { icon: <Clock />, color: 'bg-gray-100 text-gray-700' },
+  shortlisted: { icon: <CheckCircle />, color: 'bg-green-100 text-green-700' },
+  interviewed: { icon: <BadgeCheck />, color: 'bg-blue-100 text-blue-700' },
+  offered: { icon: <ThumbsUp />, color: 'bg-purple-100 text-purple-700' },
+  rejected: { icon: <XCircle />, color: 'bg-red-100 text-red-700' },
+};
+
+const applicationStatus = Object.freeze({
+  APPLIED: "applied",
+  SHORTLISTED: "shortlisted",
+  INTERVIEWED: "interviewed",
+  OFFERED: "offered",
+  REJECTED: "rejected",
+});
 
 const getBgColor = (name) => {
   const index = name?.charCodeAt(0) % bgColors.length;
@@ -23,6 +55,12 @@ const ShortlistedCandidates = () => {
   const [error, setError] = useState('');
   const [loadingAppDetail, setLoadingAppDetail] = useState(false);
   const [errorAppDetail, setErrorAppDetail] = useState('');
+
+  // For status update modal:
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [updateError, setUpdateError] = useState('');
+  const [newStatus, setNewStatus] = useState('');
 
   useEffect(() => {
     const fetchShortlisted = async () => {
@@ -45,25 +83,83 @@ const ShortlistedCandidates = () => {
   };
 
   const openApplicantDetail = async (applicationID) => {
-  if (!selectedJob?.jobId) return;
-  setLoadingAppDetail(true);
-  try {
-    // Assuming you have an endpoint similar to Code2 that accepts applicationID and jobID to get details
-    const res = await apiClient.post('/employee/job/get-detail', {
-      IDs: [applicationID],
-      jobID: selectedJob.jobId,
-      type: 'jobApplication',
-    }, { withCredentials: true });
+    if (!selectedJob?.jobId) return;
+    setLoadingAppDetail(true);
+    try {
+      const res = await apiClient.post('/employee/job/get-detail', {
+        IDs: [applicationID],
+        jobID: selectedJob.jobId,
+        type: 'jobApplication',
+      }, { withCredentials: true });
 
-    // Adjust according to your response structure, here assuming jobApplications is the key
-    setSelectedApplication(res?.data?.jobApplications?.[0] || null);
-  } catch (err) {
-    setErrorAppDetail(err.response?.data?.error || 'Failed to load applicant detail.');
-  } finally {
-    setLoadingAppDetail(false);
-  }
-};
+      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
+    } catch (err) {
+      setErrorAppDetail(err.response?.data?.error || 'Failed to load applicant detail.');
+    } finally {
+      setLoadingAppDetail(false);
+    }
+  };
 
+  // Open status modal for an applicant
+  const openStatusModal = (application) => {
+    setSelectedApplication(application);
+    setNewStatus(application.status || applicationStatus.APPLIED);
+    setUpdateError('');
+    setStatusModalOpen(true);
+  };
+
+  // Update applicant status API call
+  const handleStatusUpdate = async () => {
+    if (!newStatus || !selectedJob?.jobId || !selectedApplication?.applicationID) return;
+    setUpdatingStatus(true);
+    setUpdateError('');
+    try {
+      const res = await apiClient.post(
+        '/employee/job/applicant/shortlist',
+        {
+          jobID: selectedJob.jobId,
+          applicantID: selectedApplication.candidateID?._id || selectedApplication.candidateID || selectedApplication._id,
+          customStatus: newStatus,
+        },
+        { withCredentials: true }
+      );
+
+      // Update the local applicant status in selectedJob applicants and selectedApplication
+      setSelectedJob(prevJob => {
+        if (!prevJob) return prevJob;
+        const updatedApplicants = prevJob.applicants.map(applicant => {
+          if (applicant.applicationID === selectedApplication.applicationID) {
+            return { ...applicant, status: newStatus };
+          }
+          return applicant;
+        });
+        return { ...prevJob, applicants: updatedApplicants };
+      });
+
+      setSelectedApplication(prev => prev ? { ...prev, status: newStatus } : prev);
+
+      // Also update the jobs array state so it persists if user goes back
+      setJobs(prevJobs => prevJobs.map(job => {
+        if (job.jobId === selectedJob.jobId) {
+          const updatedApplicants = job.applicants.map(applicant => {
+            if (applicant.applicationID === selectedApplication.applicationID) {
+              return { ...applicant, status: newStatus };
+            }
+            return applicant;
+          });
+          return { ...job, applicants: updatedApplicants };
+        }
+        return job;
+      }));
+
+      toast.success(`Applicant status set to '${newStatus}' successfully.`);
+      setStatusModalOpen(false);
+    } catch (err) {
+      setUpdateError(err.response?.data?.error || 'Failed to update status.');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -114,7 +210,7 @@ const ShortlistedCandidates = () => {
             <h3 className="text-xl font-semibold text-gray-800">
               Shortlisted for <span className="text-indigo-600">{selectedJob.title}</span>
             </h3>
-            <button onClick={() => setSelectedJob(null)} className="text-gray-500 hover:text-black">
+            <button onClick={() => setSelectedJob(null)} className="text-gray-500 hover:text-black" aria-label="Close Job View">
               <X />
             </button>
           </div>
@@ -127,6 +223,7 @@ const ShortlistedCandidates = () => {
                 const name = applicant.candidateID?.name || 'Applicant';
                 const email = applicant.candidateID?.email || '';
                 const initial = name.charAt(0).toUpperCase();
+                const status = applicant.status || applicationStatus.APPLIED;
 
                 return (
                   <div
@@ -138,17 +235,42 @@ const ShortlistedCandidates = () => {
                     </div>
                     <h4 className="text-center font-semibold text-base text-gray-800 mt-2">{name}</h4>
                     <p className="text-sm text-center text-gray-500">{email}</p>
+
+                    {/* Status display */}
+                    <p
+                      className={`text-center mt-1 font-semibold ${statusColors[status] || 'text-gray-600'}`}
+                      title={`Status: ${status}`}
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </p>
+
                     <div className="flex justify-center gap-3 mt-3">
                       <button
                         onClick={() => openApplicantDetail(applicant.applicationID)}
                         className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
-                        title="View"
+                        title="View Details"
                       >
                         <FiEye />
                       </button>
-                      <span className="p-2 bg-green-100 rounded text-green-700" title="Shortlisted">
-                        <CheckCircle />
-                      </span>
+
+                      <button
+                        onClick={() => openStatusModal(applicant)}
+                        className="p-2 bg-yellow-100 rounded hover:bg-yellow-200 text-yellow-700"
+                        title="Change Status"
+                      >
+                        <FiEdit className="h-5 w-5" />
+                      </button>
+
+
+                      {(() => {
+                        const iconData = statusIcons[status] || statusIcons.applied;
+                        return (
+                          <span className={`p-2 rounded ${iconData.color}`} title={status}>
+                            {iconData.icon}
+                          </span>
+                        );
+                      })()}
+
                     </div>
                   </div>
                 );
@@ -158,80 +280,109 @@ const ShortlistedCandidates = () => {
         </div>
       )}
 
-      {selectedApplication && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
-                <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border border-gray-200">
-                  <button
-                    onClick={() => setSelectedApplication(null)}
-                    className="absolute top-3 right-3 text-gray-600 hover:text-black"
-                    aria-label="Close"
-                  >
-                    <X size={20} />
-                  </button>
-      
-                  {loadingAppDetail ? (
-                    <p className="text-center text-gray-600">Loading...</p>
-                  ) : errorAppDetail ? (
-                    <p className="text-center text-red-500">{errorAppDetail}</p>
-                  ) : (
-                    <>
-                      <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
-      
-                      {/* Applicant Info */}
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
-                        <div className="text-sm text-gray-700 space-y-1">
-                          <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
-                          <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
-                          <p><strong>Status:</strong> 
-                            <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
-                              {selectedApplication.status}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-      
-                      {/* Job Info */}
-                      <div className="mb-4 border-t pt-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
-                        <div className="text-sm text-gray-700 space-y-1">
-                          <p><strong>Title:</strong> {selectedApplication.jobID?.title}</p>
-                          <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
-                          <p><strong>Location:</strong> {selectedApplication.jobID?.location}, {selectedApplication.jobID?.city}, {selectedApplication.jobID?.country}</p>
-                          <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
-                          <p><strong>Posted At:</strong> {new Date(selectedApplication.jobID?.createdAt).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-      
-                      {/* Resume */}
-                      <div className="mb-6 border-t pt-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
-                        <a
-                          href={selectedApplication.resumeURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          View Resume PDF
-                        </a>
-                      </div>
-      
-                      {/* Shortlist Button */}
-                      {selectedApplication.status !== 'shortlisted' && (
-                        <button
-                          onClick={() => handleShortlist(selectedApplication, selectedJob._id)}
-                          disabled={shortlisting}
-                          className="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
-                        >
-                          {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
-                        </button>
-                      )}
-                    </>
-                  )}
+      {/* Applicant Detail Modal */}
+      {selectedApplication && !statusModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border border-gray-200">
+            <button
+              onClick={() => setSelectedApplication(null)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+              aria-label="Close Details"
+            >
+              <X size={20} />
+            </button>
+
+            {loadingAppDetail ? (
+              <p className="text-center text-gray-600">Loading...</p>
+            ) : errorAppDetail ? (
+              <p className="text-center text-red-500">{errorAppDetail}</p>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
+
+                {/* Applicant Info */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
+                    <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
+                    <p><strong>Status:</strong> 
+                      <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
+                        {selectedApplication.status}
+                      </span>
+                    </p>
+                  </div>
                 </div>
-              </div>
-      
+
+                {/* Job Info */}
+                <div className="mb-4 border-t pt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p><strong>Title:</strong> {selectedApplication.jobID?.title}</p>
+                    <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
+                    <p><strong>Location:</strong> {selectedApplication.jobID?.location}, {selectedApplication.jobID?.city}, {selectedApplication.jobID?.country}</p>
+                    <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
+                    <p><strong>Posted At:</strong> {new Date(selectedApplication.jobID?.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                {/* Resume */}
+                <div className="mb-6 border-t pt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
+                  <a
+                    href={selectedApplication.resumeURL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View Resume PDF
+                  </a>
+                </div>
+              </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Status Change Modal */}
+      {statusModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex justify-center items-center px-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative border border-gray-200">
+            <button
+              onClick={() => setStatusModalOpen(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+              aria-label="Close Status Modal"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-semibold mb-4">Change Applicant Status</h2>
+
+            {updateError && (
+              <p className="text-red-500 mb-3 text-sm">{updateError}</p>
+            )}
+
+            <select
+              className="w-full p-2 border rounded mb-4"
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value)}
+            >
+              {Object.entries(applicationStatus).map(([key, value]) => (
+                <option key={value} value={value}>
+                  {value.charAt(0).toUpperCase() + value.slice(1)}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={handleStatusUpdate}
+              disabled={updatingStatus}
+              className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            >
+              {updatingStatus ? 'Updating...' : 'Update Status'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
