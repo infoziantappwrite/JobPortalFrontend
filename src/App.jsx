@@ -25,7 +25,7 @@ import AppliedJobs from './candidate/jobs/AppliedJobs';
 import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
-import ShortlistedJobs from './pages/ShortlistedJobs';
+import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
 import ApplicantActions from './pages/ApplicantActions';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
