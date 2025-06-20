@@ -55,7 +55,7 @@ const DashboardLayout = () => {
       { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/employee/post-job' },
       { key: 'manage-jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/employee/manage-jobs' },
       { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/employee/applicants' },
-      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/employee/shortlisted' },
+      { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/employee/shortlisted' },
     ]
   };
 
