@@ -106,14 +106,6 @@ function App() {
             }
           />
 
-
-
-
-
-
-
-
-
           <Route path="/verify-success" element={<VerifySuccess />} />
           <Route path="/verify-failed" element={<VerifyFailed />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
@@ -155,6 +147,7 @@ function App() {
           >
             <Route path="dashboard" element={<div>Admin Dashboard</div>} />
             <Route path="manage-employees" element={<EmployeeList />} />
+            <Route path="post-job" element={<PostJob />} />
             <Route path="view-jobs" element={<Jobalerts />} />
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path='jobdetails' element={<JobDetails />}/>
