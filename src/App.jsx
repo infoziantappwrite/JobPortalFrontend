@@ -53,6 +53,7 @@ import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
 import Dashboard from './pages/CompanyProfileSection/Dashboard';
 import CompanyDetails from './pages/CompanyDetails';
+import SuperCompanyViewPage from './pages/SuperAdminViewPage/SuperCompanyViewPage';
 import CandidateDashboard from './candidate/CandidateDashboard';
 
 
@@ -183,6 +184,8 @@ function App() {
             <Route path="manage-employee" element={<SuperEmployeeManage />} />
             <Route path="manage-candidate" element={<SuperCandidateManage />} />
             <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
+            <Route path="/superadmin/view-company/:id" element={<SuperCompanyViewPage />} />
+
           </Route>
           {/*superadmin Routes end*/}
 
