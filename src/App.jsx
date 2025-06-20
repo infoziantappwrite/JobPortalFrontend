@@ -26,6 +26,7 @@ import Shortlisted from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
 import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
+import ApplicantActions from './pages/ApplicantActions';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
@@ -109,14 +110,6 @@ function App() {
             }
           />
 
-
-
-
-
-
-
-
-
           <Route path="/verify-success" element={<VerifySuccess />} />
           <Route path="/verify-failed" element={<VerifyFailed />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
@@ -145,6 +138,7 @@ function App() {
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
+            <Route path="applicant-actions" element={<ApplicantActions />} />
           </Route>
           {/* Employee Routes end */}
 
@@ -159,7 +153,8 @@ function App() {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-employees" element={<EmployeeList />} />
-            <Route path="view-jobs" element={<Jobalerts />} />
+            <Route path="post-job" element={<PostJob />} />
+            <Route path="manage-jobs" element={<JobList />} />
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicants" element={<Applicants />} />

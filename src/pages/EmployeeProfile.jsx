@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  FiUser, FiMail, FiBriefcase, FiCalendar
+  FiUser,
+  FiMail,
+  FiBriefcase,
+  FiCalendar,
+  FiXCircle,
 } from 'react-icons/fi';
 import { useUser } from '../contexts/UserContext';
 
@@ -22,9 +26,22 @@ const EmployeeProfile = () => {
     }
   }, [user]);
 
-  if (loading) return <p className="text-center mt-10 text-sm text-gray-600">Loading profile...</p>;
-  if (error) return <p className="text-red-600 text-center text-sm">{error}</p>;
-  if (!userInfo) return <p className="text-center text-sm">No user data found.</p>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center">
+        <p className="text-sm text-gray-600">Loading profile...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-red-600 text-sm">
+          <FiXCircle />
+          {error}
+        </div>
+      </div>
+    );
 
   const fields = [
     { label: 'Name', value: userInfo.name, icon: <FiUser /> },
@@ -34,31 +51,44 @@ const EmployeeProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-200/30 via-white to-indigo-200/30 flex items-center justify-center p-6">
-      <div className="w-full max-w-3xl bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-xl space-y-8 border border-indigo-100">
-        <div className="text-center">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-start justify-center p-5">
+      <div className="w-full max-w-lg bg-white p-8 rounded-2xl shadow-xl mt-5 space-y-6">
+        <div className="flex flex-col items-center space-y-3">
           <img
             src={defaultProfileImage}
             alt="User Avatar"
-            className="w-28 h-28 mx-auto rounded-full border-4 border-indigo-300 object-cover shadow-lg mb-4"
+            className="w-24 h-24 rounded-full border-4 border-indigo-300 object-cover shadow-md"
           />
-          <h2 className="text-2xl font-bold text-indigo-900">{userInfo.name}</h2>
-          <p className="text-sm text-indigo-700 font-medium capitalize mt-1">{userInfo.userType || 'N/A'}</p>
-          <p className="text-sm text-indigo-600">{userInfo.email}</p>
+          <div className="text-center">
+            <h3 className="text-xl font-semibold text-gray-900">
+              {userInfo.name}
+            </h3>
+            <p className="text-sm text-indigo-700 capitalize">
+              {userInfo.userType || 'N/A'}
+            </p>
+            <p className="text-sm text-gray-600">{userInfo.email}</p>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-indigo-700 border-b pb-1 border-indigo-300">Employee Details</h3>
+          <h3 className="flex items-center gap-2 text-lg font-medium text-gray-700 border-b pb-1 border-indigo-200">
+            <FiUser className="text-gray-600" />
+            Profile Details
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {fields.map(({ label, value, icon }) => (
               <div
                 key={label}
-                className="flex items-start gap-3 bg-indigo-100/60 p-4 rounded-xl shadow-sm hover:shadow-md transition-all border border-indigo-200"
+                className="flex items-start gap-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100 shadow-sm hover:shadow-md transition"
               >
-                <div className="text-indigo-600 text-xl mt-1">{icon}</div>
+                <div className="text-indigo-600 text-lg mt-1">{icon}</div>
                 <div>
-                  <p className="text-xs text-indigo-700 font-medium mb-1 uppercase tracking-wide">{label}</p>
-                  <p className="text-indigo-950 font-semibold break-words text-sm">{value || '-'}</p>
+                  <p className="text-xs text-indigo-700 font-medium uppercase tracking-wide">
+                    {label}
+                  </p>
+                  <p className="text-gray-800 font-semibold text-sm break-words">
+                    {value || '-'}
+                  </p>
                 </div>
               </div>
             ))}

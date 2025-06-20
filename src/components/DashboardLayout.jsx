@@ -45,10 +45,11 @@ const DashboardLayout = () => {
     ],
 
     company: [
-      { key: 'dashboard', label: 'Company Dashboard', icon: <FiHome />, path: '/company/dashboard' },
-      { key: 'viewJobs', label: 'View Jobs', icon: <FiClipboard />, path: '/company/view-jobs' },
-      { key: 'applicants', label: 'View Applicants', icon: <FiList />, path: '/company/applicants' },
-      { key: 'create', label: 'Create Employees', icon: <FiUserPlus />, path: '/company/create-employees' },
+      { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
+      { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/company/post-job' },
+      { key: 'Manage Jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/company/manage-jobs' },
+      { key: 'applicants', label: 'View Applicants', icon: <FiUsers />, path: '/company/applicants' },
+      { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/company/create-employees' },
       { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
       { key: 'approve', label: 'Approve Employees', icon: <FiUserCheck />, path: '/company/approve-employees' },
 
@@ -58,7 +59,8 @@ const DashboardLayout = () => {
       { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/employee/post-job' },
       { key: 'manage-jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/employee/manage-jobs' },
       { key: 'applicants', label: 'All Applicants', icon: <FiUsers />, path: '/employee/applicants' },
-      { key: 'shortlisted', label: 'Shortlisted Resumes', icon: <FiHeart />, path: '/employee/shortlisted' },
+      { key: 'applicantactions', label: 'Applicant Actions', icon: <FiUserCheck />, path: '/employee/applicant-actions' },
+      { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/employee/shortlisted' },
     ]
   };
 

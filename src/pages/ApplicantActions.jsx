@@ -47,7 +47,7 @@ const getBgColor = (name) => {
   return bgColors[index];
 };
 
-const ShortlistedCandidates = () => {
+const ApplicantActions = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -55,21 +55,23 @@ const ShortlistedCandidates = () => {
   const [error, setError] = useState('');
   const [loadingAppDetail, setLoadingAppDetail] = useState(false);
   const [errorAppDetail, setErrorAppDetail] = useState('');
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // For status update modal:
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
+  
 
   useEffect(() => {
     const fetchShortlisted = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/employee/job/applicant/shortlisted-applicants', { withCredentials: true });
-        setJobs(res.data.shortlistedApplicants || []);
+        const res = await apiClient.get('/employee/job/applicant/get-applicants', { withCredentials: true });
+        setJobs(res.data.jobs || []);
       } catch (err) {
-        setError(err.response?.data?.error || 'Failed to load shortlisted applicants.');
+        setError(err.response?.data?.error || 'Failed to load applicants.');
       } finally {
         setLoading(false);
       }
@@ -78,23 +80,34 @@ const ShortlistedCandidates = () => {
   }, []);
 
   const handleViewApplicants = (jobID) => {
-    const job = jobs.find(j => j.jobId === jobID);
+    const job = jobs.find(j => j._id === jobID);
     if (job) setSelectedJob(job);
   };
 
   const openApplicantDetail = async (applicationID) => {
-    if (!selectedJob?.jobId) return;
+    if (!selectedJob?._id || !applicationID) return;
     setLoadingAppDetail(true);
+    setErrorAppDetail('');
     try {
       const res = await apiClient.post('/employee/job/get-detail', {
         IDs: [applicationID],
-        jobID: selectedJob.jobId,
+        jobID: selectedJob._id,
         type: 'jobApplication',
       }, { withCredentials: true });
 
-      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
+      const application = res?.data?.jobApplications?.[0] || null;
+      if (!application) {
+        setErrorAppDetail('Application details not found.');
+        setSelectedApplication(null);
+        setIsDetailModalOpen(false);
+      } else {
+        setSelectedApplication(application);
+        setIsDetailModalOpen(true); // 👈 open modal
+      }
     } catch (err) {
       setErrorAppDetail(err.response?.data?.error || 'Failed to load applicant detail.');
+      setSelectedApplication(null);
+      setIsDetailModalOpen(false);
     } finally {
       setLoadingAppDetail(false);
     }
@@ -110,56 +123,65 @@ const ShortlistedCandidates = () => {
 
   // Update applicant status API call
   const handleStatusUpdate = async () => {
-    if (!newStatus || !selectedJob?.jobId || !selectedApplication?.applicationID) return;
-    setUpdatingStatus(true);
-    setUpdateError('');
-    try {
-      const res = await apiClient.post(
-        '/employee/job/applicant/shortlist',
-        {
-          jobID: selectedJob.jobId,
-          applicantID: selectedApplication.candidateID?._id || selectedApplication.candidateID || selectedApplication._id,
-          customStatus: newStatus,
-        },
-        { withCredentials: true }
-      );
+  if (!newStatus || !selectedJob?._id || !selectedApplication) return;
 
-      // Update the local applicant status in selectedJob applicants and selectedApplication
-      setSelectedJob(prevJob => {
-        if (!prevJob) return prevJob;
-        const updatedApplicants = prevJob.applicants.map(applicant => {
+  setUpdatingStatus(true);
+  setUpdateError('');
+
+  try {
+    const applicantID = selectedApplication.candidateID?._id || selectedApplication.candidateID || selectedApplication.applicationID || selectedApplication._id;
+    if (!applicantID) {
+      setUpdateError('Applicant ID not found.');
+      setUpdatingStatus(false);
+      return;
+    }
+
+    const res = await apiClient.post(
+      '/employee/job/applicant/shortlist',
+      {
+        jobID: selectedJob._id,
+        applicantID,
+        customStatus: newStatus,
+      },
+      { withCredentials: true }
+    );
+
+    // Update local state
+    setSelectedJob(prevJob => {
+      if (!prevJob) return prevJob;
+      const updatedApplicants = prevJob.applicants.map(applicant => {
+        if (applicant.applicationID === selectedApplication.applicationID) {
+          return { ...applicant, status: newStatus };
+        }
+        return applicant;
+      });
+      return { ...prevJob, applicants: updatedApplicants };
+    });
+
+    setJobs(prevJobs => prevJobs.map(job => {
+      if (job._id === selectedJob._id) {
+        const updatedApplicants = job.applicants.map(applicant => {
           if (applicant.applicationID === selectedApplication.applicationID) {
             return { ...applicant, status: newStatus };
           }
           return applicant;
         });
-        return { ...prevJob, applicants: updatedApplicants };
-      });
+        return { ...job, applicants: updatedApplicants };
+      }
+      return job;
+    }));
 
-      setSelectedApplication(prev => prev ? { ...prev, status: newStatus } : prev);
+    toast.success(`Applicant status set to '${newStatus}' successfully.`);
+    setSelectedApplication(null);
+    setStatusModalOpen(false);
 
-      // Also update the jobs array state so it persists if user goes back
-      setJobs(prevJobs => prevJobs.map(job => {
-        if (job.jobId === selectedJob.jobId) {
-          const updatedApplicants = job.applicants.map(applicant => {
-            if (applicant.applicationID === selectedApplication.applicationID) {
-              return { ...applicant, status: newStatus };
-            }
-            return applicant;
-          });
-          return { ...job, applicants: updatedApplicants };
-        }
-        return job;
-      }));
+  } catch (err) {
+    setUpdateError(err.response?.data?.error || 'Failed to update status.');
+  } finally {
+    setUpdatingStatus(false);
+  }
+};
 
-      toast.success(`Applicant status set to '${newStatus}' successfully.`);
-      setStatusModalOpen(false);
-    } catch (err) {
-      setUpdateError(err.response?.data?.error || 'Failed to update status.');
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -170,45 +192,48 @@ const ShortlistedCandidates = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
           <FiUsers className="text-indigo-600" />
-          Shortlisted Applicants
+           Applicant Actions
         </h2>
       </div>
 
       {!selectedJob ? (
         <div className="overflow-x-auto bg-white rounded-md shadow-md border">
           <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-              <tr>
-                <th className="text-left py-3 px-5 border-b">Title</th>
-                <th className="text-left py-3 px-5 border-b">Company</th>
-                <th className="text-left py-3 px-5 border-b">Shortlisted</th>
-                <th className="text-left py-3 px-5 border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm text-gray-800">
-              {jobs.map((job) => (
-                <tr key={job.jobId} className="hover:bg-gray-50 border-t">
-                  <td className="py-3 px-5">{job.title}</td>
-                  <td className="py-3 px-5">{job.company}</td>
-                  <td className="py-3 px-5">{job.applicants?.length || 0}</td>
-                  <td className="py-3 px-5">
-                    <button
-                      onClick={() => handleViewApplicants(job.jobId)}
-                      className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
-                    >
-                      View Shortlisted
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
+    <tr>
+      <th className="text-left py-3 px-5 border-b">Title</th>
+      <th className="text-left py-3 px-5 border-b">Company</th>
+      <th className="text-left py-3 px-5 border-b">Posted By</th>
+      <th className="text-left py-3 px-5 border-b">Applicants</th>
+      <th className="text-left py-3 px-5 border-b">Actions</th>
+    </tr>
+  </thead>
+  <tbody className="text-sm text-gray-800">
+    {jobs.map((job) => (
+      <tr key={job._id} className="hover:bg-gray-50 border-t">
+        <td className="py-3 px-5">{job.title}</td>
+        <td className="py-3 px-5">{job.company}</td>
+        <td className="py-3 px-5">{job.postedBy?.name}</td>
+        <td className="py-3 px-5">{job.applicants?.length || 0}</td>
+        <td className="py-3 px-5">
+          <button
+            onClick={() => handleViewApplicants(job._id)}
+            className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
+          >
+            View Applicants
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
         </div>
       ) : (
         <div>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold text-gray-800">
-              Shortlisted for <span className="text-indigo-600">{selectedJob.title}</span>
+              Applicants for <span className="text-indigo-600">{selectedJob.title}</span>
             </h3>
             <button onClick={() => setSelectedJob(null)} className="text-gray-500 hover:text-black" aria-label="Close Job View">
               <X />
@@ -281,68 +306,72 @@ const ShortlistedCandidates = () => {
       )}
 
       {/* Applicant Detail Modal */}
-      {selectedApplication && !statusModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border border-gray-200">
-            <button
-              onClick={() => setSelectedApplication(null)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              aria-label="Close Details"
-            >
-              <X size={20} />
-            </button>
+       {isDetailModalOpen && selectedApplication && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border border-gray-200">
+              <button
+                onClick={() => {
+                  setSelectedApplication(null);
+                  setIsDetailModalOpen(false);
+                }}
+                className="absolute top-3 right-3 text-gray-600 hover:text-black"
+                aria-label="Close Details"
+              >
+                <X size={20} />
+              </button>
 
-            {loadingAppDetail ? (
-              <p className="text-center text-gray-600">Loading...</p>
-            ) : errorAppDetail ? (
-              <p className="text-center text-red-500">{errorAppDetail}</p>
-            ) : (
-              <>
-                <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
+              {loadingAppDetail ? (
+                <p className="text-center text-gray-600">Loading...</p>
+              ) : errorAppDetail ? (
+                <p className="text-center text-red-500">{errorAppDetail}</p>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
 
-                {/* Applicant Info */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
-                  <div className="text-sm text-gray-700 space-y-1">
-                    <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
-                    <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
-                    <p><strong>Status:</strong> 
-                      <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {selectedApplication.status}
-                      </span>
-                    </p>
+                  {/* Applicant Info */}
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
+                    <div className="text-sm text-gray-700 space-y-1">
+                      <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
+                      <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
+                      <p><strong>Status:</strong> 
+                        <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
+                          {selectedApplication.status}
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                {/* Job Info */}
-                <div className="mb-4 border-t pt-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
-                  <div className="text-sm text-gray-700 space-y-1">
-                    <p><strong>Title:</strong> {selectedApplication.jobID?.title}</p>
-                    <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
-                    <p><strong>Location:</strong> {selectedApplication.jobID?.location}, {selectedApplication.jobID?.city}, {selectedApplication.jobID?.country}</p>
-                    <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
-                    <p><strong>Posted At:</strong> {new Date(selectedApplication.jobID?.createdAt).toLocaleDateString()}</p>
+                  {/* Job Info */}
+                  <div className="mb-4 border-t pt-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
+                    <div className="text-sm text-gray-700 space-y-1">
+                      <p><strong>Title:</strong> {selectedApplication.jobID?.title}</p>
+                      <p><strong>Company:</strong> {selectedApplication.jobID?.company}</p>
+                      <p><strong>Location:</strong> {selectedApplication.jobID?.location}, {selectedApplication.jobID?.city}, {selectedApplication.jobID?.country}</p>
+                      <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
+                      <p><strong>Posted At:</strong> {new Date(selectedApplication.jobID?.createdAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                </div>
 
-                {/* Resume */}
-                <div className="mb-6 border-t pt-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
-                  <a
-                    href={selectedApplication.resumeURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    View Resume PDF
-                  </a>
-                </div>
-              </>
-            )}
+                  {/* Resume */}
+                  <div className="mb-6 border-t pt-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
+                    <a
+                      href={selectedApplication.resumeURL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      View Resume PDF
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
 
       {/* Status Change Modal */}
       {statusModalOpen && (
@@ -387,4 +416,4 @@ const ShortlistedCandidates = () => {
   );
 };
 
-export default ShortlistedCandidates;
+export default ApplicantActions;

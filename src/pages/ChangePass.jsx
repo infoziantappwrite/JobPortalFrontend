@@ -85,9 +85,11 @@ const ChangePass = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-lg bg-white p-8 rounded-2xl shadow-xl mt-5 space-y-6"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          🔐 Change Password
+        <h2 className="flex items-center justify-center gap-2 text-2xl font-bold text-gray-800">
+          <FiLock className="text-gray-600" />
+          Change Password
         </h2>
+
 
         {error && (
           <div className="flex items-center gap-2 text-red-600 text-sm">
