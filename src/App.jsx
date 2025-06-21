@@ -56,6 +56,7 @@ import Dashboard from './pages/CompanyProfileSection/Dashboard';
 import CompanyDetails from './pages/CompanyDetails';
 import SuperCompanyViewPage from './pages/SuperAdminViewPage/SuperCompanyViewPage';
 import CandidateDashboard from './candidate/CandidateDashboard';
+import JobListCompany from "./components/JobListCompany"
 
 
 function App() {
@@ -154,7 +155,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="post-job" element={<PostJob />} />
-            <Route path="manage-jobs" element={<JobList />} />
+            <Route path="manage-jobs" element={<JobListCompany />} />
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicants" element={<Applicants />} />
