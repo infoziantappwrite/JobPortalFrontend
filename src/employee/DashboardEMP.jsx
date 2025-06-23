@@ -3,31 +3,36 @@ import {
   FiUsers, FiBriefcase, FiHeart, FiBarChart2,
   FiCheckCircle, FiXCircle
 } from 'react-icons/fi';
+import apiClient from '../api/apiClient';
+import { Link } from 'react-router-dom';
+
 
 const DashboardEMP = () => {
   const [dashboardData, setDashboardData] = useState(null);
-  const [jobsData, setJobsData] = useState([]);
+  const [topJobs, setTopJobs] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      const mockSummary = {
-        totalJobsPosted: 12,
-        totalApplicants: 98,
-        shortlisted: 26,
-        activeJobs: 5,
-        upcomingInterviews: 4,
-        applicationRate: '67%',
-      };
-      const mockJobs = [
-        { id: 1, title: 'Frontend Developer', status: 'Active', applicants: 15, postedOn: '2025-05-01', closingDate: '2025-06-01' },
-        { id: 2, title: 'Backend Developer', status: 'Closed', applicants: 25, postedOn: '2025-04-15', closingDate: '2025-05-15' },
-        { id: 3, title: 'UI/UX Designer', status: 'Active', applicants: 18, postedOn: '2025-05-10', closingDate: '2025-06-10' },
-        { id: 4, title: 'Project Manager', status: 'Active', applicants: 12, postedOn: '2025-05-20', closingDate: '2025-06-20' },
-        { id: 5, title: 'QA Engineer', status: 'Active', applicants: 10, postedOn: '2025-05-25', closingDate: '2025-06-25' },
-      ];
-      setDashboardData(mockSummary);
-      setJobsData(mockJobs);
+      try {
+        const response = await apiClient.get('/employee/analytics');
+        const data = response.data;
+
+        const summary = {
+          totalJobsPosted: data.jobsPosted,
+          totalApplicants: data.applicationsReceived,
+          shortlisted: data.applicationStatusCount?.shortlisted || 0,
+          activeJobs: data.kpiReport?.jobsPosted || 0,
+          upcomingInterviews: data.applicationStatusCount?.interviewed || 0,
+          applicationRate: data.kpiReport?.applicationRate || '0',
+        };
+
+        setDashboardData(summary);
+        setTopJobs(data.topJobs || []);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      }
     };
+
     fetchDashboardData();
   }, []);
 
@@ -41,7 +46,6 @@ const DashboardEMP = () => {
 
   return (
     <div className="p-6 space-y-10 bg-gradient-to-br from-slate-100 to-white min-h-screen">
-      {/* Header */}
       <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
         <h1 className="text-3xl font-bold text-gray-900">Welcome, Employer</h1>
         <p className="text-gray-500 mt-2">Manage your postings, track applicants, and monitor performance.</p>
@@ -65,24 +69,17 @@ const DashboardEMP = () => {
             <thead className="bg-gradient-to-r from-teal-500 to-indigo-600 text-white">
               <tr>
                 <th className="px-4 py-2">Title</th>
-                <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2 text-center">Applicants</th>
-                <th className="px-4 py-2">Posted On</th>
-                <th className="px-4 py-2">Closing</th>
                 <th className="px-4 py-2 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {jobsData.map(({ id, title, status, applicants, postedOn, closingDate }) => (
-                <tr key={id} className="hover:bg-gray-50 border-t">
+              {topJobs.map(({ _id, title, applicationCount }) => (
+                <tr key={_id} className="hover:bg-gray-50 border-t">
                   <td className="px-4 py-2">{title}</td>
-                  <td className="px-4 py-2"><StatusBadge status={status} /></td>
-                  <td className="px-4 py-2 text-center">{applicants}</td>
-                  <td className="px-4 py-2">{postedOn}</td>
-                  <td className="px-4 py-2">{closingDate}</td>
+                  <td className="px-4 py-2 text-center">{applicationCount}</td>
                   <td className="px-4 py-2 text-center space-x-2">
-                    <ActionButton label="View" />
-                    <ActionButton label="Edit" />
+                    <ActionButton label="View" to="/employee/manage-jobs" />
                   </td>
                 </tr>
               ))}
@@ -93,21 +90,20 @@ const DashboardEMP = () => {
 
       {/* Recently Posted Jobs */}
       <div className="bg-white shadow-lg rounded-2xl p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Recently Posted</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Top Jobs</h2>
         <div className="space-y-4 max-h-48 overflow-y-auto">
-          {jobsData
-            .sort((a, b) => new Date(b.postedOn) - new Date(a.postedOn))
+          {topJobs
             .slice(0, 3)
-            .map(({ id, title, postedOn, status }) => (
+            .map(({ _id, title }) => (
               <div
-                key={id}
+                key={_id}
                 className="flex justify-between items-center border border-gray-200 rounded-lg p-4 hover:shadow transition"
               >
                 <div>
                   <p className="font-medium text-gray-900">{title}</p>
-                  <p className="text-xs text-gray-500">Posted: {postedOn}</p>
+                  <p className="text-xs text-gray-500">Recently Added</p>
                 </div>
-                <StatusBadge status={status} />
+                <StatusBadge status="Active" />
               </div>
             ))}
         </div>
@@ -144,10 +140,14 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const ActionButton = ({ label }) => (
-  <button className="bg-gradient-to-r from-teal-500 to-indigo-600 text-white px-3 py-1 rounded-md text-xs hover:opacity-90 transition">
+const ActionButton = ({ label, to }) => (
+  <Link
+    to={to}
+    className="bg-gradient-to-r from-teal-500 to-indigo-600 text-white px-3 py-1 rounded-md text-xs hover:opacity-90 transition inline-block"
+  >
     {label}
-  </button>
+  </Link>
 );
+
 
 export default DashboardEMP;
