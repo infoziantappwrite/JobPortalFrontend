@@ -65,7 +65,7 @@ const EditJob = () => {
         {/* Step Header */}
         <div>
           <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">Edit Job</h2>
-          <p className="text-center text-gray-500 text-sm mb-6">Update job information carefully 🛠️</p>
+          <p className="text-center text-gray-500 text-sm mb-6">Update job information carefully</p>
 
           <div className="flex justify-center gap-10">
             {[
