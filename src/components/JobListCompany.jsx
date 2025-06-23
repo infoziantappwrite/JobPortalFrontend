@@ -122,7 +122,7 @@ const JobList = () => {
       (j) => j.companyID === job.companyID && j._id !== job._id
     );
 
-    navigate('/employee/jobdetails', {
+    navigate('/company/jobdetails', {
       state: {
         jobdetails: job,
         relatedJobs: relatedJobs,
@@ -238,7 +238,7 @@ const JobList = () => {
                         <FiEye />
                       </button>
                       <button
-                        onClick={() => canEdit && navigate('/employee/jobs-edit', { state: job })}
+                        onClick={() => canEdit && navigate('/company/jobs-edit', { state: job })}
                         title="Edit"
                         disabled={!canEdit}
                         className={`text-yellow-600 hover:text-yellow-800 ${
