@@ -254,11 +254,6 @@ const Applicants = () => {
                   <div className="text-sm text-gray-700 space-y-1">
                     <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
                     <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
-                    <p><strong>Status:</strong> 
-                      <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {selectedApplication.status}
-                      </span>
-                    </p>
                   </div>
                 </div>
 
