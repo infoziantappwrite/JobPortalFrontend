@@ -178,15 +178,21 @@ const DashboardLayout = () => {
         {/* Desktop Header */}
 
 
-        {/* Content Area */}
-        <div className=" overflow-y-auto">
-          <div className="w-full max-w-7xl mx-auto ">
-            <div className=" rounded-lg">
-              <Outlet />
+        {/* Full-page layout */}
+        <div className="min-h-screen flex flex-col">
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="w-full max-w-7xl mx-auto">
+              <div className="rounded-lg">
+                <Outlet />
+              </div>
             </div>
           </div>
+
+          {/* Footer */}
+          <DFooter />
         </div>
-        <DFooter></DFooter>
+
       </div>
     </div>
   );

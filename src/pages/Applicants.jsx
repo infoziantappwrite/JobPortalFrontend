@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { FiEye, FiUsers } from 'react-icons/fi';
-import { UserPlus, X, CheckCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,6 +15,22 @@ const getBgColor = (name) => {
   return bgColors[index];
 };
 
+const applicationStatus = Object.freeze({
+  APPLIED: "applied",
+  SHORTLISTED: "shortlisted",
+  INTERVIEWED: "interviewed",
+  OFFERED: "offered",
+  REJECTED: "rejected",
+});
+
+const statusOrder = [
+  applicationStatus.APPLIED,
+  applicationStatus.SHORTLISTED,
+  applicationStatus.INTERVIEWED,
+  applicationStatus.OFFERED,
+  applicationStatus.REJECTED,
+];
+
 const Applicants = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -23,7 +39,6 @@ const Applicants = () => {
   const [error, setError] = useState('');
   const [loadingAppDetail, setLoadingAppDetail] = useState(false);
   const [errorAppDetail, setErrorAppDetail] = useState('');
-  const [shortlisting, setShortlisting] = useState(false);
 
   useEffect(() => {
     const fetchPostedJobs = async () => {
@@ -52,7 +67,7 @@ const Applicants = () => {
       const res = await apiClient.post('/employee/job/get-detail', {
         IDs: [applicationID],
         jobID: selectedJob._id,
-        type: 'jobApplication', // or 'jobApplicant' depending on your use case
+        type: 'jobApplication',
       });
       setSelectedApplication(res?.data?.jobApplications?.[0] || null);
     } catch (err) {
@@ -61,65 +76,6 @@ const Applicants = () => {
       setLoadingAppDetail(false);
     }
   };
-
-
-  const handleShortlist = async (applicant, jobID) => {
-    let applicantID = applicant?.candidateID?._id || applicant?.candidateID || applicant?._id;
-
-    if (!applicantID || !jobID) {
-      alert("Invalid applicant data. Missing jobID or applicantID.");
-      return;
-    }
-
-    setShortlisting(true);
-    try {
-      await apiClient.post(
-        '/employee/job/applicant/shortlist',
-        { jobID, applicantID },
-        { withCredentials: true }
-      );
-
-      toast.success(`${applicant?.candidateID?.name || 'Applicant'} has been shortlisted!`);
-
-      setSelectedApplication(null);
-
-      // ✅ Update jobs state
-      setJobs(prevJobs =>
-        prevJobs.map(job =>
-          job._id === jobID
-            ? {
-                ...job,
-                applicants: job.applicants.map(a =>
-                  (a.applicationID || a._id) === (applicant.applicationID || applicant._id)
-                    ? { ...a, status: 'shortlisted' }
-                    : a
-                )
-              }
-            : job
-        )
-      );
-
-      // ✅ Update selectedJob state as well (so UI updates immediately)
-      setSelectedJob(prevJob =>
-        prevJob
-          ? {
-              ...prevJob,
-              applicants: prevJob.applicants.map(a =>
-                (a.applicationID || a._id) === (applicant.applicationID || applicant._id)
-                  ? { ...a, status: 'shortlisted' }
-                  : a
-              )
-            }
-          : null
-      );
-
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Could not shortlist applicant.');
-    } finally {
-      setShortlisting(false);
-    }
-  };
-
 
   if (loading) return <div className="text-center py-10">Loading jobs...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -135,37 +91,37 @@ const Applicants = () => {
       </div>
 
       {!selectedJob ? (
-      <div className="overflow-x-auto bg-white rounded-md shadow-md border">
-        <table className="min-w-full table-auto border-collapse">
-          <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-            <tr>
-              <th className="text-left py-3 px-5 border-b">Title</th>
-              <th className="text-left py-3 px-5 border-b">Company</th>
-              <th className="text-left py-3 px-5 border-b">Posted By</th>
-              <th className="text-left py-3 px-5 border-b">Applicants</th>
-              <th className="text-left py-3 px-5 border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm text-gray-800">
-            {jobs.map((job) => (
-              <tr key={job._id} className="hover:bg-gray-50 border-t">
-                <td className="py-3 px-5">{job.title}</td>
-                <td className="py-3 px-5">{job.company}</td>
-                <td className="py-3 px-5">{job.postedBy?.name}</td>
-                <td className="py-3 px-5">{job.applicants?.length || 0}</td>
-                <td className="py-3 px-5">
-                  <button
-                    onClick={() => handleViewApplicants(job._id)}
-                    className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
-                  >
-                    View Applicants
-                  </button>
-                </td>
+        <div className="overflow-x-auto bg-white rounded-md shadow-md border">
+          <table className="min-w-full table-auto border-collapse">
+            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
+              <tr>
+                <th className="text-left py-3 px-5 border-b">Title</th>
+                <th className="text-left py-3 px-5 border-b">Company</th>
+                <th className="text-left py-3 px-5 border-b">Posted By</th>
+                <th className="text-left py-3 px-5 border-b">Applicants</th>
+                <th className="text-left py-3 px-5 border-b">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="text-sm text-gray-800">
+              {jobs.map((job) => (
+                <tr key={job._id} className="hover:bg-gray-50 border-t">
+                  <td className="py-3 px-5">{job.title}</td>
+                  <td className="py-3 px-5">{job.company}</td>
+                  <td className="py-3 px-5">{job.postedBy?.name}</td>
+                  <td className="py-3 px-5">{job.applicants?.length || 0}</td>
+                  <td className="py-3 px-5">
+                    <button
+                      onClick={() => handleViewApplicants(job._id)}
+                      className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
+                    >
+                      View Applicants
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div>
           <div className="flex justify-between items-center mb-4">
@@ -206,20 +162,9 @@ const Applicants = () => {
                       >
                         <FiEye />
                       </button>
-                      {status === 'shortlisted' ? (
-                        <span className="p-2 bg-green-100 rounded text-green-700" title="Shortlisted">
-                          <CheckCircle />
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => handleShortlist(applicant, selectedJob._id)}
-                          className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
-                          title="Shortlist"
-                          disabled={shortlisting}
-                        >
-                          <UserPlus />
-                        </button>
-                      )}
+                      <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 capitalize">
+                        {status}
+                      </span>
                     </div>
                   </div>
                 );
@@ -248,21 +193,14 @@ const Applicants = () => {
               <>
                 <h2 className="text-2xl font-bold text-indigo-700 mb-4">Application Details</h2>
 
-                {/* Applicant Info */}
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Applicant Info</h3>
                   <div className="text-sm text-gray-700 space-y-1">
                     <p><strong>Name:</strong> {selectedApplication.userID?.name}</p>
                     <p><strong>Email:</strong> {selectedApplication.userID?.email}</p>
-                    <p><strong>Status:</strong> 
-                      <span className={`ml-1 font-medium ${selectedApplication.status === 'shortlisted' ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {selectedApplication.status}
-                      </span>
-                    </p>
                   </div>
                 </div>
 
-                {/* Job Info */}
                 <div className="mb-4 border-t pt-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Job Info</h3>
                   <div className="text-sm text-gray-700 space-y-1">
@@ -274,7 +212,6 @@ const Applicants = () => {
                   </div>
                 </div>
 
-                {/* Resume */}
                 <div className="mb-6 border-t pt-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Resume</h3>
                   <a
@@ -287,21 +224,39 @@ const Applicants = () => {
                   </a>
                 </div>
 
-                {/* Shortlist Button */}
-                {selectedApplication.status !== 'shortlisted' && (
-                  <button
-                    onClick={() => handleShortlist(selectedApplication, selectedJob._id)}
-                    disabled={shortlisting}
-                    className="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 text-sm"
-                  >
-                    {shortlisting ? 'Shortlisting...' : 'Shortlist Applicant'}
-                  </button>
-                )}
+                <div className="mb-6 border-t pt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Application Timeline</h3>
+                  <div className="space-y-3">
+                    {statusOrder.map((stage) => {
+                      const statusEntry = selectedApplication.status?.find(s => s.stage === stage);
+                      const isCompleted = Boolean(statusEntry);
+                      return (
+                        <div key={stage} className="flex items-start gap-3">
+                          <div className={`w-4 h-4 rounded-full mt-1 ${isCompleted ? 'bg-green-500' : 'bg-gray-300'}`} />
+                          <div>
+                            <p className={`font-medium capitalize ${isCompleted ? 'text-green-700' : 'text-gray-400'}`}>
+                              {stage}
+                            </p>
+                            {isCompleted && (
+                              <div className="text-sm text-gray-600">
+                                <p>
+                                  {statusEntry.remarks && <span className="block mb-1 italic">"{statusEntry.remarks}"</span>}
+                                  <span className="text-xs">
+                                    {new Date(statusEntry.createdAt).toLocaleString()}
+                                  </span>
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </>
             )}
           </div>
         </div>
-
       )}
     </div>
   );
