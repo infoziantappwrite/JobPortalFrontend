@@ -325,34 +325,46 @@ const ApplicantActions = () => {
                   ) : <p>No resume available</p>}
                 </div>
 
-                {/* ✅ Timeline from Code1 */}
-                <div className="border-t pt-4 mb-4">
-                  <h3 className="font-semibold text-gray-800 mb-2">Application Timeline</h3>
-                  <div className="space-y-3">
+                {/* Application Timeline */}
+                <div className="mt-8">
+                  <h3 className="text-lg font-semibold text-blue-700 mb-4 border-b pb-2">Application Timeline</h3>
+                  <ol className="relative border-l border-blue-300 ml-2">
                     {statusOrder.map(stage => {
                       const entry = selectedApplication.status?.find(s => s.stage === stage);
                       const done = Boolean(entry);
                       return (
-                        <div key={stage} className="flex items-start gap-3">
-                          <div className={`w-4 h-4 rounded-full mt-1 ${done ? 'bg-green-500' : 'bg-gray-300'}`}/>
-                          <div>
-                            <p className={`capitalize font-medium ${done ? 'text-green-700' : 'text-gray-400'}`}>
-                              {stage}
+                        <li key={stage} className="mb-6 relative pl-6">
+                          {/* Circle dot */}
+                          <div
+                            className={`absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2
+                              ${done ? 'bg-blue-500' : 'bg-gray-300'}`}
+                          ></div>
+
+                          {/* Date */}
+                          {done && (
+                            <time className="block mb-1 text-sm font-normal leading-none text-gray-400">
+                              {new Date(entry.createdAt).toLocaleString()}
+                            </time>
+                          )}
+
+                          {/* Stage name */}
+                          <p className={`text-base font-medium capitalize ${done ? 'text-blue-700' : 'text-gray-400'}`}>
+                            {stage}
+                          </p>
+
+                          {/* Remarks */}
+                          {done && entry.remarks && (
+                            <p className="text-sm text-gray-600 mt-1 italic">
+                              "{entry.remarks}"
                             </p>
-                            {done && (
-                              <div className="text-sm text-gray-600">
-                                {entry.remarks && <span className="italic block mb-1">"{entry.remarks}"</span>}
-                                <span className="text-xs">
-                                  {new Date(entry.createdAt).toLocaleString()}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                          )}
+                        </li>
                       );
                     })}
-                  </div>
+                  </ol>
                 </div>
+
+
               </>
             )}
           </div>
