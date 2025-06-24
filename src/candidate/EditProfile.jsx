@@ -8,6 +8,8 @@ import {
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SelectCategory from './SelectCategory';
+import InternalLoader from '../components/InternalLoader';
 
 
 const defaultProfileImage = 'https://www.w3schools.com/howto/img_avatar.png';
@@ -29,8 +31,9 @@ const EditProfile = () => {
     const fetchProfile = async () => {
       try {
         const res = await apiClient.get('/candidate/info/get-profile');
+        //console.log(res.data)
         const data = res.data;
-        console.log(data);
+        //console.log(data);
         const {workExperience,awards,educationHistory, _id, createdAt, updatedAt, __v, ...filteredCandidateInfo } = data.candidateInfo;
 
         setForm({
@@ -93,8 +96,7 @@ const EditProfile = () => {
 
 
 
-  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
-
+ if (loading) return <InternalLoader text="Loading Profile" />;
   const renderInput = (label, name, icon, value, isLink = false, disabled = false) => (
     <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
       <div className="text-indigo-500 mt-1">{icon}</div>
@@ -176,25 +178,7 @@ const EditProfile = () => {
             <div className="text-indigo-500 mt-1"><FiBook /></div>
             <div className="w-full">
               <p className="text-sm text-gray-600">Categories</p>
-              <Select
-                isMulti
-                name="categories"
-                menuPlacement="top" // 👈 This forces the menu to open above
-                options={[
-                  { value: 'Banking', label: 'Banking' },
-                  { value: 'Digital & Creative', label: 'Digital & Creative' },
-                  { value: 'Retail', label: 'Retail' },
-                  { value: 'Human Resources', label: 'Human Resources' },
-                  { value: 'Management', label: 'Management' }
-                ]}
-                className="mt-1"
-                classNamePrefix="select"
-                value={(form.categories || []).map((cat) => ({ value: cat, label: cat }))}
-                onChange={(selected) => {
-                  const values = selected.map((option) => option.value);
-                  setForm((prev) => ({ ...prev, categories: values }));
-                }}
-              />
+              <SelectCategory form={form} setForm={setForm} />
             </div>
           </div>
 

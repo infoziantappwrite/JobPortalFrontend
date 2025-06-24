@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   FiMapPin, FiClock, FiBriefcase, FiUser,
-  FiCalendar, FiDollarSign, FiBookmark
+  FiCalendar, FiBookmark
 } from 'react-icons/fi';
 import { Banknote } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 import ApplyButton from '../candidate/jobs/ApplyButton';
 import apiClient from '../api/apiClient';
+import InternalLoader from '../components/InternalLoader';
 
 const JobDetails = () => {
   const location = useLocation();
@@ -44,12 +45,7 @@ const JobDetails = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-blue-700 font-medium text-lg">Loading Job Details...</p>
-        </div>
-      </div>
+      <InternalLoader text='Loading Job Details'/>
     );
   }
 
