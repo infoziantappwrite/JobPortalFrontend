@@ -7,6 +7,7 @@ import apiClient from '../api/apiClient';
 import { fetchCurrentUser } from '../api/fetchuser';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { useNavigate } from 'react-router-dom';
+import InternalLoader from './InternalLoader';
 
 const JobList = () => {
   const navigate = useNavigate();
@@ -133,6 +134,8 @@ const JobList = () => {
 
   const role = user?.role?.toLowerCase();
   const userId = String(user?._id || user?.id || '').trim();
+
+  if (loadingJobs) return <InternalLoader text="Loading Jobs" />;
 
   return (
     <div className="max-w-7xl mx-auto p-6">

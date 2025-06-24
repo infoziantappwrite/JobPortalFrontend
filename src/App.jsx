@@ -127,9 +127,12 @@ function App() {
           <Route
             path="/employee"
             element={
-              <ProtectedRoute roles={['employee']}>
+            <ProtectedRoute roles={['employee']}>
+              <>
+                <GlobalLoader />
                 <DashboardLayout />
-              </ProtectedRoute>
+              </>
+            </ProtectedRoute>
             }
           >
             <Route path="dashboard" element={<DashboardEMP />} />

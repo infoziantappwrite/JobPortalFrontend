@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
+import InternalLoader from '../components/InternalLoader';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   CheckCircle,
@@ -171,7 +172,7 @@ const ApplicantActions = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <InternalLoader text="Loading Applicants" />;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (

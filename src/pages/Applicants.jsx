@@ -4,7 +4,7 @@ import { FiEye, FiUsers } from 'react-icons/fi';
 import { X } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import InternalLoader from '../components/InternalLoader';
 const bgColors = [
   'bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-yellow-500',
   'bg-indigo-500', 'bg-pink-500', 'bg-purple-500', 'bg-orange-500'
@@ -77,7 +77,7 @@ const Applicants = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading jobs...</div>;
+  if (loading) return <InternalLoader text="Loading Applicants" />;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (
