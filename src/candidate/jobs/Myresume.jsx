@@ -10,6 +10,7 @@ import SectionTimeline from './SectionTimeline';
 import apiClient from '../../api/apiClient';
 import InternalLoader from '../../components/InternalLoader';
 import { AlertTriangle } from "lucide-react";
+import CVManager from './CVManager';
 
 const Myresume = () => {
   const [candidateInfo, setCandidateInfo] = useState(null);
@@ -136,6 +137,7 @@ if (error) {
           <SectionTimeline title="Experience" items={candidateInfo.workExperience} type="experience" fetchData={fetchProfile} />
           <SectionTimeline title="Awards" items={candidateInfo.awards} type="awards" fetchData={fetchProfile} />
         </div>
+        <CVManager/>
       </div>
     </div>
   );

@@ -56,7 +56,7 @@ const CVManager = () => {
   };
 
   return (
-     <div className="bg-gradient-to-br from-blue-50 to-teal-50 min-h-screen p-6 ">
+     <div className="bg-gradient-to-br from-blue-50 to-teal-50 ">
     <div className="p-6 bg-white rounded-2xl shadow-lg max-w-6xl mx-auto space-y-10">
       <h2 className="text-xl font-semibold text-gray-800 mb-6">CV Manager</h2>
 
