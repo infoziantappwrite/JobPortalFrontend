@@ -57,7 +57,8 @@ import CompanyDetails from './pages/CompanyDetails';
 import SuperCompanyViewPage from './pages/SuperAdminViewPage/SuperCompanyViewPage';
 import CandidateDashboard from './candidate/CandidateDashboard';
 import JobListCompany from "./components/JobListCompany"
-
+// Super Admin Page 
+import SuperAdminDashboard from './pages/SuperAdminViewPage/Dashboard';
 
 function App() {
 
@@ -175,7 +176,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="dashboard" element={<div>Dashboard</div>} />
+            <Route path="dashboard" element={<SuperAdminDashboard />} />
             <Route path="approve-companies" element={<ApproveRequests />} />
             <Route path="manage-companies" element={<SuperCompanyManage />} />
             <Route path="manage-employee" element={<SuperEmployeeManage />} />

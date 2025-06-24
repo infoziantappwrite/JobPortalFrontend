@@ -37,7 +37,7 @@ const DashboardLayout = () => {
 
     ],
     superadmin: [
-      {key: 'company',label: 'SuperAdmin Profile',icon: <FiShield />,path: '/superadmin/profile',},
+      {key: 'dashboard',label: 'Dashboard',icon: <FiBarChart2 />,path: '/superadmin/dashboard',},
       {key: 'add',label: 'Approve Companies',icon: <FiUserCheck />,path: '/superadmin/approve-companies',},
       {key: 'manage',label: 'Manage Companies',icon: <FiBriefcase />,path: '/superadmin/manage-companies',},
       {key: 'manageEmployee',label: 'Manage Employee',icon: <FiSettings  />,path: '/superadmin/manage-employee',},
