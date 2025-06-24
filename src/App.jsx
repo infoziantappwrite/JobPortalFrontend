@@ -144,7 +144,7 @@ function App() {
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
-            <Route path="applicant-actions" element={<ApplicantActions />} />
+            <Route path="manage-applicants" element={<ApplicantActions />} />
           </Route>
           {/* Employee Routes end */}
 
