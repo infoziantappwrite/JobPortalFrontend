@@ -4,6 +4,7 @@ import {
   FiMail, FiPhone, FiUser, FiCheckCircle, FiMapPin, FiBook, FiBriefcase, FiDollarSign, FiGithub, FiGlobe, FiX, FiLinkedin, FiFacebook, FiTwitter, FiLink,
 } from 'react-icons/fi';
 import apiClient from '../api/apiClient';
+import InternalLoader from '../components/InternalLoader';
  // Use your own fallback image
 
 const ViewProfile = () => {
@@ -37,7 +38,7 @@ const ViewProfile = () => {
     fetchProfile();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
+  if (loading) return <InternalLoader text="Loading Profile" />;
   if (error) return <p className="text-red-600 text-center">{error}</p>;
   if (!profile) return <p className="text-center">No profile data found.</p>;
   //console.log(profile)

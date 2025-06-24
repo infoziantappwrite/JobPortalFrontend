@@ -1,43 +1,76 @@
-import { Bell, Filter } from 'lucide-react';
+import { Bell, Filter, RotateCcw,Search } from 'lucide-react';
 import { useState } from 'react';
 
-const JobAlertHeader = ({ filters, handleChange, predefinedOptions, user }) => {
+const JobAlertHeader = ({ filters, handleChange, predefinedOptions, user, setFilters }) => {
   const [showFilters, setShowFilters] = useState(false);
+  const defaultFilters = {
+    title: "",
+    location: "",
+    gender: "",
+    experience: "",
+    qualification: "",
+    jobType: "",
+    careerLevel: "",
+    industry: "",
+    city: "",
+    specialisms: "",
+    sortBy: "postedAt",
+    sortOrder: "desc",
+  };
+
 
   return (
     <>
       {/* Title + Search + Filter Toggle */}
-      <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-6">
-        <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-          <Bell className="text-blue-600 w-5 h-5" />
-          {user?.userType?.toLowerCase() === "candidate"
-            ? "My Job Alerts"
-            : "Posted Jobs"}
-        </h2>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-6 w-full max-w-6xl mx-auto">
+  {/* Heading */}
+  <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
+    <Bell className="text-blue-600 w-5 h-5" />
+    {user?.userType?.toLowerCase() === "candidate"
+      ? "My Job Alerts"
+      : "Posted Jobs"}
+  </h2>
 
-        {/* Unified Search Bar + Filter Button */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-2/3">
-          <input
-            type="text"
-            value={filters.title}
-            onChange={(e) => handleChange("title", e.target.value)}
-            placeholder="Search by title, city or specialisms"
-            className="flex-grow bg-white px-4 py-2 rounded-md border border-blue-200 text-sm text-gray-700 shadow-sm"
-          />
-          <button
-            onClick={() => setShowFilters((prev) => !prev)}
-            className="flex items-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white px-4 py-2 rounded-md shadow hover:shadow-md text-sm font-medium"
-          >
-            <Filter className="w-4 h-4" />
-            Filters
-          </button>
-        </div>
-      </div>
+  {/* Search + Buttons Container */}
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:max-w-2xl">
+    {/* Search Input */}
+    <div className="relative w-full">
+  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+  <input
+    type="text"
+    value={filters.title}
+    onChange={(e) => handleChange("title", e.target.value)}
+    placeholder="Search by title, city or specialisms"
+    className="w-full pl-10 pr-4 py-2 rounded-md border border-blue-200 text-sm text-gray-700 shadow-sm bg-white"
+  />
+</div>
+
+    {/* Buttons */}
+    <div className="flex w-full sm:w-auto flex-wrap sm:flex-nowrap gap-2">
+      <button
+        onClick={() => setShowFilters((prev) => !prev)}
+        className="flex-1 sm:flex-none min-w-[48%] sm:min-w-[unset] flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white px-4 py-2 rounded-md shadow hover:shadow-md text-sm font-medium"
+      >
+        <Filter className="w-4 h-4" />
+        Filters
+      </button>
+
+      <button
+        onClick={() => setFilters(defaultFilters)}
+        className="flex-1 sm:flex-none min-w-[48%] sm:min-w-[unset] flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white px-4 py-2 rounded-md shadow hover:shadow-md text-sm font-medium"
+      >
+        <RotateCcw className="w-4 h-4" />
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
+
 
       {/* Collapsible Filters */}
       {showFilters && (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 transition-all duration-300 ease-in-out">
-          
+
 
           {Object.entries(predefinedOptions).map(([field, options]) => (
             <select
