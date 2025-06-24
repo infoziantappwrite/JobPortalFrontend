@@ -176,57 +176,65 @@ const NotificationPopup = () => {
           )}
 
           {/* Body */}
-          <div className="overflow-y-auto max-h-[75vh] divide-y">
-            {Object.entries(grouped).map(([group, notifs]) => (
-              <div key={group} className="px-4 py-2">
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{group}</h4>
-                {notifs.map((n) => {
-                  const isSelected = selected.includes(n._id);
-                  const isUnread = !n.isRead;
-                  const color = initialColors[n._id] || 'bg-blue-600';
+         {/* Body */}
+<div className="overflow-y-auto max-h-[75vh] divide-y">
+  {notifications.length === 0 ? (
+    <div className="p-6 text-center text-gray-500">
+      <p className="text-sm">You have no notifications.</p>
+    </div>
+  ) : (
+    Object.entries(grouped).map(([group, notifs]) => (
+      <div key={group} className="px-4 py-2">
+        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{group}</h4>
+        {notifs.map((n) => {
+          const isSelected = selected.includes(n._id);
+          const isUnread = !n.isRead;
+          const color = initialColors[n._id] || 'bg-blue-600';
 
-                  return (
-                    <div
-                      key={n._id}
-                      onClick={() =>
-                        selectMode ? toggleSelect(n._id) : markSingleRead(n._id)
-                      }
-                      className={`flex items-start gap-3 p-3 rounded-md hover:bg-gray-100 transition cursor-pointer ${
-                        isSelected ? 'ring-2 ring-blue-400' : ''
-                      }`}
-                    >
-                      {selectMode && (
-                        <div className="pt-1">
-                          {isSelected ? (
-                            <CheckSquare className="text-blue-600 w-5 h-5" />
-                          ) : (
-                            <Square className="text-gray-400 w-5 h-5" />
-                          )}
-                        </div>
-                      )}
+          return (
+            <div
+              key={n._id}
+              onClick={() =>
+                selectMode ? toggleSelect(n._id) : markSingleRead(n._id)
+              }
+              className={`flex items-start gap-3 p-3 rounded-md hover:bg-gray-100 transition cursor-pointer ${
+                isSelected ? 'ring-2 ring-blue-400' : ''
+              }`}
+            >
+              {selectMode && (
+                <div className="pt-1">
+                  {isSelected ? (
+                    <CheckSquare className="text-blue-600 w-5 h-5" />
+                  ) : (
+                    <Square className="text-gray-400 w-5 h-5" />
+                  )}
+                </div>
+              )}
 
-                      <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white font-bold`}>
-                        {n.title?.charAt(0) || 'N'}
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center">
-                          <p className="text-sm font-semibold text-gray-800">{n.title}</p>
-                          {isUnread && (
-                            <span className="w-2 h-2 bg-red-500 rounded-full inline-block" />
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600">{n.message}</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(n.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white font-bold`}>
+                {n.title?.charAt(0) || 'N'}
               </div>
-            ))}
-          </div>
+
+              <div className="flex-1">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-semibold text-gray-800">{n.title}</p>
+                  {isUnread && (
+                    <span className="w-2 h-2 bg-red-500 rounded-full inline-block" />
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">{n.message}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(n.createdAt).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ))
+  )}
+</div>
+
         </div>
       )}
     </div>
