@@ -33,6 +33,7 @@ import GlobalLoader from './components/GlobalLoader';
 import ViewProfile from './candidate/ViewProfile';
 import EditProfilecandidate from './candidate/EditProfile';
 import EditJob from './pages/EditJob';
+import EditJobByCompany from './pages/EditJobByCompany';
 import Job from './components/Job';
 /*candidate jobs*/
 import Jobalerts from './candidate/jobs/Jobalerts';
@@ -162,7 +163,7 @@ function App() {
             <Route path="manage-jobs" element={<JobListCompany />} />
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path='jobdetails' element={<JobDetails />}/>
-            <Route path="jobs-edit" element={<EditJob />} />
+            <Route path="jobs-edit" element={<EditJobByCompany />} />
             <Route path="applicants" element={<Applicants />} />
             <Route path="shortlisted" element={<Shortlisted />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />

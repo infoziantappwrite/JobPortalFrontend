@@ -106,7 +106,7 @@ const JobList = () => {
   const handleDelete = async () => {
     try {
       for (let id of selectedIds) {
-        await apiClient.delete(`employee/job/${id}`, { withCredentials: true });
+        await apiClient.delete(`/company/job/${id}`, { withCredentials: true });
       }
       alert('Deleted successfully');
       setConfirmDelete(false);
