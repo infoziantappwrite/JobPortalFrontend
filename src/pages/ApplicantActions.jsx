@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
 import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
+import InternalLoader from '../components/InternalLoader';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   CheckCircle,
@@ -60,15 +62,13 @@ const ApplicantActions = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [loadingAppDetail, setLoadingAppDetail] = useState(false);
-  const [errorAppDetail, setErrorAppDetail] = useState('');
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
   const [remarks, setRemarks] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchShortlisted = async () => {
@@ -90,32 +90,10 @@ const ApplicantActions = () => {
     if (job) setSelectedJob(job);
   };
 
-  const openApplicantDetail = async (applicationID) => {
+  // Navigation instead of modal
+  const openApplicantDetail = (applicationID) => {
     if (!selectedJob?._id || !applicationID) return;
-    setLoadingAppDetail(true);
-    setErrorAppDetail('');
-    try {
-      const res = await apiClient.post('/employee/job/get-detail', {
-        IDs: [applicationID],
-        jobID: selectedJob._id,
-        type: 'jobApplication',
-      }, { withCredentials: true });
-      const application = res?.data?.jobApplications?.[0] || null;
-      if (!application) {
-        setErrorAppDetail('Application details not found.');
-        setSelectedApplication(null);
-        setIsDetailModalOpen(false);
-      } else {
-        setSelectedApplication(application);
-        setIsDetailModalOpen(true);
-      }
-    } catch (err) {
-      setErrorAppDetail(err.response?.data?.error || 'Failed to load applicant detail.');
-      setSelectedApplication(null);
-      setIsDetailModalOpen(false);
-    } finally {
-      setLoadingAppDetail(false);
-    }
+    navigate(`/employee/applicant-detail-view/${selectedJob._id}/${applicationID}`);
   };
 
   const openStatusModal = (application) => {
@@ -171,7 +149,7 @@ const ApplicantActions = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <InternalLoader text="Loading Applicants" />;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (
@@ -180,7 +158,7 @@ const ApplicantActions = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
           <FiUsers className="text-indigo-600" />
-          Applicant Actions
+          Manage Applicants
         </h2>
       </div>
 
@@ -227,7 +205,7 @@ const ApplicantActions = () => {
             </button>
           </div>
           {selectedJob.applicants?.length === 0 ? (
-            <p className="text-gray-600">No shortlisted applicants for this job.</p>
+            <p className="text-gray-600">No applicants for this job.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {selectedJob.applicants.map((applicant, idx) => {
@@ -272,105 +250,6 @@ const ApplicantActions = () => {
         </div>
       )}
 
-      {isDetailModalOpen && selectedApplication && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center px-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-auto border">
-            <button
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              onClick={() => setIsDetailModalOpen(false)}
-            >
-              <X size={20} />
-            </button>
-
-            {loadingAppDetail ? (
-              <p className="text-center text-gray-600">Loading...</p>
-            ) : errorAppDetail ? (
-              <p className="text-center text-red-500">{errorAppDetail}</p>
-            ) : (
-              <>
-                <h2 className="text-indigo-700 text-2xl font-bold mb-4">Application Details</h2>
-
-                <div className="mb-4">
-                  <h3 className="font-semibold text-gray-800 mb-2">Applicant Info</h3>
-                  <div className="text-gray-700 text-sm space-y-1">
-                    <p><strong>Name:</strong> {selectedApplication.userID?.name || 'N/A'}</p>
-                    <p><strong>Email:</strong> {selectedApplication.userID?.email || 'N/A'}</p>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4 mb-4">
-                  <h3 className="font-semibold text-gray-800 mb-2">Job Info</h3>
-                  <div className="text-gray-700 text-sm space-y-1">
-                    <p><strong>Title:</strong> {selectedApplication.jobID?.title || 'N/A'}</p>
-                    <p><strong>Company:</strong> {selectedApplication.jobID?.company || 'N/A'}</p>
-                    <p><strong>Location:</strong> {[
-                      selectedApplication.jobID?.location,
-                      selectedApplication.jobID?.city,
-                      selectedApplication.jobID?.country
-                    ].filter(Boolean).join(', ')}</p>
-                    <p><strong>Type:</strong> {selectedApplication.jobID?.jobType}</p>
-                    <p><strong>Posted At:</strong> {selectedApplication.jobID?.createdAt
-                      ? new Date(selectedApplication.jobID.createdAt).toLocaleDateString()
-                      : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4 mb-6">
-                  <h3 className="font-semibold text-gray-800 mb-2">Resume</h3>
-                  {selectedApplication.resumeURL ? (
-                    <a href={selectedApplication.resumeURL} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                      View Resume PDF
-                    </a>
-                  ) : <p>No resume available</p>}
-                </div>
-
-                {/* Application Timeline */}
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-blue-700 mb-4 border-b pb-2">Application Timeline</h3>
-                  <ol className="relative border-l border-blue-300 ml-2">
-                    {statusOrder.map(stage => {
-                      const entry = selectedApplication.status?.find(s => s.stage === stage);
-                      const done = Boolean(entry);
-                      return (
-                        <li key={stage} className="mb-6 relative pl-6">
-                          {/* Circle dot */}
-                          <div
-                            className={`absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2
-                              ${done ? 'bg-blue-500' : 'bg-gray-300'}`}
-                          ></div>
-
-                          {/* Date */}
-                          {done && (
-                            <time className="block mb-1 text-sm font-normal leading-none text-gray-400">
-                              {new Date(entry.createdAt).toLocaleString()}
-                            </time>
-                          )}
-
-                          {/* Stage name */}
-                          <p className={`text-base font-medium capitalize ${done ? 'text-blue-700' : 'text-gray-400'}`}>
-                            {stage}
-                          </p>
-
-                          {/* Remarks */}
-                          {done && entry.remarks && (
-                            <p className="text-sm text-gray-600 mt-1 italic">
-                              "{entry.remarks}"
-                            </p>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </div>
-
-
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
       {statusModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex justify-center items-center px-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative border">
@@ -389,12 +268,16 @@ const ApplicantActions = () => {
               value={newStatus}
               onChange={e => setNewStatus(e.target.value)}
             >
-              {Object.entries(applicationStatus).map(([_, val]) => (
+              {[
+                applicationStatus.APPLIED,
+                applicationStatus.SHORTLISTED
+              ].map(val => (
                 <option key={val} value={val}>
                   {val.charAt(0).toUpperCase() + val.slice(1)}
                 </option>
               ))}
             </select>
+
 
             <textarea
               className="w-full p-2 border rounded mb-4 resize-none"

@@ -27,6 +27,8 @@ import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
 import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
 import ApplicantActions from './pages/ApplicantActions';
+import ApplicantDetailPage from './pages/ApplicantDetailPage';
+import ApplicantDetailView from './pages/ApplicantDetailView';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
@@ -128,20 +130,25 @@ function App() {
           <Route
             path="/employee"
             element={
-              <ProtectedRoute roles={['employee']}>
+            <ProtectedRoute roles={['employee']}>
+              <>
+                <GlobalLoader />
                 <DashboardLayout />
-              </ProtectedRoute>
+              </>
+            </ProtectedRoute>
             }
           >
             <Route path="dashboard" element={<DashboardEMP />} />
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobList />} />
             <Route path="applicants" element={<Applicants />} />
-            <Route path="shortlisted" element={<Shortlisted />} />
+            <Route path="shortlisted-applicants" element={<Shortlisted />} />
             <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
-            <Route path="applicant-actions" element={<ApplicantActions />} />
+            <Route path="manage-applicants" element={<ApplicantActions />} />
+            <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
+            <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
           </Route>
           {/* Employee Routes end */}
 

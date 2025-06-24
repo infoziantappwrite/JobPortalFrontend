@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/apiClient';
+import InternalLoader from '../components/InternalLoader';
 
 const DashboardEMP = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -38,7 +39,7 @@ const DashboardEMP = () => {
     fetchDashboardData();
   }, []);
 
-  if (!dashboardData) return null;
+  if (!dashboardData) return <InternalLoader text="Loading Dashboard" />; 
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6 relative overflow-hidden">

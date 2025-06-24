@@ -3,6 +3,8 @@ import apiClient from '../api/apiClient';
 import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InternalLoader from '../components/InternalLoader';
+import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle,
   XCircle,
@@ -62,6 +64,8 @@ const ShortlistedCandidates = () => {
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchShortlisted = async () => {
       setLoading(true);
@@ -82,23 +86,13 @@ const ShortlistedCandidates = () => {
     if (job) setSelectedJob(job);
   };
 
-  const openApplicantDetail = async (applicationID) => {
-    if (!selectedJob?.jobId) return;
-    setLoadingAppDetail(true);
-    try {
-      const res = await apiClient.post('/employee/job/get-detail', {
-        IDs: [applicationID],
-        jobID: selectedJob.jobId,
-        type: 'jobApplication',
-      }, { withCredentials: true });
-
-      setSelectedApplication(res?.data?.jobApplications?.[0] || null);
-    } catch (err) {
-      setErrorAppDetail(err.response?.data?.error || 'Failed to load applicant detail.');
-    } finally {
-      setLoadingAppDetail(false);
-    }
+  // Navigation instead of modal
+  const openApplicantDetail = (applicationID) => {
+    if (!selectedJob?.jobId || !applicationID) return;
+    navigate(`/employee/applicant-detail-edit/${selectedJob.jobId}/${applicationID}`);
   };
+
+
 
   // Open status modal for an applicant
   const openStatusModal = (application) => {
@@ -161,7 +155,7 @@ const ShortlistedCandidates = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <InternalLoader text="Loading Applicants" />;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (
@@ -251,14 +245,6 @@ const ShortlistedCandidates = () => {
                         title="View Details"
                       >
                         <FiEye />
-                      </button>
-
-                      <button
-                        onClick={() => openStatusModal(applicant)}
-                        className="p-2 bg-yellow-100 rounded hover:bg-yellow-200 text-yellow-700"
-                        title="Change Status"
-                      >
-                        <FiEdit className="h-5 w-5" />
                       </button>
 
 
