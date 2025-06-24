@@ -201,12 +201,27 @@ const ApplicantDetailPage = () => {
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
         <h3 className="text-lg font-semibold text-indigo-600 mb-4">Application Timeline</h3>
         <ol className="relative border-l border-indigo-300 ml-2">
-            {statusOrder
-            .map(stage => {
-                // Get all entries for this stage and find the latest one by createdAt
-                const entries = status?.filter(s => s.stage === stage) || [];
-                if (entries.length === 0) return null; // no entry, skip
+            {(() => {
+            if (!status || status.length === 0) {
+                return <p className="text-gray-500 italic">No timeline data available.</p>;
+            }
 
+            // Find latest status entry overall by createdAt
+            const latestOverallEntry = status.reduce((latest, current) =>
+                new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+            );
+
+            // Get index of the latest stage in the order array
+            const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
+
+            // Filter stages to only those up to latestStageIndex
+            const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
+
+            return visibleStages.map(stage => {
+                const entries = status.filter(s => s.stage === stage);
+                if (entries.length === 0) return null;
+
+                // Latest entry per stage
                 const latestEntry = entries.reduce((latest, current) =>
                 new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
                 );
@@ -230,10 +245,11 @@ const ApplicantDetailPage = () => {
                     )}
                 </li>
                 );
-            })
-            .filter(Boolean)}
+            });
+            })()}
         </ol>
         </div>
+
 
       </div>
     </div>
