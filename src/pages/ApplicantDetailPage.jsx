@@ -188,6 +188,8 @@ const ApplicantDetailPage = () => {
             />
           </div>
 
+
+
           <button
             onClick={handleStatusUpdate}
             disabled={updatingStatus}
@@ -196,6 +198,8 @@ const ApplicantDetailPage = () => {
             {updatingStatus ? 'Updating...' : 'Update Status'}
           </button>
         </div>
+
+        {/* Status Timeline */}
 
         {/* Timeline */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
@@ -249,7 +253,6 @@ const ApplicantDetailPage = () => {
             })()}
         </ol>
         </div>
-
 
       </div>
     </div>
