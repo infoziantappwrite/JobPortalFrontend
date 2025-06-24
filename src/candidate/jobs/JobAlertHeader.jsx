@@ -27,7 +27,7 @@ const JobAlertHeader = ({ filters, handleChange, predefinedOptions, user, setFil
   <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
     <Bell className="text-blue-600 w-5 h-5" />
     {user?.userType?.toLowerCase() === "candidate"
-      ? "My Job Alerts"
+      ? "Job Alerts"
       : "Posted Jobs"}
   </h2>
 

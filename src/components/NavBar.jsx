@@ -7,11 +7,13 @@ import apiClient from '../api/apiClient';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { useUser } from '../contexts/UserContext';
+import NotificationPopup from './Notificationpopup'; // Import the NotificationPopup component
 
 export default function Navbar() {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mainMenuOpen, setMainMenuOpen] = useState(false);
+
   const userMenuRef = useRef();
   const mainMenuRef = useRef();
   const navigate = useNavigate();
@@ -121,10 +123,8 @@ export default function Navbar() {
         {user && (
           <div className="flex items-center gap-4 px-4">
             {/* Notification */}
-            <button className="text-gray-700 text-2xl relative" aria-label="Notifications">
-              <FiBell />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+                 <NotificationPopup />
+
 
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
