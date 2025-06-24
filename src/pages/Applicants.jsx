@@ -154,17 +154,15 @@ const Applicants = () => {
                     <h4 className="text-center font-semibold text-base text-gray-800 mt-2">{name}</h4>
                     <p className="text-sm text-center text-indigo-600">{applicant.candidateID?.role || 'Applicant'}</p>
                     <p className="text-sm text-center text-gray-500">{email}</p>
-                    <div className="flex justify-center gap-3 mt-3">
+                    <div className="flex justify-center mt-4">
                       <button
                         onClick={() => openApplicantDetail(applicant.applicationID)}
-                        className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
-                        title="View"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded transition"
+                        title="View Details"
                       >
-                        <FiEye />
+                        <FiEye className="w-4 h-4" />
+                        View Details
                       </button>
-                      <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 capitalize">
-                        {status}
-                      </span>
                     </div>
                   </div>
                 );
@@ -224,35 +222,6 @@ const Applicants = () => {
                   </a>
                 </div>
 
-                <div className="mb-6 border-t pt-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Application Timeline</h3>
-                  <div className="space-y-3">
-                    {statusOrder.map((stage) => {
-                      const statusEntry = selectedApplication.status?.find(s => s.stage === stage);
-                      const isCompleted = Boolean(statusEntry);
-                      return (
-                        <div key={stage} className="flex items-start gap-3">
-                          <div className={`w-4 h-4 rounded-full mt-1 ${isCompleted ? 'bg-green-500' : 'bg-gray-300'}`} />
-                          <div>
-                            <p className={`font-medium capitalize ${isCompleted ? 'text-green-700' : 'text-gray-400'}`}>
-                              {stage}
-                            </p>
-                            {isCompleted && (
-                              <div className="text-sm text-gray-600">
-                                <p>
-                                  {statusEntry.remarks && <span className="block mb-1 italic">"{statusEntry.remarks}"</span>}
-                                  <span className="text-xs">
-                                    {new Date(statusEntry.createdAt).toLocaleString()}
-                                  </span>
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
               </>
             )}
           </div>
