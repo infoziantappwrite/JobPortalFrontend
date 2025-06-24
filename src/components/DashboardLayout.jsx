@@ -33,7 +33,7 @@ const DashboardLayout = () => {
       { key: 'jobs', label: 'Job Alerts', icon: <FiBell />, path: '/candidate/jobs' },
       { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
       // { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
-      { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
+      // { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
 
     ],
     superadmin: [

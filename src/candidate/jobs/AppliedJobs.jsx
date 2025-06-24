@@ -5,27 +5,13 @@ import {
   Briefcase,
   MapPin,
   Clock,
-  X,
-  Building2,
-  Calendar,
-  Mail,
-  Tags,
-  DollarSign,
-  User,
-  GraduationCap,
-  Globe,
-  Locate,
-  BookOpen,
-  Users,
   FileClock,
   Search,
-  Filter,
   RotateCcw,
-  Bell,
-
 } from 'lucide-react';
 import EmptyState from '../../components/EmptyState';
 import InternalLoader from '../../components/InternalLoader';
+import JobDetailsModal from './JobDetailsModal';
 
 const AppliedJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -44,7 +30,7 @@ const AppliedJobs = () => {
         setLoading(true);
         const res = await apiClient.get('/candidate/job/get-applied-jobs', { withCredentials: true });
         setJobs(res.data.jobs || []);
-        console.log(res.data.jobs)
+        //console.log(res.data.jobs)
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applied jobs.');
       } finally {
@@ -98,6 +84,8 @@ const AppliedJobs = () => {
             <Briefcase className="text-blue-600 w-5 h-5" />
             Applied Jobs
           </h2>
+          
+          
 
           {/* Search + Buttons Container */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:max-w-xl">
@@ -153,56 +141,91 @@ const AppliedJobs = () => {
         {filteredJobs.length > 0 ? (
           <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginatedJobs.map((job) => (
-                <div
-                  key={job._id}
-                  onClick={() => openJobModal(job)}
-                  className="bg-white border border-blue-100 rounded-xl p-5 shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <Briefcase className="text-teal-600" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{job.title}</h3>
+              {paginatedJobs.map((job) => {
+                const latestStageObj = [...job.applicationStatus].sort(
+                  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                )[0];
+                const stage = latestStageObj?.stage || '';
+
+                const stageColor = {
+                  applied: 'bg-gray-300 text-gray-700',
+                  shortlisted: 'bg-blue-100 text-blue-600',
+                  interviewed: 'bg-yellow-100 text-yellow-700',
+                  offered: 'bg-green-100 text-green-600',
+                  rejected: 'bg-red-100 text-red-600',
+                };
+
+                return (
+                  <div
+                    key={job._id}
+                    onClick={() => openJobModal(job)}
+                    className="bg-gradient-to-br from-white via-blue-50 to-white border border-blue-100 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-shadow cursor-pointer flex flex-col justify-between h-full"
+                  >
+                    {/* Title */}
+                    <div className="mb-3">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-1 flex items-center gap-2">
+                        <Briefcase className="text-teal-600 w-5 h-5" />
+                        {job.title}
+                      </h3>
                       <p className="text-sm text-gray-500">{job.company}</p>
                     </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-3">
-                    <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-                      <MapPin className="w-4 h-4" /> {job.location}
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-3">
+                      <div className="flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                        <MapPin className="w-4 h-4" /> {job.location}
+                      </div>
+                      <div className="flex items-center gap-1 bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
+                        <Clock className="w-4 h-4" /> {job.jobType}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-                      <Clock className="w-4 h-4" /> {job.jobType}
+
+                    {/* Footer: Stage + Applied Date */}
+                    <div className="flex justify-between items-center text-xs text-gray-500 mt-auto pt-2 border-t border-gray-100">
+                      <p>
+                        <strong>Applied At:</strong>{' '}
+                        {new Date(job.appliedAt).toLocaleDateString()}
+                      </p>
+                      {stage && (
+                        <span
+                          className={`px-3 py-0.5 text-xs rounded-full font-medium whitespace-nowrap ${stageColor[stage] || 'bg-gray-100 text-gray-600'
+                            }`}
+                        >
+                          {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <p className="text-gray-700 text-sm line-clamp-3">
-                    {job.description?.substring(0, 120)}...
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
+
+            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-6 gap-2">
+              <div className="flex justify-center mt-8 gap-3 items-center flex-wrap text-sm">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm rounded border border-blue-300 text-blue-700 disabled:opacity-50"
+                  className="px-3 py-1 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 disabled:opacity-50"
                 >
                   Prev
                 </button>
-                <span className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
+                <span className="text-gray-600">
+                  Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
                 </span>
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm rounded border border-blue-300 text-blue-700 disabled:opacity-50"
+                  className="px-3 py-1 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
             )}
-          </>) : (
+          </>
+
+        ) : (
           <EmptyState
             icon={FileClock}
             title="No Results Found"
@@ -213,80 +236,7 @@ const AppliedJobs = () => {
 
         {/* Modal */}
         {selectedJob && (
-          <div className="fixed inset-0 z-50 flex justify-center items-center px-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-3xl rounded-xl p-6 overflow-y-auto max-h-[90vh] relative shadow-xl">
-              <button
-                onClick={closeJobModal}
-                className="absolute top-4 right-4 text-gray-600 hover:text-black"
-                aria-label="Close"
-              >
-                <X size={20} />
-              </button>
-
-              {/* Job Title & Description */}
-              <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-blue-700 mb-2 flex items-center gap-2">
-                  <Briefcase className="text-teal-600" size={18} />
-                  {selectedJob.title}
-                </h2>
-                <p className="text-gray-700 mb-1 flex items-center gap-1">
-                  <Building2 className="text-teal-600" size={16} />
-                  {selectedJob.company}
-                </p>
-                <p className="text-gray-600 mt-3 leading-relaxed border-t pt-4 text-justify">
-                  {selectedJob.description}
-                </p>
-              </div>
-
-              {/* Job Details */}
-              <div>
-                <h3 className="text-lg font-semibold text-blue-700 mb-4 border-b pb-2">Job Details</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-gray-700 text-sm">
-                  <Detail label="Location" icon={MapPin} value={selectedJob.location} />
-                  <Detail label="Type" icon={Clock} value={selectedJob.jobType} />
-                  <Detail label="Email" icon={Mail} value={selectedJob.emailAddress} />
-                  <Detail label="Specialisms" icon={Tags} value={selectedJob.specialisms?.join(', ') || 'N/A'} />
-                  <Detail label="Salary" icon={DollarSign} value={selectedJob.offeredSalary || 'N/A'} />
-                  <Detail label="Career Level" icon={User} value={selectedJob.careerLevel || 'N/A'} />
-                  <Detail label="Experience" icon={Clock} value={selectedJob.experience || 'N/A'} />
-                  <Detail label="Gender" icon={Users} value={selectedJob.gender || 'N/A'} />
-                  <Detail label="Industry" icon={Globe} value={selectedJob.industry || 'N/A'} />
-                  <Detail label="Qualification" icon={GraduationCap} value={selectedJob.qualification || 'N/A'} />
-                  <Detail label="Deadline" icon={Calendar} value={new Date(selectedJob.applicationDeadline).toLocaleDateString()} />
-                  <Detail label="Country" icon={Locate} value={selectedJob.country || 'N/A'} />
-                  <Detail label="City" icon={MapPin} value={selectedJob.city || 'N/A'} />
-                  <Detail label="Address" icon={BookOpen} value={selectedJob.address || 'N/A'} />
-                </div>
-              </div>
-             
-              {/* Application Status Timeline */}
-{selectedJob.applicationStatus && selectedJob.applicationStatus.length > 0 && (
-  <div className="mt-8">
-    <h3 className="text-lg font-semibold text-blue-700 mb-4 border-b pb-2">Application Timeline</h3>
-    <ol className="relative border-l border-blue-300 ml-2">
-      {selectedJob.applicationStatus.map((stage, index) => (
-        <li key={stage._id} className="mb-6 ml-4">
-          <div className="absolute w-3 h-3 bg-blue-500 rounded-full -left-1.5 border border-white"></div>
-          <time className="block mb-1 text-sm font-normal leading-none text-gray-400">
-            {new Date(stage.createdAt).toLocaleString()}
-          </time>
-          <p className="text-base font-medium text-blue-700 capitalize">
-            {stage.stage}
-          </p>
-          {stage.remarks && (
-            <p className="text-sm text-gray-600 mt-1">
-              {stage.remarks}
-            </p>
-          )}
-        </li>
-      ))}
-    </ol>
-  </div>
-)}
-
-            </div>
-            
-          </div>
+          <JobDetailsModal selectedJob={selectedJob} onClose={closeJobModal} />
         )}
       </div>
     </div>
