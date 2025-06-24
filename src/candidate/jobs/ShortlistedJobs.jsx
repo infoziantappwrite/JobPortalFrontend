@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../../api/apiClient';
-import { Eye, X } from 'lucide-react';
+import { Eye, X,ArchiveX } from 'lucide-react';
+import EmptyState from '../../components/EmptyState';
+import InternalLoader from '../../components/InternalLoader';
 
 const ShortlistedJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -14,7 +16,8 @@ const ShortlistedJobs = () => {
     const fetch = async () => {
       try {
         const res = await apiClient.get('/candidate/job/get-shortlisted-jobs', { withCredentials: true });
-        setJobs(res.data.jobs || []);
+        console.log(res.data)
+        setJobs( []);
       } catch {
         setError('Failed to load shortlisted jobs.');
       } finally {
@@ -37,20 +40,18 @@ const ShortlistedJobs = () => {
     }
   };
 
-  if (loading) return (<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-blue-700 font-medium text-lg">Loading Shortlisted Jobs...</p>
-      </div>
-    </div>);
+  if (loading) return <InternalLoader text="Loading Shortlisted jobs"/>;
   if (error) return (<div className="text-red-600 text-center">{error}</div>);
+
+
+
   if (jobs.length === 0) {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-center text-gray-600 bg-gradient-to-br from-teal-50 to-blue-50 rounded-lg shadow-inner px-6">
-      <div className="text-5xl mb-4">🔎</div>
-      <h2 className="text-xl font-semibold mb-2">No shortlisted jobs yet</h2>
-      <p className="text-sm text-gray-500">Start exploring jobs and shortlist the ones that catch your interest!</p>
-    </div>
+    <EmptyState
+  icon={ArchiveX}
+  title="No Shortlisted Jobs"
+  message="You haven't shortlisted any jobs yet. Explore and save jobs you like!"
+/>
   );
 }
 

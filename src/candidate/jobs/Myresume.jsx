@@ -8,16 +8,20 @@ import {
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import SectionTimeline from './SectionTimeline';
 import apiClient from '../../api/apiClient';
+import InternalLoader from '../../components/InternalLoader';
+import { AlertTriangle } from "lucide-react";
 
 const Myresume = () => {
   const [candidateInfo, setCandidateInfo] = useState(null);
-
+const [error, setError] = useState('');
   const fetchProfile = async () => {
     try {
       const res = await apiClient.get('/candidate/info/get-profile');
       setCandidateInfo(res.data.candidateInfo);
+      setError('');
     } catch (error) {
       console.error('Error fetching candidate profile:', error);
+      setError('Something went wrong while loading your Page.');
     }
   };
 
@@ -29,15 +33,18 @@ const Myresume = () => {
   const getColorFromName = (name) => name ? colors[name.charCodeAt(0) % colors.length] : 'bg-gray-500';
 
   if (!candidateInfo) {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-blue-700 font-medium text-lg">Loading your profile...</p>
-      </div>
-    </div>
-  );
+  return <InternalLoader text="Loading Resume" />
 }
+if (error) {
+    return (
+     
+        <EmptyState
+          icon={AlertTriangle}
+          title="Oops! Something Went Wrong"
+          message={error}
+        />
+    );
+  }
 
 
   const {

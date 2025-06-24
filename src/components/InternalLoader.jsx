@@ -1,10 +1,6 @@
-import { useUser } from '../contexts/UserContext';
+import React from 'react';
 
-const GlobalLoader = () => {
-  const { loading } = useUser();
-
-  if (!loading) return null;
-
+const InternalLoader = ({ text = 'Loading' }) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
       <div className="flex flex-col items-center gap-5">
@@ -20,7 +16,7 @@ const GlobalLoader = () => {
 
         {/* Animated text with livelier bouncing dots */}
         <p className="text-blue-800 font-semibold text-lg flex items-center tracking-wide">
-          Loading
+          {text}
           <span className="ml-1 animate-bounce text-blue-800">.</span>
           <span className="ml-0.5 animate-bounce [animation-delay:0.15s] text-blue-800">.</span>
           <span className="ml-0.5 animate-bounce [animation-delay:0.3s] text-blue-800">.</span>
@@ -30,4 +26,4 @@ const GlobalLoader = () => {
   );
 };
 
-export default GlobalLoader;
+export default InternalLoader;
