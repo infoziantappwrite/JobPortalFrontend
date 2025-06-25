@@ -11,11 +11,13 @@ import apiClient from '../../api/apiClient';
 import InternalLoader from '../../components/InternalLoader';
 import { AlertTriangle } from "lucide-react";
 import CVManager from './CVManager';
+import { fetchCurrentUser } from '../../api/fetchuser';
 
 const Myresume = () => {
-  const [candidateInfo, setCandidateInfo] = useState(null);
+const [candidateInfo, setCandidateInfo] = useState(null);
 const [error, setError] = useState('');
-  const fetchProfile = async () => {
+
+  const fetchProfile = async (userId) => {
     try {
       const res = await apiClient.get('/candidate/info/get-profile');
       setCandidateInfo(res.data.candidateInfo);
@@ -26,9 +28,25 @@ const [error, setError] = useState('');
     }
   };
 
+
   useEffect(() => {
-    fetchProfile();
+    const loadData = async () => {
+      try {
+        const user = await fetchCurrentUser();
+        if (user && user.id) {
+          await fetchProfile(user.id);
+        } else {
+          setError('User ID not found');
+        }
+      } catch (err) {
+        console.error('Error loading user/profile:', err);
+        setError('Failed to load user data.');
+      }
+    };
+
+    loadData();
   }, []);
+
 
   const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
   const getColorFromName = (name) => name ? colors[name.charCodeAt(0) % colors.length] : 'bg-gray-500';
