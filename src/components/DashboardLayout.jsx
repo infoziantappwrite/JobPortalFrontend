@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { FiUser, FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiList, FiClipboard, FiHome, FiShield, FiSettings  } from 'react-icons/fi';
+import { FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiList, FiClipboard, FiHome, FiShield, FiSettings  } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import DFooter from './DFooter';
 
@@ -53,7 +53,7 @@ const DashboardLayout = () => {
       { key: 'Manage Jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/company/manage-jobs' },
       { key: 'applicants', label: 'Manage Applicants', icon: <FiUsers />, path: '/company/manage-applicants' },
       { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/company/shortlisted-applicants' },
-      { key: 'create', label: 'Create Employees', icon: <FiUsers />, path: '/company/create-employees' },
+      { key: 'create', label: 'Create Employees', icon: <FiUserPlus />, path: '/company/create-employees' },
       { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
       { key: 'approve', label: 'Approve Employees', icon: <FiUserCheck />, path: '/company/approve-employees' },
 

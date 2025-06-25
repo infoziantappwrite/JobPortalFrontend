@@ -16,9 +16,10 @@ import { fetchCurrentUser } from '../../api/fetchuser';
 const Myresume = () => {
 const [candidateInfo, setCandidateInfo] = useState(null);
 const [error, setError] = useState('');
+
   const fetchProfile = async (userId) => {
     try {
-      const res = await apiClient.get(`/candidate/info/get-profile/${userId}`);
+      const res = await apiClient.get('/candidate/info/get-profile');
       setCandidateInfo(res.data.candidateInfo);
       setError('');
     } catch (error) {
