@@ -189,6 +189,7 @@ function App() {
             <Route path="manage-companies" element={<SuperCompanyManage />} />
             <Route path="manage-employee" element={<SuperEmployeeManage />} />
             <Route path="manage-candidate" element={<SuperCandidateManage />} />
+            <Route path="manage-applicants" element={<ApplicantActions />} />
             <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
             <Route path="/superadmin/view-company/:id" element={<SuperCompanyViewPage />} />
 

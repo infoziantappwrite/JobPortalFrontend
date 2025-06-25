@@ -40,6 +40,7 @@ const DashboardLayout = () => {
       {key: 'dashboard',label: 'Dashboard',icon: <FiBarChart2 />,path: '/superadmin/dashboard',},
       {key: 'add',label: 'Approve Companies',icon: <FiUserCheck />,path: '/superadmin/approve-companies',},
       {key: 'manage',label: 'Manage Companies',icon: <FiBriefcase />,path: '/superadmin/manage-companies',},
+      {key: 'Applicants',label: 'Manage Applicants',icon: <FiBriefcase />,path: '/superadmin/manage-applicants',},
       {key: 'manageEmployee',label: 'Manage Employee',icon: <FiSettings  />,path: '/superadmin/manage-employee',},
       {key: 'manageCandidate',label: 'Manage Candidate',icon: <FiUsers />,path: '/superadmin/manage-candidate',},
     ],
