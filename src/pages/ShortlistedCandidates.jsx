@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import InternalLoader from '../components/InternalLoader';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 import {
   CheckCircle,
   XCircle,
@@ -64,13 +65,16 @@ const ShortlistedCandidates = () => {
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
 
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchShortlisted = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/employee/job/applicant/shortlisted-applicants', { withCredentials: true });
+        const res = await apiClient.get(`/${role}/job/applicant/shortlisted-applicants`, { withCredentials: true });
         setJobs(res.data.shortlistedApplicants || []);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load shortlisted applicants.');
@@ -89,7 +93,7 @@ const ShortlistedCandidates = () => {
   // Navigation instead of modal
   const openApplicantDetail = (applicationID) => {
     if (!selectedJob?.jobId || !applicationID) return;
-    navigate(`/employee/applicant-detail-edit/${selectedJob.jobId}/${applicationID}`);
+    navigate(`/${role}/applicant-detail-edit/${selectedJob.jobId}/${applicationID}`);
   };
 
 
@@ -109,7 +113,7 @@ const ShortlistedCandidates = () => {
     setUpdateError('');
     try {
       const res = await apiClient.post(
-        '/employee/job/applicant/shortlist',
+        `/${role}/job/applicant/shortlist`,
         {
           jobID: selectedJob.jobId,
           applicantID: selectedApplication.candidateID?._id || selectedApplication.candidateID || selectedApplication._id,

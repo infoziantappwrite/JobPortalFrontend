@@ -5,6 +5,7 @@ import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import InternalLoader from '../components/InternalLoader';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from '../contexts/UserContext';
 import {
   CheckCircle,
   XCircle,
@@ -68,13 +69,16 @@ const ApplicantActions = () => {
   const [newStatus, setNewStatus] = useState('');
   const [remarks, setRemarks] = useState('');
 
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchShortlisted = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/employee/job/applicant/get-applicants', { withCredentials: true });
+        const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, { withCredentials: true });
         setJobs(res.data.jobs || []);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applicants.');
@@ -93,8 +97,12 @@ const ApplicantActions = () => {
   // Navigation instead of modal
   const openApplicantDetail = (applicationID) => {
     if (!selectedJob?._id || !applicationID) return;
-    navigate(`/employee/applicant-detail-view/${selectedJob._id}/${applicationID}`);
+
+    const applicationIDString = typeof applicationID === 'object' ? applicationID._id : applicationID;
+
+    navigate(`/${role}/applicant-detail-view/${selectedJob._id}/${applicationIDString}`);
   };
+
 
   const openStatusModal = (application) => {
     setSelectedApplication(application);
@@ -121,7 +129,7 @@ const ApplicantActions = () => {
       }
 
       await apiClient.post(
-        '/employee/job/applicant/shortlist',
+        `/${role}/job/applicant/shortlist`,
         { jobID: selectedJob._id, applicantID, customStatus: newStatus, remarks },
         { withCredentials: true }
       );
