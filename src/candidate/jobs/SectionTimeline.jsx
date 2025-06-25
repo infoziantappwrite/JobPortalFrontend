@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import apiClient from '../../api/apiClient';
+import { useUser } from '../../contexts/UserContext';
+
 
 // Reusable Input
 const Input = ({ placeholder, type = 'text', value, onChange }) => (
@@ -17,6 +19,11 @@ const Input = ({ placeholder, type = 'text', value, onChange }) => (
 const SectionTimeline = ({ title, items, type, fetchData }) => {
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
+
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
+
+  const isReadOnly = role === 'employee' || role === 'company';
 
   const getInitial = (text) => {
     if (!text) return '?';
@@ -53,14 +60,18 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h2 className="text-xl font-bold text-blue-700">{title}</h2>
-        <button
-          onClick={() => setEditingItem({})}
-          className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium"
-        >
-          <FiPlus className="bg-red-100 p-1 rounded-full" size={20} />
-          Add {title}
-        </button>
+
+        {!isReadOnly && (
+          <button
+            onClick={() => setEditingItem({})}
+            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium"
+          >
+            <FiPlus className="bg-red-100 p-1 rounded-full" size={20} />
+            Add {title}
+          </button>
+        )}
       </div>
+
 
       {/* Timeline Items */}
       <div className="border-l-2 border-dashed border-red-300 ml-5 pl-5 space-y-8">
@@ -81,36 +92,40 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-800">
-  {heading}
-  <br className="block md:hidden" />
-  <span className="inline-block md:ml-3 mt-1 md:mt-0 bg-red-100 text-red-600 text-sm px-2 py-0.5 rounded-full">
-    {badge}
-  </span>
-</h3>
+                    {heading}
+                    <br className="block md:hidden" />
+                    <span className="inline-block md:ml-3 mt-1 md:mt-0 bg-red-100 text-red-600 text-sm px-2 py-0.5 rounded-full">
+                      {badge}
+                    </span>
+                  </h3>
 
                   <h4 className="text-md text-blue-600 font-medium mt-1">{subHeading}</h4>
                   <p className="text-gray-600 mt-1">{item.description}</p>
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEditingItem(item)}
-                    className="bg-purple-100 p-2 rounded-full hover:bg-purple-200"
-                  >
-                    <FiEdit2 className="text-purple-600" size={16} />
-                  </button>
-                  <button
-                    onClick={() => setDeletingItemId(item._id)}
-                    className="bg-purple-100 p-2 rounded-full hover:bg-purple-200"
-                  >
-                    <FiTrash2 className="text-purple-600" size={16} />
-                  </button>
-                </div>
+                {/* Conditionally render edit/delete buttons */}
+                {!isReadOnly && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingItem(item)}
+                      className="bg-purple-100 p-2 rounded-full hover:bg-purple-200"
+                    >
+                      <FiEdit2 className="text-purple-600" size={16} />
+                    </button>
+                    <button
+                      onClick={() => setDeletingItemId(item._id)}
+                      className="bg-purple-100 p-2 rounded-full hover:bg-purple-200"
+                    >
+                      <FiTrash2 className="text-purple-600" size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
 
       {/* Modal: Add/Edit */}
       {editingItem !== null && (
