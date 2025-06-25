@@ -24,12 +24,25 @@ const ApplicantDetailView = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateError, setUpdateError] = useState('');
 
-  useEffect(() => {
-    const fetchApplicationDetail = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await apiClient.post(
+ useEffect(() => {
+  const fetchApplicationDetail = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      let res;
+
+      if (role === 'superadmin') {
+        res = await apiClient.post(
+          '/superadmin/job/applicant-details',
+          {
+            candidateID: applicationID, // This must be the actual candidate ID
+            jobID,
+          },
+          { withCredentials: true }
+        );
+      } else {
+        res = await apiClient.post(
           `/${role}/job/get-detail`,
           {
             IDs: [applicationID],
@@ -38,24 +51,33 @@ const ApplicantDetailView = () => {
           },
           { withCredentials: true }
         );
-
-        const app = res?.data?.jobApplications?.[0] || null;
-        if (!app) {
-          setError('Application details not found.');
-        } else {
-          setApplication(app);
-          const latestStatus = app?.status?.slice().pop()?.stage || 'applied';
-          setNewStatus(latestStatus);
-        }
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to load applicant detail.');
-      } finally {
-        setLoading(false);
       }
-    };
 
-    if (jobID && applicationID) fetchApplicationDetail();
-  }, [jobID, applicationID]);
+      // console.log(res.data);
+      
+
+      const app = role === 'superadmin' ? res?.data?.application : res?.data?.jobApplications?.[0] || null;
+
+
+      if (!app) {
+        setError('Application details not found.');
+      } else {
+        setApplication(app);
+        const latestStatus = app?.status?.slice().pop()?.stage || 'applied';
+        setNewStatus(latestStatus);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to load applicant detail.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (role && jobID && applicationID) {
+    fetchApplicationDetail();
+  }
+}, [role, jobID, applicationID]);
+
 
 
   if (loading) return <InternalLoader text="Loading Applicant Details" />;
