@@ -5,6 +5,7 @@ import { X, AlertTriangle } from 'lucide-react';
 import InternalLoader from '../components/InternalLoader';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from '../contexts/UserContext';
 
 const ApplicantDetailView = () => {
   const { jobID, applicationID } = useParams();
@@ -13,6 +14,9 @@ const ApplicantDetailView = () => {
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
 
   // Change status states
   const [newStatus, setNewStatus] = useState('');
@@ -26,7 +30,7 @@ const ApplicantDetailView = () => {
       setError('');
       try {
         const res = await apiClient.post(
-          '/employee/job/get-detail',
+          `/${role}/job/get-detail`,
           {
             IDs: [applicationID],
             jobID,
@@ -53,42 +57,6 @@ const ApplicantDetailView = () => {
     if (jobID && applicationID) fetchApplicationDetail();
   }, [jobID, applicationID]);
 
-  const handleStatusUpdate = async () => {
-    if (!newStatus) return;
-
-    setUpdatingStatus(true);
-    setUpdateError('');
-    try {
-      const applicantID = application?.userID?._id || application?.userID || applicationID;
-      await apiClient.post(
-        '/employee/job/applicant/shortlist',
-        {
-          jobID,
-          applicantID,
-          customStatus: newStatus,
-          remarks,
-        },
-        { withCredentials: true }
-      );
-      toast.success(`Status updated to '${newStatus}' successfully.`);
-      setRemarks('');
-      // Refresh application details to reflect updated timeline
-      const refreshed = await apiClient.post(
-        '/employee/job/get-detail',
-        {
-          IDs: [applicationID],
-          jobID,
-          type: 'jobApplication',
-        },
-        { withCredentials: true }
-      );
-      setApplication(refreshed?.data?.jobApplications?.[0] || null);
-    } catch (err) {
-      setUpdateError(err.response?.data?.error || 'Failed to update status.');
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
 
   if (loading) return <InternalLoader text="Loading Applicant Details" />;
 

@@ -5,6 +5,7 @@ import { X, AlertTriangle } from 'lucide-react';
 import InternalLoader from '../components/InternalLoader';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from '../contexts/UserContext';
 
 const statusOrder = ['applied', 'shortlisted', 'interviewed', 'offered', 'rejected'];
 
@@ -15,6 +16,9 @@ const ApplicantDetailPage = () => {
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
 
   // Change status states
   const [newStatus, setNewStatus] = useState('');
@@ -28,7 +32,7 @@ const ApplicantDetailPage = () => {
       setError('');
       try {
         const res = await apiClient.post(
-          '/employee/job/get-detail',
+          `/${role}/job/get-detail`,
           {
             IDs: [applicationID],
             jobID,
@@ -55,28 +59,34 @@ const ApplicantDetailPage = () => {
     if (jobID && applicationID) fetchApplicationDetail();
   }, [jobID, applicationID]);
 
-  const handleStatusUpdate = async () => {
-    if (!newStatus) return;
+const handleStatusUpdate = async () => {
+  if (!newStatus) return;
 
-    setUpdatingStatus(true);
-    setUpdateError('');
-    try {
-      const applicantID = application?.userID?._id || application?.userID || applicationID;
-      await apiClient.post(
-        '/employee/job/applicant/shortlist',
-        {
-          jobID,
-          applicantID,
-          customStatus: newStatus,
-          remarks,
-        },
-        { withCredentials: true }
-      );
-      toast.success(`Status updated to '${newStatus}' successfully.`);
-      setRemarks('');
-      // Refresh application details to reflect updated timeline
+  setUpdatingStatus(true);
+  setUpdateError('');
+  try {
+    const applicantID = application?.userID?._id || application?.userID || applicationID;
+
+    // Make status update request
+    await apiClient.post(
+      `/${role}/job/applicant/shortlist`,
+      {
+        jobID,
+        applicantID,
+        customStatus: newStatus,
+        remarks,
+      },
+      { withCredentials: true }
+    );
+
+    toast.success(`Status updated to '${newStatus}' successfully.`);
+    setRemarks('');
+
+    // Wait for the status update to be successful, then refresh the application details
+    setTimeout(async () => {
+      console.log('Refreshing application details after status update...');
       const refreshed = await apiClient.post(
-        '/employee/job/get-detail',
+        `/${role}/job/get-detail`,
         {
           IDs: [applicationID],
           jobID,
@@ -85,12 +95,16 @@ const ApplicantDetailPage = () => {
         { withCredentials: true }
       );
       setApplication(refreshed?.data?.jobApplications?.[0] || null);
-    } catch (err) {
-      setUpdateError(err.response?.data?.error || 'Failed to update status.');
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
+    }, 500); // Adding a small delay to ensure the update is complete
+
+  } catch (err) {
+    console.error('Error during status update:', err);
+    setUpdateError(err.response?.data?.error || 'Failed to update status.');
+  } finally {
+    setUpdatingStatus(false);
+  }
+};
+
 
   if (loading) return <InternalLoader text="Loading Applicant Details" />;
 

@@ -22,7 +22,7 @@ import { ToastContainer } from 'react-toastify';
 import DashboardEMP from './employee/DashboardEMP';
 import EmployeeProfile from './pages/EmployeeProfile';
 import AppliedJobs from './candidate/jobs/AppliedJobs';
-import Shortlisted from './pages/ShortlistedCandidates';
+import ShortlistedCandidates from './pages/ShortlistedCandidates';
 import Applicants from './pages/Applicants';
 import ChangePass from './pages/ChangePass';
 import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
@@ -142,8 +142,7 @@ function App() {
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobList />} />
             <Route path="applicants" element={<Applicants />} />
-            <Route path="shortlisted-applicants" element={<Shortlisted />} />
-            <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
+            <Route path="shortlisted-applicants" element={<ShortlistedCandidates />} />
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
             <Route path="manage-applicants" element={<ApplicantActions />} />
@@ -168,10 +167,11 @@ function App() {
             <Route path="create-employees" element={<CreateEmployee />} />
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="jobs-edit" element={<EditJobByCompany />} />
-            <Route path="applicants" element={<Applicants />} />
-            <Route path="shortlisted" element={<Shortlisted />} />
+            <Route path="manage-applicants" element={<ApplicantActions />} />
+            <Route path="shortlisted-applicants" element={<ShortlistedCandidates />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />
-            <Route path="resume-alerts" element={<div>Resume Alerts</div>} />
+            <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
+            <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
           </Route>
           {/* Company Routes end */}
 
