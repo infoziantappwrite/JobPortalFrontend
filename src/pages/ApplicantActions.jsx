@@ -93,8 +93,12 @@ const ApplicantActions = () => {
   // Navigation instead of modal
   const openApplicantDetail = (applicationID) => {
     if (!selectedJob?._id || !applicationID) return;
-    navigate(`/employee/applicant-detail-view/${selectedJob._id}/${applicationID}`);
+
+    const applicationIDString = typeof applicationID === 'object' ? applicationID._id : applicationID;
+    
+    navigate(`/employee/applicant-detail-view/${selectedJob._id}/${applicationIDString}`);
   };
+
 
   const openStatusModal = (application) => {
     setSelectedApplication(application);
