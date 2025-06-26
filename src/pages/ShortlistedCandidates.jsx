@@ -175,36 +175,39 @@ const companyId = location?.state?.companyId;
           Shortlisted Applicants
         </h2>
       </div>
-
       {!selectedJob ? (
-        <div className="overflow-x-auto bg-white rounded-md shadow-md border">
-          <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-              <tr>
-                <th className="text-left py-3 px-5 border-b">Title</th>
-                <th className="text-left py-3 px-5 border-b">Company</th>
-                <th className="text-left py-3 px-5 border-b">Shortlisted</th>
-                <th className="text-left py-3 px-5 border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm text-gray-800">
+        <div className="overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
+          <div className="w-full">
+            {/* Header */}
+            <div className="hidden sm:grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
+              <div className="col-span-2">Title</div>
+              <div className="col-span-2">Company</div>
+              <div>Shortlisted</div>
+              <div>Actions</div>
+            </div>
+
+            {/* Rows */}
+            <div className="divide-y">
               {jobs.map((job) => (
-                <tr key={job.jobId} className="hover:bg-gray-50 border-t">
-                  <td className="py-3 px-5">{job.title}</td>
-                  <td className="py-3 px-5">{job.company}</td>
-                  <td className="py-3 px-5">{job.applicants?.length || 0}</td>
-                  <td className="py-3 px-5">
+                <div
+                  key={job.jobId}
+                  className="grid grid-cols-1 sm:grid-cols-6 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50"
+                >
+                  <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+                  <div className="col-span-2">{job.company}</div>
+                  <div>{job.applicants?.length || 0}</div>
+                  <div>
                     <button
                       onClick={() => handleViewApplicants(job.jobId)}
-                      className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded"
+                      className="text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded"
                     >
                       View Shortlisted
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       ) : (
         <div>

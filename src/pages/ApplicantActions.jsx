@@ -171,36 +171,40 @@ const ApplicantActions = () => {
       </div>
 
       {!selectedJob ? (
-        <div className="overflow-x-auto bg-white rounded-md shadow-md border">
-          <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-              <tr>
-                <th className="px-5 py-3 border-b text-left">Title</th>
-                <th className="px-5 py-3 border-b text-left">Company</th>
-                <th className="px-5 py-3 border-b text-left">Posted By</th>
-                <th className="px-5 py-3 border-b text-left">Applicants</th>
-                <th className="px-5 py-3 border-b text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm text-gray-800">
+        <div className="overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
+          <div className="w-full">
+            {/* Header */}
+            <div className="hidden sm:grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
+              <div className="col-span-2">Title</div>
+              <div>Company</div>
+              <div>Posted By</div>
+              <div className="text-center">Applicants</div>
+              <div>Actions</div>
+            </div>
+
+            {/* Rows */}
+            <div className="divide-y">
               {jobs.map(job => (
-                <tr key={job._id} className="hover:bg-gray-50 border-t">
-                  <td className="px-5 py-3">{job.title}</td>
-                  <td className="px-5 py-3">{job.company}</td>
-                  <td className="px-5 py-3">{job.postedBy?.name}</td>
-                  <td className="px-5 py-3">{job.applicants?.length || 0}</td>
-                  <td className="px-5 py-3">
+                <div
+                  key={job._id}
+                  className="grid grid-cols-1 sm:grid-cols-6 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50 cursor-default"
+                >
+                  <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+                  <div>{job.company}</div>
+                  <div>{job.postedBy?.name}</div>
+                  <div className="text-center">{job.applicants?.length || 0}</div>
+                  <div>
                     <button
-                      className="px-3 py-1.5 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700"
                       onClick={() => handleViewApplicants(job._id)}
                     >
                       View Applicants
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       ) : (
         <div>
