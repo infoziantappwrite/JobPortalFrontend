@@ -70,12 +70,13 @@ const ShortlistedCandidates = () => {
           withCredentials: true
         });
 
-        const formattedJobs = (res.data.applicants || []).map(item => ({
+        const formattedJobs = (res.data.shortlistedApplicants || []).map(item => ({
           jobId: item.job._id,
           title: item.job.title,
-          company: item.job.company || 'N/A',
+          company: res.data.company.name || 'N/A',
           applicants: item.applicants || []
         }));
+        
 
         setJobs(formattedJobs);
       } catch (err) {
