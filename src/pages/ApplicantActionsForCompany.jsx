@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiEye, FiUsers, FiEdit } from 'react-icons/fi';
+import { FiEye, FiUsers } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import InternalLoader from '../components/InternalLoader';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-    CheckCircle,
-    XCircle,
-    Clock,
-    X
-} from 'lucide-react';
+import { CheckCircle, XCircle, Clock, X } from 'lucide-react';
 
 const bgColors = [
     'bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-yellow-500',
@@ -39,8 +34,6 @@ const getBgColor = (name) => {
 
 const ApplicantActions = () => {
     const [jobs, setJobs] = useState([]);
-    // console.log(jobs);
-
     const [selectedJob, setSelectedJob] = useState(null);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -179,8 +172,15 @@ const ApplicantActions = () => {
                                 return (
                                     <tr key={job._id} className="hover:bg-gray-50 border-t">
                                         <td className="px-5 py-3">{job.title}</td>
-                                        <td className="px-5 py-3">{job.company || '—'}</td>
-                                        <td className="px-5 py-3">{job.postedBy?.name || '—'}</td>
+                                        <td className="px-5 py-3">
+                                            {typeof job.company === 'object' ? job.company.name : job.company || '—'}
+                                        </td>
+
+                                        <td className="px-5 py-3">
+                                            {typeof job.postedBy?.name === 'string'
+                                                ? job.postedBy.name
+                                                : job.company.name}
+                                        </td>
                                         <td className="px-5 py-3">{applicants.length}</td>
                                         <td className="px-5 py-3">
                                             <button
@@ -228,7 +228,7 @@ const ApplicantActions = () => {
                                             <button
                                                 className="p-2 bg-indigo-100 rounded hover:bg-indigo-200 text-indigo-700"
                                                 title="View Details"
-                                                onClick={() => openApplicantDetail(applicant)} // pass full applicant object
+                                                onClick={() => openApplicantDetail(applicant)}
                                             >
                                                 <FiEye />
                                             </button>
@@ -246,7 +246,6 @@ const ApplicantActions = () => {
                 </div>
             )}
 
-            {/* Status Modal */}
             {statusModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex justify-center items-center px-4">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative border">
