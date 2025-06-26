@@ -174,6 +174,7 @@ function App() {
             <Route path="approve-employees" element={<ApproveEmployee />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
             <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
+            <Route path="applicant-detail-edit/full-profile/:jobID/:applicationID" element={<CandidateProfile />} />
           </Route>
           {/* Company Routes end */}
 

@@ -109,7 +109,7 @@ const ApplicantDetailPage = () => {
   // New function to navigate to full profile page
   const goToFullProfile = () => {
     if (!jobID || !applicationID) return;
-    navigate(`/employee/applicant-detail-edit/full-profile/${jobID}/${applicationID}`);
+    navigate(`/${role}/applicant-detail-edit/full-profile/${jobID}/${applicationID}`);
   };
 
   if (loading) return <InternalLoader text="Loading Applicant Details" />;
