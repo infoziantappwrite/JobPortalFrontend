@@ -86,7 +86,7 @@ const Companies = () => {
   }
 
   return (
-    <div className="bg-gradient-to-tr from-blue-50 to-white min-h-screen py-10 px-4 md:px-10">
+    <div className="bg-gradient-to-tr from-blue-50 to-teal-50 min-h-screen py-10 px-4 md:px-10">
       {/* Header */}
       <div className="text-center mb-10">
   <h1 className="text-4xl font-extrabold pb-2 text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text mb-3">

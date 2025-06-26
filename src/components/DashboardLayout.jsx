@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiList, FiClipboard, FiHome, FiShield, FiSettings  } from 'react-icons/fi';
+import { FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiBook, FiSettings  } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import DFooter from './DFooter';
 
@@ -45,6 +45,7 @@ const DashboardLayout = () => {
       // { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/superadmin/shortlisted-applicants' },
       {key: 'manageEmployee',label: 'Manage Employee',icon: <FiSettings  />,path: '/superadmin/manage-employee',},
       {key: 'manageCandidate',label: 'Manage Candidate',icon: <FiUsers />,path: '/superadmin/manage-candidate',},
+      {key: 'course', label: 'Manage Courses', icon: <FiBook />, path: '/superadmin/course' },
     ],
 
     company: [
