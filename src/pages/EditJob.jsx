@@ -18,6 +18,7 @@ const EditJob = () => {
     emailAddress: job.emailAddress || '',
     username: job.username || '',
     specialisms: (job.specialisms || []).join(', '),
+    keyResponsibilities: (job.keyResponsibilities || []).join(', '), // ✅ Added here
     offeredSalary: job.offeredSalary || '',
     careerLevel: job.careerLevel || '',
     experience: job.experience || '',
@@ -41,6 +42,7 @@ const EditJob = () => {
     const updatedJob = {
       ...form,
       specialisms: form.specialisms.split(',').map(s => s.trim()),
+      keyResponsibilities: form.keyResponsibilities.split(',').map(k => k.trim()), // ✅ Added here
     };
 
     try {
@@ -85,7 +87,7 @@ const EditJob = () => {
 
         {/* Dynamic Field Sections */}
         {[
-          { title: "Job Details", fields: ["title", "specialisms", "description"] },
+          { title: "Job Details", fields: ["title", "specialisms", "keyResponsibilities", "description"] }, // ✅ Added keyResponsibilities
           { title: "Company Information", fields: ["company", "emailAddress", "username"] },
           { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experience", "jobType"] },
           { title: "Requirements", fields: ["gender", "industry", "qualification", "applicationDeadline"] },
@@ -160,8 +162,12 @@ const EditJob = () => {
                     type={isDate ? "date" : "text"}
                     value={form[field]}
                     onChange={handleChange}
-                    placeholder={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
-                    className="input bg-indigo-50"
+                    placeholder={
+                      field === "specialisms" || field === "keyResponsibilities"
+                        ? "Comma-separated (e.g. Leadership, Teamwork)"
+                        : field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())
+                    }
+                     className={`input bg-indigo-50 ${field === "keyResponsibilities" ? "md:col-span-2" : ""}`}
                   />
                 );
               })}

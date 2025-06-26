@@ -203,7 +203,7 @@ const companyId = location?.state?.companyId;
               <div className="text-center">
                 <button
                   className="inline-block text-white bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 px-4 py-1.5 rounded-lg shadow-md transition-colors duration-300"
-                  onClick={() => handleViewApplicants(job._id)}
+                  onClick={() => handleViewApplicants(job.jobId)}
                 >
                   View Shortlisted
                 </button>
