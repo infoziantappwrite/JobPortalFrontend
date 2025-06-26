@@ -3,6 +3,9 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { FiBriefcase, FiBell, FiUserCheck, FiHeart, FiFileText, FiUsers, FiBarChart2, FiMenu, FiX, FiPlusSquare, FiUserPlus, FiBook, FiSettings  } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import DFooter from './DFooter';
+import { LuFileUser } from 'react-icons/lu';
+
+
 
 
 import { useUser } from '../contexts/UserContext';
@@ -51,9 +54,8 @@ const DashboardLayout = () => {
       { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
       { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/company/post-job' },
       { key: 'Manage Jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/company/manage-jobs' },
-      { key: 'applicants', label: 'Manage Applicants', icon: <FiUsers />, path: '/company/manage-applicants' },
+      { key: 'applicants', label: 'Manage Applicants', icon: <LuFileUser />, path: '/company/manage-applicants' },
       { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/company/shortlisted-applicants' },
-      { key: 'create', label: 'Create Employees', icon: <FiUserPlus />, path: '/company/create-employees' },
       { key: 'manage', label: 'Manage Employees', icon: <FiUsers />, path: '/company/manage-employees' },
       { key: 'approve', label: 'Approve Employees', icon: <FiUserCheck />, path: '/company/approve-employees' },
 
@@ -62,7 +64,7 @@ const DashboardLayout = () => {
       { key: 'dashboard', label: 'Dashboard', icon: <FiBarChart2 />, path: '/employee/dashboard' },
       { key: 'post', label: 'Post a New Job', icon: <FiPlusSquare />, path: '/employee/post-job' },
       { key: 'manage-jobs', label: 'Manage Jobs', icon: <FiBriefcase />, path: '/employee/manage-jobs' },
-      { key: 'manage-applicants', label: 'Manage Applicants', icon: <FiUsers />, path: '/employee/manage-applicants' },
+      { key: 'manage-applicants', label: 'Manage Applicants', icon: <LuFileUser />, path: '/employee/manage-applicants' },
       { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/employee/shortlisted-applicants' },
     ]
   };
