@@ -60,7 +60,7 @@ const ViewCourse = ({ search }) => {
 
   if (loading) {
     return (
-      <InternalLoader text="Loading courses..." />
+      <InternalLoader text="Loading courses" />
     )
   }
 
@@ -109,7 +109,7 @@ const ViewCourse = ({ search }) => {
 
               {/* Course Image */}
               <img
-                src={course.image || Imageno}
+                src={ Imageno}// src={course.image || Imageno}
                 alt={course.title}
                 className="w-full h-44 object-cover rounded-t-xl"
                 onError={(e) => {
@@ -161,18 +161,17 @@ const ViewCourse = ({ search }) => {
                   {/* Add Tags if needed */}
                 </div>
                 {isSuperAdmin && (
-                  <div className="flex items-center justify-between mt-3">
-                    {/* Enrollment Count */}
-                    <span className="text-sm text-gray-500">
-                      Enrolled: <strong>{course.enrollmentCount || 0}</strong>
-                    </span>
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-2">
+    {/* Enrollment Count */}
+    <span className="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-500 shadow-sm w-max">
+      Enrolled: <strong>{course.enrollmentCount || 0}</strong>
+    </span>
 
-                    {/* Action Buttons */}
+    {/* Action Buttons */}
+    <CourseActions course={course} fetchCourses={fetchCourses} />
+  </div>
+)}
 
-                    <CourseActions course={course} fetchCourses={fetchCourses} />
-
-                  </div>
-                )}
               </div>
             </div>
           ))}

@@ -5,6 +5,12 @@ import { useLocation } from 'react-router-dom';
 import DFooter from './DFooter';
 import { LuFileUser } from 'react-icons/lu';
 
+import { LuBuilding2, LuBriefcaseBusiness, LuUserCog } from 'react-icons/lu';
+import { HiOutlineDocumentText } from 'react-icons/hi';
+import { MdOutlineManageAccounts } from 'react-icons/md';
+import { PiChalkboardTeacher } from 'react-icons/pi';
+import { BiUserCheck } from 'react-icons/bi';
+import { TbUserSquareRounded } from 'react-icons/tb';
 
 
 
@@ -39,16 +45,51 @@ const DashboardLayout = () => {
       // { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
 
     ],
-    superadmin: [
-      {key: 'dashboard',label: 'Dashboard',icon: <FiBarChart2 />,path: '/superadmin/dashboard',},
-      {key: 'manage',label: 'Manage Companies',icon: <FiBriefcase />,path: '/superadmin/manage-companies',},
-       {key: 'jobs',label: 'Manage Jobs',icon: <FiBriefcase />,path: '/superadmin/manage-jobs',},
-      {key: 'Applicants',label: 'Manage Applicants',icon: <FiBriefcase />,path: '/superadmin/manage-applicants',},
-      // { key: 'shortlisted', label: 'Shortlisted Applicants', icon: <FiHeart />, path: '/superadmin/shortlisted-applicants' },
-      {key: 'manageEmployee',label: 'Manage Employee',icon: <FiSettings  />,path: '/superadmin/manage-employee',},
-      {key: 'manageCandidate',label: 'Manage Candidate',icon: <FiUsers />,path: '/superadmin/manage-candidate',},
-      {key: 'course', label: 'Manage Courses', icon: <FiBook />, path: '/superadmin/course' },
-    ],
+   superadmin : [
+  {
+    key: 'dashboard',
+    label: 'Dashboard',
+    icon: <FiBarChart2 />,
+    path: '/superadmin/dashboard',
+  },
+  {
+    key: 'manage',
+    label: 'Manage Companies',
+    icon: <LuBuilding2 />,
+    path: '/superadmin/manage-companies',
+  },
+  {
+    key: 'jobs',
+    label: 'Manage Jobs',
+    icon: <LuBriefcaseBusiness />,
+    path: '/superadmin/manage-jobs',
+  },
+  {
+    key: 'applicants',
+    label: 'Manage Applicants',
+    icon: <HiOutlineDocumentText />,
+    path: '/superadmin/manage-applicants',
+  },
+  {
+    key: 'manageEmployee',
+    label: 'Manage Employee',
+    icon: <LuUserCog />,
+    path: '/superadmin/manage-employee',
+  },
+  {
+    key: 'manageCandidate',
+    label: 'Manage Candidate',
+    icon: <TbUserSquareRounded />,
+    path: '/superadmin/manage-candidate',
+  },
+  {
+    key: 'course',
+    label: 'Manage Courses',
+    icon: <PiChalkboardTeacher />,
+    path: '/superadmin/course',
+  },
+],
+    
 
     company: [
       { key: 'dashboard', label: 'Company Dashboard', icon: <FiBarChart2 />, path: '/company/dashboard' },
