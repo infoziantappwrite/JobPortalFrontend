@@ -32,35 +32,12 @@ const ApplicationDetailView = () => {
   // const [profileLoading, setProfileLoading] = useState(false);
   // const [profileError, setProfileError] = useState('');
 
-<<<<<<< hariraj_employee
- useEffect(() => {
-  const fetchApplicationDetail = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      let res;
-
-      if (role === 'superadmin') {
-        res = await apiClient.post(
-          '/superadmin/job/applicant-details',
-          {
-            candidateID: applicationID, // This must be the actual candidate ID
-            jobID,
-          },
-          { withCredentials: true }
-        );
-      } else {
-        res = await apiClient.post(
-
-=======
   useEffect(() => {
     const fetchApplicationDetail = async () => {
       setLoading(true);
       setError('');
       try {
         const res = await apiClient.post(
->>>>>>> master
           `/${role}/job/get-detail`,
           {
             IDs: [applicationID],
@@ -69,22 +46,6 @@ const ApplicationDetailView = () => {
           },
           { withCredentials: true }
         );
-<<<<<<< hariraj_employee
-      }
-
-      // console.log(res.data);
-      
-
-      const app = role === 'superadmin' ? res?.data?.application : res?.data?.jobApplications?.[0] || null;
-
-
-      if (!app) {
-        setError('Application details not found.');
-      } else {
-        setApplication(app);
-        const latestStatus = app?.status?.slice().pop()?.stage || 'applied';
-        setNewStatus(latestStatus);
-=======
 
         const app = res?.data?.jobApplications?.[0] || null;
         if (!app) {
@@ -98,21 +59,8 @@ const ApplicationDetailView = () => {
         setError(err.response?.data?.error || 'Failed to load applicant detail.');
       } finally {
         setLoading(false);
->>>>>>> master
       }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load applicant detail.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (role && jobID && applicationID) {
-    fetchApplicationDetail();
-  }
-}, [role, jobID, applicationID]);
-
-
+    };
 
     if (jobID && applicationID) fetchApplicationDetail();
   }, [jobID, applicationID, role]);
@@ -246,24 +194,58 @@ const ApplicationDetailView = () => {
               if (!status || status.length === 0) {
                 return <p className="text-gray-500 italic">No timeline data available.</p>;
               }
+
+              // Define colors for each stage
+              const statusColors = {
+                applied: {
+                  dot: 'bg-blue-500',
+                  text: 'text-blue-600',
+                },
+                shortlisted: {
+                  dot: 'bg-yellow-400',
+                  text: 'text-yellow-600',
+                },
+                interviewed: {
+                  dot: 'bg-indigo-500',
+                  text: 'text-indigo-600',
+                },
+                offered: {
+                  dot: 'bg-green-500',
+                  text: 'text-green-600',
+                },
+                rejected: {
+                  dot: 'bg-red-500',
+                  text: 'text-red-600',
+                },
+              };
+
               const latestOverallEntry = status.reduce((latest, current) =>
                 new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
               );
               const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
               const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
+
               return visibleStages.map(stage => {
                 const entries = status.filter(s => s.stage === stage);
                 if (entries.length === 0) return null;
+
                 const latestEntry = entries.reduce((latest, current) =>
                   new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
                 );
+
+                const stageKey = stage.toLowerCase();
+                const { dot, text } = statusColors[stageKey] || {
+                  dot: 'bg-gray-400',
+                  text: 'text-gray-600',
+                };
+
                 return (
                   <li key={stage + latestEntry.createdAt} className="mb-6 relative pl-6">
-                    <div className="absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 bg-indigo-500" />
+                    <div className={`absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 ${dot}`} />
                     <time className="block mb-1 text-sm font-normal text-gray-400">
                       {new Date(latestEntry.createdAt).toLocaleString()}
                     </time>
-                    <p className="text-base font-semibold text-indigo-700 capitalize">{stage}</p>
+                    <p className={`text-base font-semibold capitalize ${text}`}>{stage}</p>
                     {latestEntry.remarks && (
                       <p className="text-sm text-gray-600 mt-1 italic">Remarks: {latestEntry.remarks}</p>
                     )}
@@ -273,6 +255,7 @@ const ApplicationDetailView = () => {
             })()}
           </ol>
         </div>
+
       </div>
 
       {/* Removed modal component since it's no longer used */}
