@@ -127,10 +127,11 @@ const ApplicationDetailView = () => {
         }
     };
 
-    const goToFullProfile = () => {
-        if (!jobID || !applicationID) return;
-        navigate(`/${role}/applicant-detail-edit/full-profile/${jobID}/${applicationID}`);
-    };
+  const goToFullProfile = () => {
+  const candidateID = application?.userID?._id || applicationID;
+  if (!jobID || !candidateID) return;
+  navigate(`/${role}/applicant-detail-edit/full-profile/${jobID}/${candidateID}`);
+};
 
     if (loading) return <InternalLoader text="Loading Applicant Details" />;
 
