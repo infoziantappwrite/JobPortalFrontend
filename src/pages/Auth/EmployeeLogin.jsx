@@ -26,9 +26,9 @@ const EmployeeLogin = () => {
 
       toast.success(response.data.message || 'Login successful');
       await refreshUser();
-      setTimeout(() => {
+     
         navigate('/');
-      }, 1000);
+      
     } catch (error) {
       const data = error.response?.data;
       toast.error(data?.error || 'Login failed');

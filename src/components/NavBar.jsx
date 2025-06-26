@@ -53,9 +53,8 @@ export default function Navbar() {
     toast.success('Logout successful');
     setUser(null); // Clear user state
     setUserMenuOpen(false); // Close user menu
-    setTimeout(() => {
       navigate('/login');
-    }, 1000);
+
   } catch (err) {
     console.error('Logout error:', err);
   }
