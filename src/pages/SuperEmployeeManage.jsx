@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 import { toast } from 'react-toastify';
-import Pagination from './hooks/Pagination'; // ✅ import reusable pagination
+import Pagination from './hooks/Pagination';
+import { X } from 'lucide-react';
 
 const SuperEmployeeManage = () => {
   const [employees, setEmployees] = useState([]);
@@ -13,9 +14,12 @@ const SuperEmployeeManage = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // View modal state
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [viewLoading, setViewLoading] = useState(false);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -39,21 +43,18 @@ const SuperEmployeeManage = () => {
     if (statusFilter) {
       filtered = filtered.filter((emp) => emp.status === statusFilter);
     }
-
     if (companyFilter) {
       filtered = filtered.filter((emp) => emp.companyId?._id === companyFilter);
     }
-
     if (startDate) {
       filtered = filtered.filter((emp) => new Date(emp.createdAt) >= new Date(startDate));
     }
-
     if (endDate) {
       filtered = filtered.filter((emp) => new Date(emp.createdAt) <= new Date(endDate));
     }
 
     setFilteredEmployees(filtered);
-    setCurrentPage(1); // reset to first page
+    setCurrentPage(1);
   }, [statusFilter, companyFilter, startDate, endDate, employees]);
 
   const handleDelete = async (id) => {
@@ -65,6 +66,18 @@ const SuperEmployeeManage = () => {
       } catch (err) {
         toast.error(err.response?.data?.error || 'Failed to delete employee.');
       }
+    }
+  };
+
+  const handleView = async (id) => {
+    setViewLoading(true);
+    try {
+      const res = await apiClient.get(`/superadmin/employee/${id}`);
+      setSelectedEmployee(res.data.user);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to fetch employee details.');
+    } finally {
+      setViewLoading(false);
     }
   };
 
@@ -105,11 +118,7 @@ const SuperEmployeeManage = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="text-sm text-gray-600">Status</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="mt-1 border-gray-300 rounded-md w-full p-2"
-            >
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="mt-1 border-gray-300 rounded-md w-full p-2">
               <option value="">All</option>
               <option value="approved">Approved</option>
               <option value="pending">Pending</option>
@@ -118,11 +127,7 @@ const SuperEmployeeManage = () => {
           </div>
           <div>
             <label className="text-sm text-gray-600">Company Name</label>
-            <select
-              value={companyFilter}
-              onChange={(e) => setCompanyFilter(e.target.value)}
-              className="mt-1 border-gray-300 rounded-md w-full p-2"
-            >
+            <select value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)} className="mt-1 border-gray-300 rounded-md w-full p-2">
               <option value="">All</option>
               {uniqueCompanies.map((company) => (
                 <option key={company._id} value={company._id}>
@@ -133,21 +138,11 @@ const SuperEmployeeManage = () => {
           </div>
           <div>
             <label className="text-sm text-gray-600">Start Date</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 border-gray-300 rounded-md w-full p-2"
-            />
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 border-gray-300 rounded-md w-full p-2" />
           </div>
           <div>
             <label className="text-sm text-gray-600">End Date</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 border-gray-300 rounded-md w-full p-2"
-            />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 border-gray-300 rounded-md w-full p-2" />
           </div>
         </div>
       </div>
@@ -169,34 +164,22 @@ const SuperEmployeeManage = () => {
           <tbody>
             {currentEmployees.length > 0 ? (
               currentEmployees.map((emp, i) => (
-                <tr
-                  key={emp._id}
-                  className={`border-t ${
-                    (indexOfFirstItem + i) % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-                  } hover:bg-indigo-50`}
-                >
+                <tr key={emp._id} className={`border-t ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-indigo-50`}>
                   <td className="py-3 px-4">{emp.name}</td>
                   <td className="py-3 px-4">{emp.email}</td>
                   <td className="py-3 px-4">{emp.position}</td>
-                  <td className="py-3 px-4 text-sm text-gray-600">
-                    {emp.companyId?.name || '—'}
-                  </td>
+                  <td className="py-3 px-4">{emp.companyId?.name || '—'}</td>
                   <td className="py-3 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        statusColors[emp.status] || 'bg-gray-200 text-gray-700'
-                      }`}
-                    >
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[emp.status] || 'bg-gray-200 text-gray-700'}`}>
                       {emp.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    {new Date(emp.createdAt).toLocaleDateString()}
-                  </td>
+                  <td className="py-3 px-4">{new Date(emp.createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-4 text-center">
                     <button
                       className="text-blue-600 hover:text-blue-800 font-medium mr-3"
-                      onClick={() => alert(`Viewing ${emp.name}`)}
+                      onClick={() => handleView(emp._id)}
+                      disabled={viewLoading}
                     >
                       View
                     </button>
@@ -220,12 +203,32 @@ const SuperEmployeeManage = () => {
         </table>
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
+        onPageChange={setCurrentPage}
       />
+
+      {/* ✅ Modal View */}
+      {selectedEmployee && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full relative shadow-xl">
+            <button
+              onClick={() => setSelectedEmployee(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X size={22} />
+            </button>
+            <h2 className="text-xl font-bold text-indigo-700 mb-4">{selectedEmployee.name}</h2>
+            <p><strong>Email:</strong> {selectedEmployee.email}</p>
+            <p><strong>Position:</strong> {selectedEmployee.position}</p>
+            <p><strong>Status:</strong> {selectedEmployee.status}</p>
+            <p><strong>Company:</strong> {selectedEmployee.companyId?.name || '—'}</p>
+            <p><strong>Created At:</strong> {new Date(selectedEmployee.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

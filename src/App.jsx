@@ -66,7 +66,14 @@ import JobListCompany from "./components/JobListCompany"
 import SuperAdminDashboard from './pages/SuperAdminViewPage/Dashboard';
 import SuperCompanyApplicant from './pages/SuperCompanyApplicant';
 import JobAtSuperAdmin from './components/JobsAtSuperAdmin';
+
 import AddCoursePage from './course/superadmin/AddCoursePage';
+
+import ApplicantActionsForCompany from './pages/ApplicantActionsForCompany';
+import ShortlistedCandidatesForCompany from './pages/ShortlistedCandidatesForCompany';
+import ApplicantDetailViewForSuperadmin from './pages/ApplicantDetailViewForSuperadmin';
+import SuperAdminCandidateProfile from './components/SuperAdminCandidateProfile';
+
 
 function App() {
 
@@ -197,15 +204,16 @@ function App() {
             <Route path="manage-employee" element={<SuperEmployeeManage />} />
             <Route path="manage-candidate" element={<SuperCandidateManage />} />
             <Route path="manage-applicants" element={<SuperCompanyApplicant />} />
-            <Route path="manage-applicants-view" element={<ApplicantActions />} />
+             <Route path="manage-applicants-view" element={<ApplicantActionsForCompany />} />
             <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
             <Route path="/superadmin/view-company/:id" element={<SuperCompanyViewPage />} />
-            <Route path="shortlisted-applicants" element={<ShortlistedCandidates />} />
+            <Route path="shortlisted-applicants" element={<ShortlistedCandidatesForCompany />} />
             <Route path="manage-jobs" element={<JobAtSuperAdmin />} />
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="course" element={<Course />} />
             <Route path="add-course" element={<AddCoursePage />} />
-
+            <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailViewForSuperadmin />} />
+             <Route path="applicant-detail-edit/full-profile/:jobID/:candidateID" element={<SuperAdminCandidateProfile />} />
 
           </Route>
           {/*superadmin Routes end*/}
