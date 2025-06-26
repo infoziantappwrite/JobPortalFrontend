@@ -104,10 +104,10 @@ const JobList = () => {
   }, [user]);
 
   useEffect(() => {
-  if (user) {
-    fetchJobs(); // Filter change fetch, no loader
-  }
-}, [filters]);
+    if (user) {
+      fetchJobs(); // Filter change fetch, no loader
+    }
+  }, [filters]);
 
 
   const handleChange = (field, value) => {
@@ -171,7 +171,7 @@ const JobList = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-6">
+    <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {(hasInteracted || jobs.length > 0) && (
           <JobAlertHeader
@@ -193,44 +193,49 @@ const JobList = () => {
             }
           />
         ) : (
-          <div className="overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
-            <div className="w-full">
-              <div className="hidden sm:grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
-                <div className="w-12">
-                  <button onClick={handleSelectAll}>
-                    {selectedIds.length === jobs.length ? <FiCheckSquare /> : <FiSquare />}
-                  </button>
+          <>
+            {/* Table for desktop */}
+            <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
+              <div className="w-full">
+                <div className="grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
+                  <div className="w-12">
+                    <button onClick={handleSelectAll} aria-label="Select all jobs">
+                      {selectedIds.length === jobs.length ? <FiCheckSquare /> : <FiSquare />}
+                    </button>
+                  </div>
+                  <div className="col-span-2">Title</div>
+                  <div>Status</div>
+                  <div>Dates</div>
+                  <div className="text-center">State</div>
+                  <div>Actions</div>
                 </div>
-                <div className="col-span-2">Title</div>
-                <div>Status</div>
-                <div>Dates</div>
-                <div className="text-center">State</div>
-                <div>Actions</div>
-              </div>
 
-              <div className="divide-y">
-                {jobs.map(job => (
-                  <div
-                    key={job._id}
-                    className="grid grid-cols-1 sm:grid-cols-7 gap-2 px-4 py-3 text-sm items-center"
-                  >
-                    <div>
-                      <button onClick={() => handleCheckbox(job._id)}>
-                        {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
-                      </button>
-                    </div>
-                    <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
-                    <div>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        job.isActive ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {job.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div>
-                      {new Date(job.postedAt).toLocaleDateString()} →{' '}
-                      {new Date(job.applicationDeadline).toLocaleDateString()}
-                    </div>
+                <div className="divide-y">
+                  {jobs.map(job => (
+                    <div
+                      key={job._id}
+                      className="grid grid-cols-1 sm:grid-cols-7 gap-2 px-4 py-3 text-sm items-center"
+                    >
+                      <div>
+                        <button
+                          onClick={() => handleCheckbox(job._id)}
+                          aria-label={`Select job ${job.title}`}
+                        >
+                          {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
+                        </button>
+                      </div>
+                      <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+                      <div>
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          job.isActive ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {job.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                      <div>
+                        {new Date(job.postedAt).toLocaleDateString()} →{' '}
+                        {new Date(job.applicationDeadline).toLocaleDateString()}
+                      </div>
                       <div className="text-lg flex justify-center items-center">
                         {job.isActive ? (
                           <FiCheck className="text-green-600" />
@@ -238,8 +243,50 @@ const JobList = () => {
                           <FiX className="text-red-600" />
                         )}
                       </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleViewJob(job)}
+                          title="View"
+                          className="text-blue-600"
+                        >
+                          <FiEye />
+                        </button>
+                        <button
+                          onClick={() => canEdit(job) && navigate('/employee/jobs-edit', { state: job })}
+                          title="Edit"
+                          disabled={!canEdit(job)}
+                          className={`text-yellow-600 ${!canEdit(job) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <FiEdit />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Cards for mobile */}
+            <div className="sm:hidden mt-6 space-y-4">
+              {jobs.map(job => (
+                <div
+                  key={job._id}
+                  className="bg-white p-4 rounded-lg shadow-md border"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <button
+                      onClick={() => handleCheckbox(job._id)}
+                      aria-label={`Select job ${job.title}`}
+                      className="text-xl"
+                    >
+                      {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
+                    </button>
                     <div className="flex gap-3">
-                      <button onClick={() => handleViewJob(job)} title="View" className="text-blue-600">
+                      <button
+                        onClick={() => handleViewJob(job)}
+                        title="View"
+                        className="text-blue-600"
+                      >
                         <FiEye />
                       </button>
                       <button
@@ -252,10 +299,36 @@ const JobList = () => {
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <h3 className="font-semibold text-blue-800 text-lg mb-1">{job.title}</h3>
+
+                  <div className="mb-1">
+                    <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                      job.isActive ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'
+                    }`}>
+                      {job.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+
+                  <div className="text-sm text-gray-700 mb-1">
+                    <strong>Posted:</strong> {new Date(job.postedAt).toLocaleDateString()}
+                  </div>
+                  <div className="text-sm text-gray-700 mb-1">
+                    <strong>Deadline:</strong> {new Date(job.applicationDeadline).toLocaleDateString()}
+                  </div>
+
+                  <div className="flex items-center gap-1 text-sm">
+                    <strong>Status:</strong>
+                    {job.isActive ? (
+                      <FiCheck className="text-green-600" />
+                    ) : (
+                      <FiX className="text-red-600" />
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          </>
         )}
 
         {confirmDelete && (
