@@ -206,7 +206,7 @@ function App() {
             <Route path="manage-jobs" element={<JobAtSuperAdmin />} />
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailViewForSuperadmin />} />
-             <Route path="applicant-detail-edit/full-profile/:jobID/:applicationID" element={<SuperAdminCandidateProfile />} />
+             <Route path="applicant-detail-edit/full-profile/:jobID/:candidateID" element={<SuperAdminCandidateProfile />} />
 
           </Route>
           {/*superadmin Routes end*/}

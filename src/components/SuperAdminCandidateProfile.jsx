@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';  // <-- import useNavigate
+import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/apiClient';
 import InternalLoader from '../components/InternalLoader';
-import { AlertTriangle, X } from "lucide-react";  // <-- import X icon
+import { AlertTriangle, X } from "lucide-react";
 import EmptyState from '../components/EmptyState';
 import {
   FiPhone, FiMapPin, FiHome, FiBriefcase, FiBookOpen, FiDollarSign,
@@ -13,31 +13,14 @@ import { HiOutlineDocumentText } from 'react-icons/hi';
 import SectionTimeline from '../candidate/jobs/SectionTimeline';
 
 const CandidateProfile = () => {
-  const { candidateId, jobID, applicationID } = useParams();
-  const navigate = useNavigate(); // <-- initialize navigate
+  const { candidateID, jobID } = useParams();
+  const navigate = useNavigate();
 
   const [candidateInfo, setCandidateInfo] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch application detail to get candidateId if not present
-  const fetchApplicationDetail = useCallback(async () => {
-    if (!jobID || !applicationID) return null;
-    try {
-      const res = await apiClient.post(`/employee/job/get-detail`, {
-        IDs: [applicationID],
-        jobID,
-        type: 'jobApplication'
-      }, { withCredentials: true });
-
-      const app = res.data.jobApplications?.[0] || null;
-      if (!app) throw new Error('Application details not found');
-      return app.userID?._id || null;
-    } catch (err) {
-      setError(err.response?.data?.error || err.message);
-      return null;
-    }
-  }, [jobID, applicationID]);
+  console.log('Candidate ID:', candidateID); // ✅ Corrected here
 
   // Fetch candidate profile by ID
   const fetchProfile = useCallback(async (id) => {
@@ -49,7 +32,7 @@ const CandidateProfile = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await apiClient.get(`/employee/job/applicant/get-profile/${id}`, {
+      const res = await apiClient.get(`superadmin/candidate/${id}`, {
         withCredentials: true,
       });
       const info = res.data.candidateInfo;
@@ -69,12 +52,8 @@ const CandidateProfile = () => {
       setCandidateInfo(null);
       setLoading(true);
       try {
-        let id = candidateId;
-        if (!id && jobID && applicationID) {
-          id = await fetchApplicationDetail();
-        }
-        if (!id) throw new Error('Candidate ID not provided');
-        await fetchProfile(id);
+        if (!candidateID) throw new Error('Candidate ID not provided');
+        await fetchProfile(candidateID);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -82,7 +61,7 @@ const CandidateProfile = () => {
       }
     };
     load();
-  }, [candidateId, jobID, applicationID, fetchApplicationDetail, fetchProfile]);
+  }, [candidateID, fetchProfile]);
 
   const colors = ['bg-red-500', 'bg-green-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
   const getColorFromName = (name) => name ? colors[name.charCodeAt(0) % colors.length] : 'bg-gray-500';
@@ -101,11 +80,8 @@ const CandidateProfile = () => {
     );
   }
 
-  if (!candidateInfo) {
-    return null;
-  }
+  if (!candidateInfo) return null;
 
-  // Destructure candidateInfo here as you already do
   const {
     name, profileDescription, email, phone, age, country, city, fullAddress,
     jobTitle, currentSalary, expectedSalary, education, yearsOfExp,
@@ -113,28 +89,28 @@ const CandidateProfile = () => {
     educationHistory = [], workExperience = [], awards = []
   } = candidateInfo;
 
-return (
-  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
-    <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow space-y-8">
-      {/* X Button to go back */}
-      <button
-        onClick={() => navigate(-1)}
-        className="text-gray-600 hover:text-black mb-4"
-        aria-label="Go Back"
-      >
-        <X size={24} />
-      </button>
+  return (
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
+      <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow space-y-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="text-gray-600 hover:text-black mb-4"
+          aria-label="Go Back"
+        >
+          <X size={24} />
+        </button>
 
-      {/* Header */}
-      <div className="text-center">
-        <h2 className="flex justify-center items-center gap-2 text-3xl font-bold text-blue-700">
-          <HiOutlineDocumentText className="text-blue-600 text-4xl" />
-          Applicant Profile
-        </h2>
-        <div className="h-1 w-24 mx-auto bg-blue-600 mt-2 rounded-full" />
-      </div>
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="flex justify-center items-center gap-2 text-3xl font-bold text-blue-700">
+            <HiOutlineDocumentText className="text-blue-600 text-4xl" />
+            Applicant Profile
+          </h2>
+          <div className="h-1 w-24 mx-auto bg-blue-600 mt-2 rounded-full" />
+        </div>
 
-        {/* Profile Card */}
+        {/* Profile Summary */}
         <div className="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row items-center gap-6">
           <div className={`w-24 h-24 rounded-full ${getColorFromName(name)} text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-md`}>
             {name?.charAt(0).toUpperCase() || "?"}
@@ -201,16 +177,15 @@ return (
 
         {/* Timeline Sections */}
         <div className="space-y-10 bg-white p-6 rounded-xl shadow">
-          <SectionTimeline title="Education" items={candidateInfo.educationHistory} type="education" fetchData={() => fetchProfile(candidateInfo._id)} />
-          <SectionTimeline title="Experience" items={candidateInfo.workExperience} type="experience" fetchData={() => fetchProfile(candidateInfo._id)} />
-          <SectionTimeline title="Awards" items={candidateInfo.awards} type="awards" fetchData={() => fetchProfile(candidateInfo._id)} />
+          <SectionTimeline title="Education" items={educationHistory} type="education" fetchData={() => fetchProfile(candidateID)} />
+          <SectionTimeline title="Experience" items={workExperience} type="experience" fetchData={() => fetchProfile(candidateID)} />
+          <SectionTimeline title="Awards" items={awards} type="awards" fetchData={() => fetchProfile(candidateID)} />
         </div>
       </div>
     </div>
   );
 };
 
-// Social link reusable component
 const SocialLink = ({ href, icon: Icon, label, color }) => (
   <a
     href={href}
