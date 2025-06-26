@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
-import Pagination from './hooks/Pagination'; // Import it
+import Pagination from './hooks/Pagination';
 
 const SuperCompanyManage = () => {
   const [allCompanies, setAllCompanies] = useState([]);
@@ -39,6 +39,23 @@ const SuperCompanyManage = () => {
       fetchCompanies();
     } catch (err) {
       toast.error('Delete failed');
+    }
+  };
+
+  const handleStatusUpdate = async (companyId, status) => {
+    try {
+      const token = localStorage.getItem('token');
+      await apiClient.patch(`/superadmin/company/approve/${companyId}`, {
+        currStatus: status,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);
+      fetchCompanies(); // Refresh the list after update
+    } catch (err) {
+      console.error(`Error updating company status to ${status}:`, err);
+      toast.error(`Failed to ${status} company.`);
     }
   };
 
@@ -95,22 +112,39 @@ const SuperCompanyManage = () => {
               <tbody>
                 {paginatedCompanies.map((company, idx) => (
                   <tr key={company._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-6 py-4 font-medium text-left">{company.name}</td>
-                    <td className="px-6 py-4 text-left">{company.email}</td>
-                    <td className="px-6 py-4 text-left">
+                    <td className="px-6 py-4 font-medium">{company.name}</td>
+                    <td className="px-6 py-4">{company.email}</td>
+                    <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[company.status]}`}
                       >
                         {company.status.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-left space-x-2">
+                    <td className="px-6 py-4 space-x-2 flex flex-wrap gap-2">
                       <button
                         onClick={() => navigate(`/superadmin/view-company/${company._id}`)}
                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
                       >
                         View
                       </button>
+
+                      {activeTab === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleStatusUpdate(company._id, 'approved')}
+                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-xs"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(company._id, 'rejected')}
+                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
 
                       <button
                         onClick={() => handleDelete(company._id)}
