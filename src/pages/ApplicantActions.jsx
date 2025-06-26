@@ -170,39 +170,84 @@ const ApplicantActions = () => {
         </h2>
       </div>
 
-      {!selectedJob ? (
-        <div className="overflow-x-auto bg-white rounded-md shadow-md border">
-          <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-indigo-50 text-indigo-800 text-sm font-semibold">
-              <tr>
-                <th className="px-5 py-3 border-b text-left">Title</th>
-                <th className="px-5 py-3 border-b text-left">Company</th>
-                <th className="px-5 py-3 border-b text-left">Posted By</th>
-                <th className="px-5 py-3 border-b text-left">Applicants</th>
-                <th className="px-5 py-3 border-b text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm text-gray-800">
-              {jobs.map(job => (
-                <tr key={job._id} className="hover:bg-gray-50 border-t">
-                  <td className="px-5 py-3">{job.title}</td>
-                  <td className="px-5 py-3">{job.company}</td>
-                  <td className="px-5 py-3">{job.postedBy?.name}</td>
-                  <td className="px-5 py-3">{job.applicants?.length || 0}</td>
-                  <td className="px-5 py-3">
-                    <button
-                      className="px-3 py-1.5 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                      onClick={() => handleViewApplicants(job._id)}
+
+        {!selectedJob ? (
+          <>
+            {/* Desktop Table (hidden on small screens) */}
+            <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
+              <div className="w-full">
+                {/* Header */}
+                <div className="grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
+                  <div className="col-span-2">Title</div>
+                  <div>Company</div>
+                  <div>Posted By</div>
+                  <div className="text-center">Applicants</div>
+                  <div>Actions</div>
+                </div>
+
+                {/* Rows */}
+                <div className="divide-y">
+                  {jobs.map(job => (
+                    <div
+                      key={job._id}
+                      className="grid grid-cols-1 sm:grid-cols-6 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50 cursor-default"
                     >
-                      View Applicants
-                    </button>
-                  </td>
-                </tr>
+                      <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+                      <div>{job.company}</div>
+                      <div>{job.postedBy?.name}</div>
+                      <div className="text-center text-gray-600 font-semibold">{job.applicants?.length || 0}</div>
+                      <div>
+                        <button
+                          className="inline-block text-white bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 px-4 py-1.5 rounded-lg shadow-md transition-colors duration-300"
+                          onClick={() => handleViewApplicants(job._id)}
+                        >
+                          View Applicants
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Cards (visible only on small screens) */}
+            <div className="sm:hidden mt-6 space-y-5 px-2">
+              {jobs.map(job => (
+                <div
+                  key={job._id}
+                  className="bg-white rounded-xl shadow-lg p-5 cursor-default hover:shadow-xl transition-shadow duration-300"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-blue-900 text-xl truncate">{job.title}</h3>
+                    <div className="text-sm font-medium text-gray-500">
+                      <span className="inline-flex items-center gap-1">
+                        <FiUsers className="text-blue-600" />
+                        {job.applicants?.length || 0}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-gray-600 space-y-1 mb-4">
+                    <p className="flex items-center gap-2 text-sm">
+                      <span className="truncate">{job.company}</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      Posted by <span className="font-medium">{job.postedBy?.name || 'N/A'}</span>
+                    </p>
+                  </div>
+
+                  <button
+                    className="w-full bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-semibold py-2 rounded-lg shadow-md hover:from-indigo-700 hover:to-teal-600 transition-colors duration-300"
+                    onClick={() => handleViewApplicants(job._id)}
+                  >
+                    View Applicants
+                  </button>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
+            </div>
+
+          </>
+        ) : (
         <div>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold text-gray-800">
