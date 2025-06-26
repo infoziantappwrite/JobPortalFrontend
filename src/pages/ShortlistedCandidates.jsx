@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import InternalLoader from '../components/InternalLoader';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import { useLocation } from 'react-router-dom';
 import {
   CheckCircle,
   XCircle,
@@ -64,6 +65,9 @@ const ShortlistedCandidates = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
+  const location = useLocation();
+const companyId = location?.state?.companyId;
+
 
   const { user } = useUser();
   const role = user?.userType?.toLowerCase();
