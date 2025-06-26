@@ -172,7 +172,7 @@ const JobList = () => {
 
   return (
     <div className="bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {(hasInteracted || jobs.length > 0) && (
           <JobAlertHeader
             filters={filters}
@@ -194,7 +194,7 @@ const JobList = () => {
           />
         ) : (
           <div className="overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
-            <div className="min-w-[1000px]">
+            <div className="w-full">
               <div className="hidden sm:grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
                 <div className="w-12">
                   <button onClick={handleSelectAll}>

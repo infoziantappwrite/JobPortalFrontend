@@ -248,7 +248,7 @@ const JobList = () => {
           />
         ) : (
           <div className="overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
-            <div className="min-w-[1000px]">
+            <div className="w-full">
               {/* Header row */}
               <div className="hidden sm:grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
                 <div className="w-12">
