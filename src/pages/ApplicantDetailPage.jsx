@@ -6,6 +6,7 @@ import InternalLoader from '../components/InternalLoader';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../contexts/UserContext';
+// Removed CandidateProfileModal import as it's no longer used
 
 const statusOrder = ['applied', 'shortlisted', 'interviewed', 'offered', 'rejected'];
 
@@ -20,11 +21,16 @@ const ApplicantDetailPage = () => {
   const { user } = useUser();
   const role = user?.userType?.toLowerCase();
 
-  // Change status states
   const [newStatus, setNewStatus] = useState('');
   const [remarks, setRemarks] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [updateError, setUpdateError] = useState('');
+
+  // Removed modal-related state since modal is no longer used
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [candidateInfo, setCandidateInfo] = useState(null);
+  // const [profileLoading, setProfileLoading] = useState(false);
+  // const [profileError, setProfileError] = useState('');
 
   useEffect(() => {
     const fetchApplicationDetail = async () => {
@@ -57,54 +63,54 @@ const ApplicantDetailPage = () => {
     };
 
     if (jobID && applicationID) fetchApplicationDetail();
-  }, [jobID, applicationID]);
+  }, [jobID, applicationID, role]);
 
-const handleStatusUpdate = async () => {
-  if (!newStatus) return;
+  const handleStatusUpdate = async () => {
+    if (!newStatus) return;
 
-  setUpdatingStatus(true);
-  setUpdateError('');
-  try {
-    const applicantID = application?.userID?._id || application?.userID || applicationID;
+    setUpdatingStatus(true);
+    setUpdateError('');
+    try {
+      const applicantID = application?.userID?._id || application?.userID || applicationID;
 
-    // Make status update request
-    await apiClient.post(
-      `/${role}/job/applicant/shortlist`,
-      {
-        jobID,
-        applicantID,
-        customStatus: newStatus,
-        remarks,
-      },
-      { withCredentials: true }
-    );
-
-    toast.success(`Status updated to '${newStatus}' successfully.`);
-    setRemarks('');
-
-    // Wait for the status update to be successful, then refresh the application details
-    setTimeout(async () => {
-      console.log('Refreshing application details after status update...');
-      const refreshed = await apiClient.post(
-        `/${role}/job/get-detail`,
+      await apiClient.post(
+        `/${role}/job/applicant/shortlist`,
         {
-          IDs: [applicationID],
           jobID,
-          type: 'jobApplication',
+          applicantID,
+          customStatus: newStatus,
+          remarks,
         },
         { withCredentials: true }
       );
-      setApplication(refreshed?.data?.jobApplications?.[0] || null);
-    }, 500); // Adding a small delay to ensure the update is complete
 
-  } catch (err) {
-    console.error('Error during status update:', err);
-    setUpdateError(err.response?.data?.error || 'Failed to update status.');
-  } finally {
-    setUpdatingStatus(false);
-  }
-};
+      toast.success(`Status updated to '${newStatus}' successfully.`);
+      setRemarks('');
 
+      setTimeout(async () => {
+        const refreshed = await apiClient.post(
+          `/${role}/job/get-detail`,
+          {
+            IDs: [applicationID],
+            jobID,
+            type: 'jobApplication',
+          },
+          { withCredentials: true }
+        );
+        setApplication(refreshed?.data?.jobApplications?.[0] || null);
+      }, 500);
+    } catch (err) {
+      setUpdateError(err.response?.data?.error || 'Failed to update status.');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  // New function to navigate to full profile page
+  const goToFullProfile = () => {
+    if (!jobID || !applicationID) return;
+    navigate(`/employee/applicant-detail-edit/full-profile/${jobID}/${applicationID}`);
+  };
 
   if (loading) return <InternalLoader text="Loading Applicant Details" />;
 
@@ -126,11 +132,7 @@ const handleStatusUpdate = async () => {
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow space-y-8">
-        <button
-          className="text-gray-600 hover:text-black"
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-        >
+        <button className="text-gray-600 hover:text-black" onClick={() => navigate(-1)}>
           <X size={24} />
         </button>
 
@@ -141,14 +143,23 @@ const handleStatusUpdate = async () => {
         </div>
 
         {/* Applicant & Job Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-gray-800">
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h3 className="text-lg font-semibold text-indigo-600 mb-2">Applicant Info</h3>
+        <div className="bg-gray-50 p-4 rounded-md shadow-sm flex flex-col sm:flex-row sm:space-x-6">
+          {/* Applicant Info */}
+          <div className="w-full sm:w-1/2 space-y-2">
+            <h3 className="text-lg font-semibold text-indigo-600">Applicant Info</h3>
             <p><strong>Name:</strong> {userID?.name || 'N/A'}</p>
             <p><strong>Email:</strong> {userID?.email || 'N/A'}</p>
+            <button
+              onClick={goToFullProfile}
+              className="mt-3 inline-block px-5 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 transition"
+            >
+              View Full Profile
+            </button>
           </div>
-          <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-            <h3 className="text-lg font-semibold text-indigo-600 mb-2">Job Info</h3>
+
+          {/* Job Info */}
+          <div className="w-full sm:w-1/2 space-y-2 mt-6 sm:mt-0">
+            <h3 className="text-lg font-semibold text-indigo-600">Job Info</h3>
             <p><strong>Title:</strong> {job?.title || 'N/A'}</p>
             <p><strong>Company:</strong> {job?.company || 'N/A'}</p>
             <p><strong>Location:</strong> {[job?.location, job?.city, job?.country].filter(Boolean).join(', ') || 'N/A'}</p>
@@ -157,7 +168,7 @@ const handleStatusUpdate = async () => {
           </div>
         </div>
 
-        {/* Resume */}
+        {/* Resume Section */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
           <h3 className="text-lg font-semibold text-indigo-600 mb-2">Resume</h3>
           {resumeURL ? (
@@ -165,7 +176,7 @@ const handleStatusUpdate = async () => {
               href={resumeURL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 underline"
+              className="inline-block px-5 py-2 border-2 border-indigo-600 text-indigo-600 font-semibold rounded-md hover:bg-indigo-600 hover:text-white transition"
             >
               View Resume PDF
             </a>
@@ -174,23 +185,21 @@ const handleStatusUpdate = async () => {
           )}
         </div>
 
-        {/* Change Status Section */}
+        {/* Status Update */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm border border-indigo-100">
           <h3 className="text-lg font-semibold text-indigo-600 mb-4">Update Application Status</h3>
 
           {updateError && <p className="text-red-500 mb-2 text-sm">{updateError}</p>}
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <select
-              className="w-full p-2 border rounded"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-            >
-              {statusOrder.map(stage => (
-                <option key={stage} value={stage}>
-                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
-                </option>
-              ))}
+            <select className="w-full p-2 border rounded" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+              {statusOrder
+                .filter(stage => stage !== 'applied' && stage !== 'shortlisted')
+                .map(stage => (
+                  <option key={stage} value={stage}>
+                    {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                  </option>
+                ))}
             </select>
 
             <input
@@ -202,8 +211,6 @@ const handleStatusUpdate = async () => {
             />
           </div>
 
-
-
           <button
             onClick={handleStatusUpdate}
             disabled={updatingStatus}
@@ -213,62 +220,43 @@ const handleStatusUpdate = async () => {
           </button>
         </div>
 
-        {/* Status Timeline */}
-
         {/* Timeline */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h3 className="text-lg font-semibold text-indigo-600 mb-4">Application Timeline</h3>
-        <ol className="relative border-l border-indigo-300 ml-2">
+          <h3 className="text-lg font-semibold text-indigo-600 mb-4">Application Timeline</h3>
+          <ol className="relative border-l border-indigo-300 ml-2">
             {(() => {
-            if (!status || status.length === 0) {
+              if (!status || status.length === 0) {
                 return <p className="text-gray-500 italic">No timeline data available.</p>;
-            }
-
-            // Find latest status entry overall by createdAt
-            const latestOverallEntry = status.reduce((latest, current) =>
+              }
+              const latestOverallEntry = status.reduce((latest, current) =>
                 new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
-            );
-
-            // Get index of the latest stage in the order array
-            const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
-
-            // Filter stages to only those up to latestStageIndex
-            const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
-
-            return visibleStages.map(stage => {
+              );
+              const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
+              const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
+              return visibleStages.map(stage => {
                 const entries = status.filter(s => s.stage === stage);
                 if (entries.length === 0) return null;
-
-                // Latest entry per stage
                 const latestEntry = entries.reduce((latest, current) =>
-                new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+                  new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
                 );
-
                 return (
-                <li key={stage + latestEntry.createdAt} className="mb-6 relative pl-6">
-                    <div
-                    className="absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 bg-indigo-500"
-                    ></div>
-
+                  <li key={stage + latestEntry.createdAt} className="mb-6 relative pl-6">
+                    <div className="absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 bg-indigo-500" />
                     <time className="block mb-1 text-sm font-normal text-gray-400">
-                    {new Date(latestEntry.createdAt).toLocaleString()}
+                      {new Date(latestEntry.createdAt).toLocaleString()}
                     </time>
-
-                    <p className="text-base font-semibold text-indigo-700 capitalize">
-                    {stage}
-                    </p>
-
+                    <p className="text-base font-semibold text-indigo-700 capitalize">{stage}</p>
                     {latestEntry.remarks && (
-                    <p className="text-sm text-gray-600 mt-1 italic">Remarks: {latestEntry.remarks}</p>
+                      <p className="text-sm text-gray-600 mt-1 italic">Remarks: {latestEntry.remarks}</p>
                     )}
-                </li>
+                  </li>
                 );
-            });
+              });
             })()}
-        </ol>
+          </ol>
         </div>
-
       </div>
+
     </div>
   );
 };
