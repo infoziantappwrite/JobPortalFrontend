@@ -14,6 +14,7 @@ const PostJob = () => {
     emailAddress: '',
     username: '',
     specialisms: '',
+    keyResponsibilities: '', 
     offeredSalary: '',
     careerLevel: '',
     experience: '',
@@ -25,6 +26,7 @@ const PostJob = () => {
     city: '',
     address: '',
   });
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +43,7 @@ const PostJob = () => {
       'emailAddress',
       'jobType',
       'specialisms',
+      'keyResponsibilities', 
       'careerLevel',
       'experience',
       'gender',
@@ -52,6 +55,7 @@ const PostJob = () => {
       'address'
     ];
 
+
     for (let field of requiredFields) {
       if (!form[field] || form[field].trim() === '') {
         toast.error(`Please fill the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
@@ -62,30 +66,28 @@ const PostJob = () => {
    
 
     try {
-      await apiClient.post(
-        '/employee/job/postjob',
-        {
-          title: form.title,
-          description: form.description,
-          company: form.company,
-          location: form.location,
-          jobType: form.jobType,
-          emailAddress: form.emailAddress,
-          username: form.username,
-          specialisms: form.specialisms.split(',').map((s) => s.trim()),
-          offeredSalary: form.offeredSalary,
-          careerLevel: form.careerLevel,
-          experience: form.experience,
-          gender: form.gender,
-          industry: form.industry,
-          qualification: form.qualification,
-          applicationDeadline: form.applicationDeadline,
-          country: form.country,
-          city: form.city,
-          address: form.address,
-        },
-       
-      );
+      await apiClient.post('/employee/job/postjob', {
+        title: form.title,
+        description: form.description,
+        company: form.company,
+        location: form.location,
+        jobType: form.jobType,
+        emailAddress: form.emailAddress,
+        username: form.username,
+        specialisms: form.specialisms.split(',').map((s) => s.trim()),
+        keyResponsibilities: form.keyResponsibilities.split(',').map((k) => k.trim()), // ✅ Split into array
+        offeredSalary: form.offeredSalary,
+        careerLevel: form.careerLevel,
+        experience: form.experience,
+        gender: form.gender,
+        industry: form.industry,
+        qualification: form.qualification,
+        applicationDeadline: form.applicationDeadline,
+        country: form.country,
+        city: form.city,
+        address: form.address,
+      });
+
 
       toast.success('Job posted successfully!');
 
@@ -99,6 +101,7 @@ const PostJob = () => {
         emailAddress: '',
         username: '',
         specialisms: '',
+        keyResponsibilities: '',
         offeredSalary: '',
         careerLevel: '',
         experience: '',
@@ -145,7 +148,7 @@ const PostJob = () => {
 
         {/* Dynamic Field Sections */}
         {[
-          { title: "Job Details", fields: ["title", "specialisms", "description"] },
+          { title: "Job Details", fields: ["title", "specialisms", "keyResponsibilities", "description"] },
           { title: "Company Information", fields: ["company", "emailAddress", "username"] },
           { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experience", "jobType"] },
           { title: "Requirements", fields: ["gender", "industry", "qualification", "applicationDeadline"] },
@@ -232,7 +235,7 @@ const PostJob = () => {
                     value={form[field]}
                     onChange={handleChange}
                     placeholder={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
-                    className="input bg-indigo-50"
+                    className={`input bg-indigo-50 ${field === "keyResponsibilities" ? "md:col-span-2" : ""}`}
                   />
                 );
               })}
