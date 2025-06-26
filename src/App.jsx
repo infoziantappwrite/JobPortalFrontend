@@ -53,6 +53,7 @@ import SuperCompanyManage from './pages/SuperCompanyManage';
 import SuperEmployeeManage from './pages/SuperEmployeeManage';
 import SuperCandidateManage from './pages/SuperCandidateManage';
 import SuperCandidateViewPage from './pages/SuperAdminViewPage/SuperCandidateViewPage';
+import Course from './course/superadmin/Course';
 // Company Details
 import CompanyProfileView from './pages/CompanyProfileSection/ViewProfile';
 import CompanyEditProfile from './pages/CompanyProfileSection/EditProfile';
@@ -65,10 +66,14 @@ import JobListCompany from "./components/JobListCompany"
 import SuperAdminDashboard from './pages/SuperAdminViewPage/Dashboard';
 import SuperCompanyApplicant from './pages/SuperCompanyApplicant';
 import JobAtSuperAdmin from './components/JobsAtSuperAdmin';
+
+import AddCoursePage from './course/superadmin/AddCoursePage';
+
 import ApplicantActionsForCompany from './pages/ApplicantActionsForCompany';
 import ShortlistedCandidatesForCompany from './pages/ShortlistedCandidatesForCompany';
 import ApplicantDetailViewForSuperadmin from './pages/ApplicantDetailViewForSuperadmin';
 import SuperAdminCandidateProfile from './components/SuperAdminCandidateProfile';
+
 
 function App() {
 
@@ -205,6 +210,8 @@ function App() {
             <Route path="shortlisted-applicants" element={<ShortlistedCandidatesForCompany />} />
             <Route path="manage-jobs" element={<JobAtSuperAdmin />} />
             <Route path='jobdetails' element={<JobDetails />}/>
+            <Route path="course" element={<Course />} />
+            <Route path="add-course" element={<AddCoursePage />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailViewForSuperadmin />} />
              <Route path="applicant-detail-edit/full-profile/:jobID/:candidateID" element={<SuperAdminCandidateProfile />} />
 
