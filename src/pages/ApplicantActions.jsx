@@ -75,19 +75,31 @@ const ApplicantActions = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchShortlisted = async () => {
-      setLoading(true);
-      try {
-        const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, { withCredentials: true });
-        setJobs(res.data.jobs || []);
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to load applicants.');
-      } finally {
-        setLoading(false);
+  const fetchShortlisted = async () => {
+    setLoading(true);
+    try {
+      let res;
+
+      if (role === 'superadmin') {
+        // Make sure you pass jobID in state or query
+        const jobID = selectedJobId || 'someJobId'; // You must get this from props or context
+        res = await apiClient.get(`/superadmin/job-applicants/${jobID}`, { withCredentials: true });
+        setJobs(res.data.applicants || []); // Assuming the response has .applicants
+      } else {
+        res = await apiClient.get(`/${role}/job/applicant/get-applicants`, { withCredentials: true });
+        setJobs(res.data.jobs || []); // Assuming the response has .jobs
       }
-    };
-    fetchShortlisted();
-  }, []);
+
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to load applicants.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (role) fetchShortlisted(); // Only fetch after role is known
+}, [role]);
+
 
   const handleViewApplicants = (jobID) => {
     const job = jobs.find(j => j._id === jobID);

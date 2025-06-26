@@ -63,6 +63,8 @@ import CandidateDashboard from './candidate/CandidateDashboard';
 import JobListCompany from "./components/JobListCompany"
 // Super Admin Page 
 import SuperAdminDashboard from './pages/SuperAdminViewPage/Dashboard';
+import SuperCompanyApplicant from './pages/SuperCompanyApplicant';
+import JobAtSuperAdmin from './components/JobsAtSuperAdmin';
 
 function App() {
 
@@ -192,8 +194,13 @@ function App() {
             <Route path="manage-companies" element={<SuperCompanyManage />} />
             <Route path="manage-employee" element={<SuperEmployeeManage />} />
             <Route path="manage-candidate" element={<SuperCandidateManage />} />
+            <Route path="manage-applicants" element={<SuperCompanyApplicant />} />
+             <Route path="manage-applicants-view" element={<ApplicantActions />} />
             <Route path="/superadmin/candidate/:id" element={<SuperCandidateViewPage />} />
             <Route path="/superadmin/view-company/:id" element={<SuperCompanyViewPage />} />
+            <Route path="shortlisted-applicants" element={<ShortlistedCandidates />} />
+            <Route path="manage-jobs" element={<JobAtSuperAdmin />} />
+            <Route path='jobdetails' element={<JobDetails />}/>
 
           </Route>
           {/*superadmin Routes end*/}
