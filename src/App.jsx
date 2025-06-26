@@ -29,6 +29,7 @@ import ShortlistedJobs from './candidate/jobs/ShortlistedJobs';
 import ApplicantActions from './pages/ApplicantActions';
 import ApplicantDetailPage from './pages/ApplicantDetailPage';
 import ApplicantDetailView from './pages/ApplicantDetailView';
+import CandidateProfile from './components/CandidateProfile';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import GlobalLoader from './components/GlobalLoader';
@@ -150,6 +151,7 @@ function App() {
             <Route path="manage-applicants" element={<ApplicantActions />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
             <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
+            <Route path="applicant-detail-edit/full-profile/:jobID/:applicationID" element={<CandidateProfile />} />
           </Route>
           {/* Employee Routes end */}
 
@@ -174,6 +176,7 @@ function App() {
             <Route path="approve-employees" element={<ApproveEmployee />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
             <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
+            <Route path="applicant-detail-edit/full-profile/:jobID/:applicationID" element={<CandidateProfile />} />
           </Route>
           {/* Company Routes end */}
 
