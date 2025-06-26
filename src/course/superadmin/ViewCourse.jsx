@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import apiClient from '../../api/apiClient'
 import Pagination from '../../pages/hooks/Pagination'
 import CourseActions from './CourseActions'
-import { FiTag } from 'react-icons/fi'
+import { FiClock } from 'react-icons/fi'
 import Imageno from "./image.png"
 import { useUser } from '../../contexts/UserContext'
 import EmptyState from '../../components/EmptyState'
 import InternalLoader from "../../components/InternalLoader"
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
+
 
 const ViewCourse = ({ search }) => {
   const [courses, setCourses] = useState([]);
@@ -92,6 +94,18 @@ const ViewCourse = ({ search }) => {
               <div className="absolute top-2 right-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white text-sm font-semibold px-2 py-1 rounded-lg shadow-sm z-10">
                 {course.price?.toLowerCase() === 'free' ? 'Free' : 'Paid'}
               </div>
+              <div
+                className={`absolute top-2 left-2 text-white text-sm font-semibold px-2 py-1 rounded-lg shadow-sm z-10 
+    ${course.level === 'beginner'
+                    ? 'bg-gradient-to-r from-green-400 to-green-600'
+                    : course.level === 'intermediate'
+                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-600'
+                      : 'bg-gradient-to-r from-red-500 to-red-700'
+                  }`}
+              >
+                {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
+              </div>
+
 
               {/* Course Image */}
               <img
@@ -105,7 +119,28 @@ const ViewCourse = ({ search }) => {
               />
 
               {/* Card Content */}
-              <div className="p-5 flex-1 flex flex-col justify-between gap-4">
+              <div className="p-5 flex-1 flex flex-col justify-between gap-2">
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  {/* Duration */}
+                  <div className="flex items-center gap-2">
+                    <FiClock className="text-blue-600" />
+                    {course.duration}
+                  </div>
+
+                  {/* Star Rating */}
+                  <div className="flex items-center gap-0.5 text-yellow-500">
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const rating = course.rating || 0
+                      if (rating >= i + 1) {
+                        return <FaStar key={i} />
+                      } else if (rating >= i + 0.5) {
+                        return <FaStarHalfAlt key={i} />
+                      } else {
+                        return <FaRegStar key={i} />
+                      }
+                    })}
+                  </div>
+                </div>
                 <div>
                   <h3
                     onClick={(e) => {

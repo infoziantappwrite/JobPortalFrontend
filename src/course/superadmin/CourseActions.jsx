@@ -6,15 +6,24 @@ import { toast } from 'react-toastify'
 
 const CourseActions = ({ course, fetchCourses }) => {
   const navigate = useNavigate()
-  const [showConfirm, setShowConfirm] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false);
+  const formatCourseNameForUrl = (title) =>
+  title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-  const handleView = () => {
-    navigate(`/superadmin/view-course/${course._id}`)
-  }
 
-  const handleEdit = () => {
-    navigate(`/superadmin/edit-course/${course._id}`)
-  }
+ const handleView = () => {
+  navigate(`/superadmin/view-course/${formatCourseNameForUrl(course.title)}`, {
+    state: { course },
+  });
+};
+
+const handleEdit = () => {
+  navigate(`/superadmin/edit-course/${formatCourseNameForUrl(course.title)}`, {
+    state: { course },
+  });
+};
+
+
 
   const confirmDelete = async () => {
     try {
