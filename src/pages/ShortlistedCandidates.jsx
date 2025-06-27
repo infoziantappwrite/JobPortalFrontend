@@ -66,7 +66,7 @@ const ShortlistedCandidates = () => {
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
   const location = useLocation();
-const companyId = location?.state?.companyId;
+  const companyId = location?.state?.companyId;
 
 
   const { user } = useUser();
@@ -90,8 +90,7 @@ const companyId = location?.state?.companyId;
   }, []);
 
   const handleViewApplicants = (jobID) => {
-    const job = jobs.find(j => j.jobId === jobID);
-    if (job) setSelectedJob(job);
+    navigate(`/employee/job/${jobID}/shortlisted-applicants`);
   };
 
   // Navigation instead of modal

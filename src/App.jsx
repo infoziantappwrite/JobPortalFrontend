@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/NavBar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import ApplicantsList from './pages/ApplicantListView';
+import ApplicantsListEdit from './pages/ApplicantListEdit';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import JobDetails from './pages/JobDetails';
@@ -158,6 +160,8 @@ function App() {
             <Route path="jobdetails" element={<JobDetails />} />
             <Route path="jobs-edit" element={<EditJob />} />
             <Route path="manage-applicants" element={<ApplicantActions />} />
+            <Route path="job/:jobId/manage-applicants" element={<ApplicantsList />} />
+            <Route path="job/:jobId/shortlisted-applicants" element={<ApplicantsListEdit />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
             <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />
             <Route path="applicant-detail-edit/full-profile/:jobID/:applicationID" element={<CandidateProfile />} />

@@ -90,8 +90,7 @@ const ApplicantActions = () => {
   }, []);
 
   const handleViewApplicants = (jobID) => {
-    const job = jobs.find(j => j._id === jobID);
-    if (job) setSelectedJob(job);
+    navigate(`/employee/job/${jobID}/manage-applicants`);
   };
 
   // Navigation instead of modal
