@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { FiBook, FiSearch } from 'react-icons/fi'
 import AddCourseButton from "./AddCourseButton"
 import ViewCourse from './ViewCourse';
+import { PiChalkboardTeacher } from 'react-icons/pi';
 
 
 const Course = () => {
@@ -14,7 +15,7 @@ const Course = () => {
         {/* Header Row with spaced content */}
         <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-            <FiBook className="text-blue-600 w-6 h-6" />
+            <PiChalkboardTeacher className="text-blue-600 w-6 h-6" />
             Manage Courses
           </h2>
 

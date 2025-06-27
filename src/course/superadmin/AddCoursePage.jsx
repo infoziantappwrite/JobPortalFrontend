@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FiPlus, FiTrash2, FiBookOpen } from 'react-icons/fi';
 import apiClient from '../../api/apiClient'
 import { toast } from 'react-toastify';
-
+import UploadJsonAI from './UploadJsonAI';
 
 const AddCoursePage = () => {
    
@@ -296,6 +296,8 @@ const AddCoursePage = () => {
 
                     {/* Submit */}
                     <div className="flex justify-end gap-4 mt-8">
+                        <UploadJsonAI/>
+                            
                         <button
                             type="button"
                             onClick={() => {
