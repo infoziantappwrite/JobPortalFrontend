@@ -32,38 +32,43 @@ const ApplicantDetailPage = () => {
   // const [profileLoading, setProfileLoading] = useState(false);
   // const [profileError, setProfileError] = useState('');
 
-  useEffect(() => {
-    const fetchApplicationDetail = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await apiClient.post(
-          `/${role}/job/get-detail`,
-          {
-            IDs: [applicationID],
-            jobID,
-            type: 'jobApplication',
-          },
-          { withCredentials: true }
-        );
+useEffect(() => {
+  const fetchApplicationDetail = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await apiClient.post(
+        `/${role}/job/get-detail`,
+        {
+          IDs: [applicationID],
+          jobID,
+          type: 'jobApplication',
+        },
+        { withCredentials: true }
+      );
 
-        const app = res?.data?.jobApplications?.[0] || null;
-        if (!app) {
-          setError('Application details not found.');
-        } else {
-          setApplication(app);
-          const latestStatus = app?.status?.slice().pop()?.stage || 'applied';
-          setNewStatus(latestStatus);
-        }
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to load applicant detail.');
-      } finally {
-        setLoading(false);
+      const app = res?.data?.jobApplications?.[0] || null;
+      if (!app) {
+        setError('Application details not found.');
+      } else {
+        setApplication(app);
+
+        const latestStatus = app?.status?.slice().pop()?.stage || 'applied';
+        const validStatusOptions = statusOrder.filter(stage => stage !== 'applied' && stage !== 'shortlisted');
+
+        // Set only if current status is part of dropdown, otherwise default to first valid one
+        setNewStatus(validStatusOptions.includes(latestStatus) ? latestStatus : validStatusOptions[0]);
       }
-    };
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to load applicant detail.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (jobID && applicationID) fetchApplicationDetail();
-  }, [jobID, applicationID, role]);
+  if (jobID && applicationID) fetchApplicationDetail();
+}, [jobID, applicationID, role]);
+
 
   const handleStatusUpdate = async () => {
     if (!newStatus) return;
