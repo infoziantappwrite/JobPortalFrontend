@@ -146,6 +146,51 @@ const JobList = () => {
     }
   };
 
+const ToggleSwitch = ({ checked, onChange }) => (
+  <label className="relative inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      className="sr-only peer"
+    />
+    {/* Background track */}
+    <div
+      className={`w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300
+        peer-checked:bg-blue-600 transition-colors duration-300`}
+    />
+    {/* Knob */}
+    <div
+      className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow
+        transform transition-transform duration-300
+        peer-checked:translate-x-5`}
+    />
+  </label>
+);
+
+
+    const toggleJobStatus = async (jobId, newStatus) => {
+    try {
+      await apiClient.patch(`/common/job/change-status/${jobId}`, 
+        { isActive: newStatus }, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      setJobs(prevJobs =>
+        prevJobs.map(job =>
+          job._id === jobId ? { ...job, isActive: newStatus } : job
+        )
+      );
+    } catch (error) {
+      alert('Failed to update job status');
+      console.error(error);
+    }
+  };
+
+
   const handleViewJob = (job) => {
     const relatedJobs = jobs.filter(j => j.companyID === job.companyID && j._id !== job._id);
     navigate('/employee/jobdetails', {
@@ -198,51 +243,43 @@ const JobList = () => {
             <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
               <div className="w-full">
                 <div className="grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
-                  <div className="w-12">
-                    <button onClick={handleSelectAll} aria-label="Select all jobs">
-                      {selectedIds.length === jobs.length ? <FiCheckSquare /> : <FiSquare />}
-                    </button>
-                  </div>
+                  <div className="w-28 flex items-center justify-center">S.No</div>
                   <div className="col-span-2">Title</div>
                   <div>Status</div>
-                  <div>Dates</div>
-                  <div className="text-center">State</div>
+                  <div>Start Date</div>
+                  <div>End Date</div>
                   <div>Actions</div>
                 </div>
 
                 <div className="divide-y">
-                  {jobs.map(job => (
+                  {jobs.map((job, index) => (
                     <div
                       key={job._id}
                       className="grid grid-cols-1 sm:grid-cols-7 gap-2 px-4 py-3 text-sm items-center"
                     >
-                      <div>
-                        <button
-                          onClick={() => handleCheckbox(job._id)}
-                          aria-label={`Select job ${job.title}`}
-                        >
-                          {selectedIds.includes(job._id) ? <FiCheckSquare /> : <FiSquare />}
-                        </button>
+                      <div className="flex items-center justify-center font-semibold text-blue-700">
+                        {index + 1}
                       </div>
                       <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+                      {/* Status with toggle */}
                       <div>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          job.isActive ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'
-                        }`}>
-                          {job.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        <label className="inline-flex items-center cursor-pointer">
+                            <ToggleSwitch
+                              checked={job.isActive}
+                              onChange={() => toggleJobStatus(job._id, !job.isActive)}
+                            />
+
+                          <span className={`ml-2 text-xs font-semibold ${
+                            job.isActive ? 'text-blue-700' : 'text-red-500'
+                          }`}>
+                            {job.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </label>
                       </div>
-                      <div>
-                        {new Date(job.postedAt).toLocaleDateString()} →{' '}
-                        {new Date(job.applicationDeadline).toLocaleDateString()}
-                      </div>
-                      <div className="text-lg flex justify-center items-center">
-                        {job.isActive ? (
-                          <FiCheck className="text-green-600" />
-                        ) : (
-                          <FiX className="text-red-600" />
-                        )}
-                      </div>
+                      {/* Start Date */}
+                      <div>{new Date(job.startDate || job.postedAt).toLocaleDateString()}</div>
+                      {/* End Date */}
+                      <div>{new Date(job.applicationDeadline).toLocaleDateString()}</div>
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleViewJob(job)}
@@ -262,13 +299,14 @@ const JobList = () => {
                       </div>
                     </div>
                   ))}
+
                 </div>
               </div>
             </div>
 
             {/* Cards for mobile */}
             <div className="sm:hidden mt-6 space-y-4">
-              {jobs.map(job => (
+              {jobs.map((job, index) => (
                 <div
                   key={job._id}
                   className="bg-white p-4 rounded-lg shadow-md border"
@@ -301,15 +339,6 @@ const JobList = () => {
                   </div>
 
                   <h3 className="font-semibold text-blue-800 text-lg mb-1">{job.title}</h3>
-
-                  <div className="mb-1">
-                    <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                      job.isActive ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {job.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-
                   <div className="text-sm text-gray-700 mb-1">
                     <strong>Posted:</strong> {new Date(job.postedAt).toLocaleDateString()}
                   </div>
@@ -317,14 +346,19 @@ const JobList = () => {
                     <strong>Deadline:</strong> {new Date(job.applicationDeadline).toLocaleDateString()}
                   </div>
 
-                  <div className="flex items-center gap-1 text-sm">
+                  <div className="flex items-center gap-2 mt-2">
                     <strong>Status:</strong>
-                    {job.isActive ? (
-                      <FiCheck className="text-green-600" />
-                    ) : (
-                      <FiX className="text-red-600" />
-                    )}
+                    <ToggleSwitch
+                      checked={job.isActive}
+                      onChange={() => toggleJobStatus(job._id, !job.isActive)}
+                    />
+                    <span className={`text-sm font-semibold ${
+                        job.isActive ? 'text-blue-700' : 'text-red-500'
+                      }`}>
+                        {job.isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
+
                 </div>
               ))}
             </div>
