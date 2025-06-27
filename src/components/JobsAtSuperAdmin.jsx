@@ -126,6 +126,50 @@ const JobList = () => {
     });
   };
 
+  const ToggleSwitch = ({ checked, onChange }) => (
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="sr-only peer"
+      />
+      {/* Background track */}
+      <div
+        className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300
+        peer-checked:bg-blue-600 transition-colors duration-300"
+      />
+      {/* Knob */}
+      <div
+        className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow
+        transform transition-transform duration-300
+        peer-checked:translate-x-5"
+      />
+    </label>
+  );
+
+  
+  const toggleJobStatus = async (jobId, newStatus) => {
+  try {
+    await apiClient.patch(`/common/job/change-status/${jobId}`, 
+      { isActive: newStatus },  // assuming your API expects this in body
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      }
+    );
+    // Update the job status locally for immediate UI feedback
+    setJobs(prevJobs =>
+      prevJobs.map(job =>
+        job._id === jobId ? { ...job, isActive: newStatus } : job
+      )
+    );
+  } catch (error) {
+    alert('Failed to update job status');
+    console.error(error);
+  }
+};
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -198,6 +242,7 @@ const JobList = () => {
                 <th className="text-left py-3 px-5 border-b">Title</th>
                 <th className="text-left py-3 px-5 border-b">Company</th>
                 <th className="text-left py-3 px-5 border-b">Status</th>
+                <th className="text-left py-3 px-5 border-b">Change Status</th>
                 <th className="text-left py-3 px-5 border-b">Created → Expired</th>
                 <th className="text-left py-3 px-5 border-b">Actions</th>
               </tr>
@@ -208,12 +253,27 @@ const JobList = () => {
                   <td className="py-3 px-5 font-medium text-indigo-700">{job.title}</td>
                   <td className="py-3 px-5 font-medium text-indigo-700">{job.company}</td>
                   <td className="py-3 px-5">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      job.isActive ? 'bg-teal-100 text-teal-800' : 'bg-red-100 text-red-700'
-                    }`}>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${job.isActive ? 'bg-teal-100 text-teal-800' : 'bg-red-100 text-red-700'
+                      }`}>
                       {job.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-500'
+                          }`}
+                      >
+                        {job.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <ToggleSwitch
+                        checked={job.isActive}
+                        onChange={() => toggleJobStatus(job._id, !job.isActive)}
+                      />
+                    </div>
+                  </td>
+
+
                   <td className="py-3 px-5">
                     {new Date(job.postedAt).toLocaleDateString()} →{' '}
                     {new Date(job.applicationDeadline).toLocaleDateString()}

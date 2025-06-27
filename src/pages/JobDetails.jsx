@@ -66,6 +66,7 @@ const JobDetails = () => {
     offeredSalary,
     description,
     specialisms,
+    keyResponsibilities,
     careerLevel,
     experience,
     gender,
@@ -132,6 +133,18 @@ const JobDetails = () => {
               </ul>
             </div>
           )}
+
+           {keyResponsibilities?.length > 0 && (
+              <div className="px-4 md:px-8">
+                <h2 className="text-xl font-bold mb-2">key Responsibilities</h2>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  {keyResponsibilities.map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
         </div>
 
         {/* Right Column */}
