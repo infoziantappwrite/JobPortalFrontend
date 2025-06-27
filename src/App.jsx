@@ -76,6 +76,8 @@ import ShortlistedCandidatesForCompany from './pages/ShortlistedCandidatesForCom
 import ApplicantDetailViewForSuperadmin from './pages/ApplicantDetailViewForSuperadmin';
 import SuperAdminCandidateProfile from './components/SuperAdminCandidateProfile';
 import AllCourses from './course/candidate/AllCourses';
+import Courses from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
 
 function App() {
 
@@ -137,6 +139,10 @@ function App() {
           <Route path="/job/:slug" element={<Job />}/>
           <Route path="/companies" element={<Companies />} />
           <Route path="/company/:companyName" element={<CompanyDetails />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/course-details/:courseId" element={<CourseDetails />} />
+
+
 
 
 
