@@ -6,6 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import InternalLoader from '../components/InternalLoader';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../contexts/UserContext';
+import Pagination from '../pages/hooks/Pagination';
+
 import {
   CheckCircle,
   XCircle,
@@ -68,6 +70,9 @@ const ApplicantActions = () => {
   const [updateError, setUpdateError] = useState('');
   const [newStatus, setNewStatus] = useState('');
   const [remarks, setRemarks] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
 
   const { user } = useUser();
   const role = user?.userType?.toLowerCase();
@@ -78,16 +83,22 @@ const ApplicantActions = () => {
     const fetchShortlisted = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, { withCredentials: true });
+        const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, {
+          params: { page }, 
+          withCredentials: true,
+        });
         setJobs(res.data.jobs || []);
+        setTotalPages(res.data.pagination?.totalPages || 1); 
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applicants.');
       } finally {
         setLoading(false);
       }
     };
+
     fetchShortlisted();
-  }, []);
+  }, [page]); 
+
 
   const handleViewApplicants = (jobID) => {
     navigate(`/${role}/job/${jobID}/manage-applicants`);
@@ -244,6 +255,17 @@ const ApplicantActions = () => {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => {
+                setPage(newPage);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+
 
           </>
         ) : (
