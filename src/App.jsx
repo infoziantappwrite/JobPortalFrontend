@@ -186,6 +186,8 @@ function App() {
             <Route path="jobs-edit" element={<EditJobByCompany />} />
             <Route path="manage-applicants" element={<ApplicantActions />} />
             <Route path="shortlisted-applicants" element={<ShortlistedCandidates />} />
+            <Route path="job/:jobId/manage-applicants" element={<ApplicantsList />} />
+            <Route path="job/:jobId/shortlisted-applicants" element={<ApplicantsListEdit />} />
             <Route path="approve-employees" element={<ApproveEmployee />} />
             <Route path="applicant-detail-view/:jobID/:applicationID" element={<ApplicantDetailView />} />
             <Route path="applicant-detail-edit/:jobID/:applicationID" element={<ApplicantDetailPage />} />

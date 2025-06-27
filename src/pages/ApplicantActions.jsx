@@ -90,7 +90,7 @@ const ApplicantActions = () => {
   }, []);
 
   const handleViewApplicants = (jobID) => {
-    navigate(`/employee/job/${jobID}/manage-applicants`);
+    navigate(`/${role}/job/${jobID}/manage-applicants`);
   };
 
   // Navigation instead of modal

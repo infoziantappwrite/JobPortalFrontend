@@ -4,6 +4,7 @@ import apiClient from '../api/apiClient';
 import { FiUsers, FiEye, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import InternalLoader from '../components/InternalLoader';
+import { useUser } from '../contexts/UserContext';
 import { CheckCircle, Clock, X, BadgeCheck, ThumbsUp, XCircle } from 'lucide-react';
 
 const bgColors = [
@@ -52,12 +53,14 @@ const ApplicantListView = () => {
   const [remarks, setRemarks] = useState('');
   const [updateError, setUpdateError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
 
   useEffect(() => {
     const fetchJobApplicants = async () => {
       try {
         setLoading(true);
-        const res = await apiClient.get(`/employee/job/applicant/get-applicants`, { withCredentials: true });
+        const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, { withCredentials: true });
         const matchedJob = res.data.jobs.find(job => job._id === jobId);
         if (!matchedJob) {
           setError('Job not found');
@@ -79,7 +82,7 @@ const ApplicantListView = () => {
 
     const applicationIDString = typeof applicationID === 'object' ? applicationID._id : applicationID;
 
-    navigate(`/employee/applicant-detail-view/${jobId}/${applicationIDString}`);
+    navigate(`/${role}/applicant-detail-view/${jobId}/${applicationIDString}`);
   };
 
   const openStatusModal = (applicant) => {
@@ -110,7 +113,7 @@ if (!applicantID) {
 
 
       await apiClient.post(
-        `/employee/job/applicant/shortlist`,
+        `/${role}/job/applicant/shortlist`,
         {
           jobID: jobId,
           applicantID,
