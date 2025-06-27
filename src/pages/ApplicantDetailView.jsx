@@ -185,6 +185,41 @@ const ApplicationDetailView = () => {
           )}
         </div>
 
+        {/* Status Update */}
+        <div className="bg-gray-50 p-4 rounded-md shadow-sm border border-indigo-100">
+          <h3 className="text-lg font-semibold text-indigo-600 mb-4">Update Application Status</h3>
+
+          {updateError && <p className="text-red-500 mb-2 text-sm">{updateError}</p>}
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <select className="w-full p-2 border rounded" value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+              {statusOrder
+                .filter(stage => stage !== 'interviewed' && stage !== 'offered' && stage !== "rejected") 
+                .map(stage => (
+                  <option key={stage} value={stage}>
+                    {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                  </option>
+                ))}
+            </select>
+
+            <input
+              type="text"
+              placeholder="Remarks (optional)"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          <button
+            onClick={handleStatusUpdate}
+            disabled={updatingStatus}
+            className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full sm:w-auto"
+          >
+            {updatingStatus ? 'Updating...' : 'Update Status'}
+          </button>
+        </div>
+
 
         {/* Timeline */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
@@ -258,7 +293,6 @@ const ApplicationDetailView = () => {
 
       </div>
 
-      {/* Removed modal component since it's no longer used */}
 
     </div>
   );
