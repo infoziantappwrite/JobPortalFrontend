@@ -148,7 +148,7 @@ const PostJob = () => {
 
         {/* Dynamic Field Sections */}
         {[
-          { title: "Job Details", fields: ["title", "specialisms", "keyResponsibilities", "description"] },
+          { title: "Job Details", fields: ["title", "skills (Comma seperated)", "keyResponsibilities (Comma seperated)", "description"] },
           { title: "Company Information", fields: ["company", "emailAddress", "username"] },
           { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experience", "jobType"] },
           { title: "Requirements", fields: ["gender", "industry", "qualification", "applicationDeadline"] },
@@ -235,7 +235,7 @@ const PostJob = () => {
                     value={form[field]}
                     onChange={handleChange}
                     placeholder={field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}
-                    className={`input bg-indigo-50 ${field === "keyResponsibilities" ? "md:col-span-2" : ""}`}
+                    className={`input bg-indigo-50 ${field === "keyResponsibilities (Comma seperated)" ? "md:col-span-2" : ""}`}
                   />
                 );
               })}
