@@ -33,7 +33,7 @@ const SuperCompanyManage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllCompanies(res.data.companies || []);
-    } catch (err) {
+    } catch  {
       toast.error('Failed to load companies');
     }
   };
@@ -47,7 +47,7 @@ const SuperCompanyManage = () => {
       });
       toast.success('Company deleted successfully');
       fetchCompanies();
-    } catch (err) {
+    } catch  {
       toast.error('Delete failed');
     }
   };
@@ -63,7 +63,7 @@ const SuperCompanyManage = () => {
 
       toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);
       fetchCompanies();
-    } catch (err) {
+    } catch  {
       toast.error(`Failed to ${status} company.`);
     }
   };
@@ -94,7 +94,7 @@ const SuperCompanyManage = () => {
             Company Management
           </h2>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:max-w-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:max-w-lg">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
