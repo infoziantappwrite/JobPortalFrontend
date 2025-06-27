@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import InternalLoader from "../../components/InternalLoader";
 import EmptyState from "../../components/EmptyState";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Building2  } from "lucide-react";
 
 const COLORS = ["#60A5FA", "#34D399", "#FBBF24", "#F87171", "#A78BFA", "#FB923C"];
 
@@ -55,7 +55,11 @@ const CompanyDashboard = () => {
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-teal-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-blue-700 mb-6">🏢 Hi, Welcome back !</h1>
+    <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 bg-gradient-to-r from-teal-500 to-blue-700 bg-clip-text text-transparent">
+  <Building2 className="w-7 h-7 text-blue-700" />
+  Hi, Welcome back!
+</h1>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-5">
         {stats.map((s, idx) => (
@@ -81,37 +85,65 @@ const CompanyDashboard = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-10">
+      <div className="mb-6">
         <div className="bg-white rounded-2xl border border-gray-200 shadow p-5">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">🔥 Top Jobs by Popularity</h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend layout="vertical" verticalAlign="middle" align="right" />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+          <h2 className="text-xl font-semibold text-blue-700 mb-4">🔥 Top Jobs by Popularity</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            {/* Chart on the left */}
+            <div>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={120} // Increased outerRadius for a larger pie
+                    fill="#8884d8"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} // Show name and percentage
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value.toLocaleString()} applications`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
 
-        {data.applicationTrend && (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow p-5">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">📈 Weekly Applications Trend</h2>
-            <ResponsiveContainer width="100%" height={250}>
-              <ComposedChart data={data.applicationTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="applications" stroke="#14B8A6" strokeWidth={3} />
-              </ComposedChart>
-            </ResponsiveContainer>
+            {/* Enhanced data list on the right */}
+            <div className="flex flex-col gap-4">
+              {pieData.slice(0, 5).map((job, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition duration-300 transform hover:-translate-y-1 flex items-center p-4 border border-gray-100"
+                >
+                  <div
+                    className={`w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-md mr-4`}
+                    style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                  >
+                    {job.name.charAt(0)}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-lg font-semibold text-gray-800">{job.name}</p>
+                    <p className="text-sm text-gray-600">{job.value.toLocaleString()} applications</p>
+                  </div>
+                  <div className="text-right text-gray-500 text-sm">
+                    {((job.value / data.applicationsReceived) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              ))}
+              {pieData.length > 5 && (
+                <div className="text-center text-sm text-gray-600 mt-2">
+                  And {pieData.length - 5} more jobs...
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
