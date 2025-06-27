@@ -328,7 +328,7 @@ const JobListCompany = () => {
                           <FiEye />
                         </button>
                         <button
-                          onClick={() => canEdit(job) && navigate('/employee/jobs-edit', { state: job })}
+                          onClick={() => canEdit(job) && navigate('/company/jobs-edit', { state: job })}
                           title="Edit"
                           disabled={!canEdit(job)}
                           className={`text-yellow-600 ${!canEdit(job) ? 'opacity-50 cursor-not-allowed' : ''}`}
