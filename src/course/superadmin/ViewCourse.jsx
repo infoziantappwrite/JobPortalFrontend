@@ -60,7 +60,7 @@ const ViewCourse = ({ search }) => {
 
   if (loading) {
     return (
-      <InternalLoader text="Loading courses" />
+      <InternalLoader text="Loading Courses" />
     )
   }
 

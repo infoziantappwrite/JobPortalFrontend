@@ -9,7 +9,7 @@ const Course = () => {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className='p-6 bg-gradient-to-br from-blue-50 to-teal-50 min-h-screen'>
+    <div className='p-6 bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen'>
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* Header Row with spaced content */}

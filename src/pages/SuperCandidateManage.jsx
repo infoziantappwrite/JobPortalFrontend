@@ -30,7 +30,6 @@ const SuperCandidateManage = () => {
       const res = await apiClient.get("/superadmin/candidate");
       const data = res.data.candidates || [];
       setCandidates(data);
-      
       setLoading(false);
     } catch {
       toast.error("Failed to load candidates");
@@ -50,7 +49,7 @@ const SuperCandidateManage = () => {
 
   // Apply filters
   useEffect(() => {
-    setLoading(true);
+    
     let result = candidates;
 
     if (startDate)
@@ -68,7 +67,7 @@ const SuperCandidateManage = () => {
 
     setFiltered(result);
     setCurrentPage(1);
-    setLoading(false);
+    
   }, [search, startDate, endDate, candidates]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -77,7 +76,7 @@ const SuperCandidateManage = () => {
     currentPage * itemsPerPage
   );
 
-  if (loading) {
+  if (loading && filtered.length === 0) {
     return <InternalLoader text="Loading Candidates" />;
   }
 
@@ -89,7 +88,7 @@ const SuperCandidateManage = () => {
           {/* Left: Title */}
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
             <TbUserSquareRounded className="text-blue-600 w-6 h-6" />
-            Candidate Management
+            Manage Candidate 
           </h2>
 
           {/* Right: Filters + Search */}
