@@ -6,13 +6,15 @@ import {
   ArrowLeft, UploadCloud, Sparkles
 } from 'lucide-react';
 import Imageno from './image.png';
+import { useUser } from '../../contexts/UserContext';
 
 const ViewCoursePage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const course = state?.course;
-
-  const [openSections, setOpenSections] = useState({});
+  const { user } = useUser();
+const isSuperAdmin = user?.userType === 'superAdmin';
+const [openSections, setOpenSections] = useState({});
 
   const toggleSection = (id) => {
     setOpenSections((prev) => ({
@@ -28,10 +30,80 @@ const ViewCoursePage = () => {
       day: 'numeric',
     });
 
+    const courseInfo = [
+  {
+    icon: <User className="w-4 h-4 text-teal-600" />,
+    label: 'Instructor',
+    value: course.instructor,
+    bg: 'from-teal-50 to-white',
+    border: 'border-teal-200',
+  },
+  {
+    icon: <Clock className="w-4 h-4 text-blue-600" />,
+    label: 'Duration',
+    value: course.duration,
+    bg: 'from-blue-50 to-white',
+    border: 'border-blue-200',
+  },
+  {
+    icon: <DollarSign className="w-4 h-4 text-yellow-600" />,
+    label: 'Price',
+    value: course.price,
+    bg: 'from-yellow-50 to-white',
+    border: 'border-yellow-200',
+  },
+  {
+    icon: <Users className="w-4 h-4 text-green-600" />,
+    label: 'Enrolled',
+    value: course.enrollmentCount,
+    bg: 'from-green-50 to-white',
+    border: 'border-green-200',
+  },
+  {
+    icon: <Star className="w-4 h-4 text-pink-600" />,
+    label: 'Rating',
+    value: course.rating,
+    bg: 'from-pink-50 to-white',
+    border: 'border-pink-200',
+  },
+  {
+    icon: <Sparkles className="w-4 h-4 text-indigo-600" />,
+    label: 'Featured',
+    value: course.featured ? 'Yes' : 'No',
+    bg: 'from-indigo-50 to-white',
+    border: 'border-indigo-200',
+  },
+  {
+    icon: <BadgeCheck className="w-4 h-4 text-gray-600" />,
+    label: 'Published',
+    value: course.isPublished ? 'Yes' : 'No',
+    bg: 'from-gray-50 to-white',
+    border: 'border-gray-300',
+  },
+  {
+    icon: <CalendarClock className="w-4 h-4 text-rose-600" />,
+    label: 'Created At',
+    value: formatDate(course.createdAt),
+    bg: 'from-rose-50 to-white',
+    border: 'border-rose-200',
+  },
+  {
+    icon: <CalendarClock className="w-4 h-4 text-violet-600" />,
+    label: 'Updated At',
+    value: formatDate(course.updatedAt),
+    bg: 'from-violet-50 to-white',
+    border: 'border-violet-200',
+  },
+];
+
+// Show all if admin, else hide last 3
+const visibleCourseInfo = isSuperAdmin ? courseInfo : courseInfo.slice(0, -3);
+
+
   if (!course) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-teal-100 px-4">
-        <p className="text-red-500 text-lg font-semibold mb-4">Course data not found.</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-teal-100 to-teal-100 px-4">
+        <p className="text-gray-500 text-lg font-semibold mb-4">Course data not found.</p>
         <button
           onClick={() => navigate(-1)}
           className="bg-gradient-to-r from-blue-600 to-teal-500 text-white px-5 py-2 rounded-full shadow hover:opacity-90 transition"
@@ -73,71 +145,7 @@ const ViewCoursePage = () => {
 
       {/* MAIN INFO GRID */}
      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-800">
-  {[
-    {
-      icon: <User className="w-4 h-4 text-teal-600" />,
-      label: 'Instructor',
-      value: course.instructor,
-      bg: 'from-teal-50 to-white',
-      border: 'border-teal-200',
-    },
-    {
-      icon: <Clock className="w-4 h-4 text-blue-600" />,
-      label: 'Duration',
-      value: course.duration,
-      bg: 'from-blue-50 to-white',
-      border: 'border-blue-200',
-    },
-    {
-      icon: <DollarSign className="w-4 h-4 text-yellow-600" />,
-      label: 'Price',
-      value: course.price,
-      bg: 'from-yellow-50 to-white',
-      border: 'border-yellow-200',
-    },
-    {
-      icon: <Users className="w-4 h-4 text-green-600" />,
-      label: 'Enrolled',
-      value: course.enrollmentCount,
-      bg: 'from-green-50 to-white',
-      border: 'border-green-200',
-    },
-    {
-      icon: <Star className="w-4 h-4 text-pink-600" />,
-      label: 'Rating',
-      value: course.rating,
-      bg: 'from-pink-50 to-white',
-      border: 'border-pink-200',
-    },
-    {
-      icon: <BadgeCheck className="w-4 h-4 text-gray-600" />,
-      label: 'Published',
-      value: course.isPublished ? 'Yes' : 'No',
-      bg: 'from-gray-50 to-white',
-      border: 'border-gray-300',
-    },
-    {
-      icon: <Sparkles className="w-4 h-4 text-indigo-600" />,
-      label: 'Featured',
-      value: course.featured ? 'Yes' : 'No',
-      bg: 'from-indigo-50 to-white',
-      border: 'border-indigo-200',
-    },
-    {
-      icon: <CalendarClock className="w-4 h-4 text-rose-600" />,
-      label: 'Created At',
-      value: formatDate(course.createdAt),
-      bg: 'from-rose-50 to-white',
-      border: 'border-rose-200',
-    },
-    {
-      icon: <CalendarClock className="w-4 h-4 text-violet-600" />,
-      label: 'Updated At',
-      value: formatDate(course.updatedAt),
-      bg: 'from-violet-50 to-white',
-      border: 'border-violet-200',
-    },
-  ].map((item, index) => (
+  {visibleCourseInfo.map((item, index) => (
     <div
       key={index}
       className={`bg-gradient-to-br ${item.bg} p-4 rounded-lg flex items-start gap-3 border ${item.border} shadow-sm`}
