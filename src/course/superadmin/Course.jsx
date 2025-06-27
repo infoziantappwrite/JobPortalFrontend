@@ -2,19 +2,20 @@ import React, { useState } from 'react'
 import { FiBook, FiSearch } from 'react-icons/fi'
 import AddCourseButton from "./AddCourseButton"
 import ViewCourse from './ViewCourse';
+import { PiChalkboardTeacher } from 'react-icons/pi';
 
 
 const Course = () => {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className='p-6 bg-gradient-to-br from-blue-50 to-teal-50 min-h-screen'>
+    <div className='p-6 bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen'>
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* Header Row with spaced content */}
         <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-            <FiBook className="text-blue-600 w-6 h-6" />
+            <PiChalkboardTeacher className="text-blue-600 w-6 h-6" />
             Manage Courses
           </h2>
 
