@@ -8,8 +8,11 @@ const labelMap = {
   keyResponsibilities: 'Key Responsibilities (Comma separated)',
   description: 'Job Description',
 };
+import { useUser } from '../contexts/UserContext';
 
 const PostJob = () => {
+  const { user } = useUser();
+  console.log('User:', user);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -137,7 +140,7 @@ const PostJob = () => {
           },
           {
             title: 'Company Information',
-            fields: ['company', 'emailAddress', 'username'],
+            fields: ['company', 'emailAddress'],
           },
           {
             title: 'Salary & Experience',
