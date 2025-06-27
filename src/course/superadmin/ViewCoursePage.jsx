@@ -116,7 +116,7 @@ const visibleCourseInfo = isSuperAdmin ? courseInfo : courseInfo.slice(0, -3);
   }
 
   return (
-    <div className="max-w-5xl mx-auto mt-0 p-6 space-y-8">
+    <div className="max-w-6xl mx-auto mt-0 p-6 space-y-8">
       {/* IMAGE */}
       <div className="rounded-xl overflow-hidden shadow-lg relative">
         <img
