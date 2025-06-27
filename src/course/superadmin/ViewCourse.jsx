@@ -11,7 +11,7 @@ import InternalLoader from "../../components/InternalLoader"
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 
 
-const ViewCourse = ({ search }) => {
+const ViewCourse = ({ search, filters }) => {
   const [courses, setCourses] = useState([]);
   const { user } = useUser();
   //console.log("User in ViewCourse:", user);
@@ -25,29 +25,47 @@ const ViewCourse = ({ search }) => {
   const navigate = useNavigate()
 
   const fetchCourses = async () => {
-    try {
-      const res = await apiClient.get('/superadmin/course', {
-        withCredentials: true,
-      })
-      setCourses(res.data.courses || [])
-      setLoading(false)
-    } catch (err) {
-      console.error('Failed to fetch courses:', err)
-      setLoading(false)
+    setLoading(true);
+
+    let endpoint = "/common/course/";
+
+    if (user?.userType === "superAdmin") {
+      endpoint = "/superadmin/course";
+    } else if (user?.userType?.toLowerCase() === "candidate") {
+      endpoint = "/candidate/course/all";
     }
-  }
+
+    try {
+      const res = await apiClient.get(endpoint, { withCredentials: true });
+      setCourses(res.data.courses || []);
+      console.log("Fetched courses:", res.data.courses);
+    } catch (err) {
+      console.error("Failed to fetch courses:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     fetchCourses()
   }, [])
 
   const filteredCourses = courses.filter(course => {
-    const title = course?.title?.toLowerCase() || ''
-    const instructor = course?.instructor?.toLowerCase() || ''
-    const topics = course?.topics?.join(',').toLowerCase() || ''
-    const q = search?.toLowerCase() || ''
-    return title.includes(q) || instructor.includes(q) || topics.includes(q)
-  })
+  const title = course?.title?.toLowerCase() || ''
+  const instructor = course?.instructor?.toLowerCase() || ''
+  const topics = course?.topics?.join(',').toLowerCase() || ''
+  const q = search?.toLowerCase() || ''
+
+  const matchesQuery = title.includes(q) || instructor.includes(q) || topics.includes(q)
+  const matchesPrice = !filters.price || course.price?.toLowerCase() === filters.price
+  const matchesLevel = !filters.level || course.level === filters.level
+  const matchesFeatured = !filters.featured || String(course.featured) === filters.featured
+  const matchesPublished = !filters.published || String(course.isPublished) === filters.published
+
+  return matchesQuery && matchesPrice && matchesLevel && matchesFeatured && matchesPublished
+})
+
 
 
   const indexOfLastCourse = currentPage * coursesPerPage
@@ -66,7 +84,7 @@ const ViewCourse = ({ search }) => {
 
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-6 ">
+    <div className="space-y-6 max-w-6xl mx-auto md:p-6 p-0  ">
       {/* Course Cards */}
 
       {currentCourses.length === 0 ? (
@@ -81,8 +99,8 @@ const ViewCourse = ({ search }) => {
               key={course._id}
               onClick={() => {
                 if (isCandidate) {
-                  navigate(`/courses/${formatCourseNameForUrl(course.title)}`, {
-                    state: { id: course._id },
+                  navigate(`/candidate/view-course/${formatCourseNameForUrl(course.title)}`, {
+                    state: { course },
                   });
                 }
               }}
@@ -109,7 +127,7 @@ const ViewCourse = ({ search }) => {
 
               {/* Course Image */}
               <img
-                src={ Imageno}// src={course.image || Imageno}
+                src={Imageno}// src={course.image || Imageno}
                 alt={course.title}
                 className="w-full h-44 object-cover rounded-t-xl"
                 onError={(e) => {
@@ -146,8 +164,8 @@ const ViewCourse = ({ search }) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (isCandidate) {
-                        navigate(`/courses/${formatCourseNameForUrl(course.title)}`, {
-                          state: { id: course._id },
+                        navigate(`/candidate/view-course/${formatCourseNameForUrl(course.title)}`, {
+                          state: { course },
                         });
                       }
                     }}
@@ -161,16 +179,16 @@ const ViewCourse = ({ search }) => {
                   {/* Add Tags if needed */}
                 </div>
                 {isSuperAdmin && (
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-2">
-    {/* Enrollment Count */}
-    <span className="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-500 shadow-sm w-max">
-      Enrolled: <strong>{course.enrollmentCount || 0}</strong>
-    </span>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-2">
+                    {/* Enrollment Count */}
+                    <span className="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-500 shadow-sm w-max">
+                      Enrolled: <strong>{course.enrollmentCount || 0}</strong>
+                    </span>
 
-    {/* Action Buttons */}
-    <CourseActions course={course} fetchCourses={fetchCourses} />
-  </div>
-)}
+                    {/* Action Buttons */}
+                    <CourseActions course={course} fetchCourses={fetchCourses} />
+                  </div>
+                )}
 
               </div>
             </div>

@@ -75,7 +75,7 @@ import ApplicantActionsForCompany from './pages/ApplicantActionsForCompany';
 import ShortlistedCandidatesForCompany from './pages/ShortlistedCandidatesForCompany';
 import ApplicantDetailViewForSuperadmin from './pages/ApplicantDetailViewForSuperadmin';
 import SuperAdminCandidateProfile from './components/SuperAdminCandidateProfile';
-
+import AllCourses from './course/candidate/AllCourses';
 
 function App() {
 
@@ -244,7 +244,9 @@ function App() {
             <Route path="messages" element={<div>Messages</div>} />
             <Route path="shortlisted" element={<ShortlistedJobs />} />
             <Route path="cv-manager" element={<CVManager />} />
-            <Route path="change-password" element={<div>Change Password</div>} />
+            <Route path="all-courses" element={<AllCourses/>} />
+            <Route path="view-course/:title" element={<ViewCoursePage />} />
+
           </Route>
           {/* candidate Routes end */}
 
