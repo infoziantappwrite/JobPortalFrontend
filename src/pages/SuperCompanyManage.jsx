@@ -3,12 +3,22 @@ import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
 import Pagination from './hooks/Pagination';
+import {
+  RotateCcw,
+  Search,
+  Building2,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Trash2
+} from 'lucide-react';
 
 const SuperCompanyManage = () => {
   const [allCompanies, setAllCompanies] = useState([]);
   const [activeTab, setActiveTab] = useState('pending');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [searchTerm, setSearchTerm] = useState('');
 
   const navigate = useNavigate();
 
@@ -52,14 +62,17 @@ const SuperCompanyManage = () => {
       });
 
       toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);
-      fetchCompanies(); // Refresh the list after update
+      fetchCompanies();
     } catch (err) {
-      console.error(`Error updating company status to ${status}:`, err);
       toast.error(`Failed to ${status} company.`);
     }
   };
 
-  const filteredCompanies = allCompanies.filter(c => c.status === activeTab);
+  const filteredCompanies = allCompanies.filter(c =>
+    c.status === activeTab &&
+    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const totalPages = Math.ceil(filteredCompanies.length / itemsPerPage);
   const paginatedCompanies = filteredCompanies.slice(
     (currentPage - 1) * itemsPerPage,
@@ -73,100 +86,131 @@ const SuperCompanyManage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4 text-center">Manage All Companies</h2>
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-6">
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
+            <Building2 className="text-blue-600 w-5 h-5" />
+            Company Management
+          </h2>
 
-      <div className="flex justify-center mb-6 gap-4">
-        {['pending', 'approved', 'rejected'].map(status => (
-          <button
-            key={status}
-            onClick={() => {
-              setActiveTab(status);
-              setCurrentPage(1); // Reset page when tab changes
-            }}
-            className={`px-4 py-2 rounded-lg font-medium shadow ${
-              activeTab === status
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </button>
-        ))}
-      </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:max-w-2xl">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by company name"
+                className="w-full pl-10 pr-4 py-2 rounded-md border border-blue-200 text-sm text-gray-700 shadow-sm bg-white"
+              />
+            </div>
+            <button
+              onClick={() => setSearchTerm('')}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white px-4 py-2 rounded-md shadow hover:shadow-md text-sm font-medium"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Reset
+            </button>
+          </div>
+        </div>
 
-      {filteredCompanies.length === 0 ? (
-        <p className="text-center text-gray-500">No {activeTab} companies found.</p>
-      ) : (
-        <>
-          <div className="overflow-x-auto shadow border rounded-xl">
-            <table className="min-w-full bg-white text-sm">
-              <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-left">
-                <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedCompanies.map((company, idx) => (
-                  <tr key={company._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-6 py-4 font-medium">{company.name}</td>
-                    <td className="px-6 py-4">{company.email}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[company.status]}`}
-                      >
+        <div className="flex justify-center mb-6 gap-4">
+          {['pending', 'approved', 'rejected'].map(status => (
+            <button
+              key={status}
+              onClick={() => {
+                setActiveTab(status);
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-lg font-medium shadow transition-all duration-200 ${
+                activeTab === status
+                  ? 'bg-gradient-to-r from-teal-500 to-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {filteredCompanies.length === 0 ? (
+          <div className="text-center text-gray-500 py-16">No {activeTab} companies found.</div>
+        ) : (
+          <>
+            <div className="bg-white rounded-xl shadow-xl overflow-x-auto">
+              <div className="hidden sm:grid grid-cols-4 text-sm font-semibold text-blue-700 bg-blue-100 pl-8 py-4 rounded-t-lg">
+                <div>Name</div>
+                <div>Email</div>
+                <div>Status</div>
+                <div>Actions</div>
+              </div>
+
+              <div className="divide-y">
+                {paginatedCompanies.map((company) => (
+                  <div
+                    key={company._id}
+                    className="grid grid-cols-1 sm:grid-cols-4 px-6 py-3 gap-4 items-center"
+                  >
+                    <div className="font-medium text-gray-800">{company.name}</div>
+                    <div className="text-sm text-gray-700">{company.email}</div>
+                    <div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[company.status]}`}>
                         {company.status.toUpperCase()}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 space-x-2 flex flex-wrap gap-2">
+                    </div>
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => navigate(`/superadmin/view-company/${company._id}`)}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+                        className="p-2 bg-blue-50 rounded-full hover:bg-blue-100 transition"
+                        title="View Company"
                       >
-                        View
+                        <Eye className="w-4 h-4 text-blue-600" />
                       </button>
 
                       {activeTab === 'pending' && (
                         <>
                           <button
                             onClick={() => handleStatusUpdate(company._id, 'approved')}
-                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-xs"
+                            className="p-2 bg-green-50 rounded-full hover:bg-green-100 transition"
+                            title="Approve"
                           >
-                            Approve
+                            <CheckCircle className="w-4 h-4 text-green-600" />
                           </button>
+
                           <button
                             onClick={() => handleStatusUpdate(company._id, 'rejected')}
-                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                            className="p-2 bg-yellow-50 rounded-full hover:bg-yellow-100 transition"
+                            title="Reject"
                           >
-                            Reject
+                            <XCircle className="w-4 h-4 text-yellow-600" />
                           </button>
                         </>
                       )}
 
                       <button
                         onClick={() => handleDelete(company._id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
+                        className="p-2 bg-red-50 rounded-full hover:bg-red-100 transition"
+                        title="Delete"
                       >
-                        Delete
+                        <Trash2 className="w-4 h-4 text-red-600" />
                       </button>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
 
-          {/* Pagination Component */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
-        </>
-      )}
+            <div className="mt-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

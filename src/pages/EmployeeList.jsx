@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 import { FiEye, FiEdit, FiTrash2, FiSave, FiX, FiUserCheck } from 'react-icons/fi';
+import CreateEmployeeModal from './CreateEmployeeModal';
 
 export default function EmployeesList() {
   const [employees, setEmployees] = useState([]);
@@ -10,7 +11,7 @@ export default function EmployeesList() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [viewModal, setViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+const [showCreateModal, setShowCreateModal] = useState(false);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -63,7 +64,27 @@ export default function EmployeesList() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">👥 Employee Directory</h2>
+     <div className="flex items-center justify-between mb-6">
+  {/* Left: Heading */}
+  <h2 className="text-3xl font-bold text-gray-800">👥 Employee Directory</h2>
+
+  {/* Right: Create Button */}
+  <button
+    onClick={() => setShowCreateModal(true)}
+    className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-all"
+  >
+    + Create Employee
+  </button>
+</div>
+
+{/* Create Employee Modal */}
+{showCreateModal && (
+  <CreateEmployeeModal
+    onClose={() => setShowCreateModal(false)}
+    onCreated={fetchEmployees}
+  />
+)}
+
 
       <div className="space-y-4">
         {employees.length === 0 ? (
@@ -172,58 +193,58 @@ export default function EmployeesList() {
         </div>
       )}
 
-   {viewModal && selectedEmployee && (
-  <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-300">
-    <div className="bg-white rounded-2xl shadow-2xl w-[92%] max-w-2xl p-6 sm:p-8 border border-gray-200">
-      {/* Profile Header */}
-      <div className="flex flex-col items-center">
-        <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
-          {selectedEmployee.name?.[0]?.toUpperCase() || 'U'}
-        </div>
-        <h2 className="text-2xl font-bold mt-4 text-center">{selectedEmployee.name}</h2>
-        <p className="text-purple-600 text-sm">Employee</p>
-        <p className="text-gray-500 text-sm">{selectedEmployee.email}</p>
-      </div>
+      {viewModal && selectedEmployee && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-2xl w-[92%] max-w-2xl p-6 sm:p-8 border border-gray-200">
+            {/* Profile Header */}
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
+                {selectedEmployee.name?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <h2 className="text-2xl font-bold mt-4 text-center">{selectedEmployee.name}</h2>
+              <p className="text-purple-600 text-sm">Employee</p>
+              <p className="text-gray-500 text-sm">{selectedEmployee.email}</p>
+            </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-200 my-6" />
+            {/* Divider */}
+            <div className="border-t border-gray-200 my-6" />
 
-      {/* Profile Details */}
-      <h3 className="text-gray-700 font-semibold mb-4 flex items-center gap-2">
-        <FiUserCheck /> Profile Details
-      </h3>
+            {/* Profile Details */}
+            <h3 className="text-gray-700 font-semibold mb-4 flex items-center gap-2">
+              <FiUserCheck /> Profile Details
+            </h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-purple-50 p-4 rounded-xl">
-          <p className="text-xs text-gray-500">Name</p>
-          <p className="text-sm font-semibold mt-1">{selectedEmployee.name}</p>
-        </div>
-        <div className="bg-purple-50 p-4 rounded-xl">
-          <p className="text-xs text-gray-500">Email</p>
-          <p className="text-sm font-semibold mt-1">{selectedEmployee.email}</p>
-        </div>
-        <div className="bg-purple-50 p-4 rounded-xl">
-          <p className="text-xs text-gray-500">Position</p>
-          <p className="text-sm font-semibold mt-1">{selectedEmployee.position || 'Not specified'}</p>
-        </div>
-        <div className="bg-purple-50 p-4 rounded-xl">
-          <p className="text-xs text-gray-500">Joined On</p>
-          <p className="text-sm font-semibold mt-1">{selectedEmployee.joinedOn || 'N/A'}</p>
-        </div>
-      </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-500">Name</p>
+                <p className="text-sm font-semibold mt-1">{selectedEmployee.name}</p>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-500">Email</p>
+                <p className="text-sm font-semibold mt-1">{selectedEmployee.email}</p>a
+              </div>
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-500">Position</p>
+                <p className="text-sm font-semibold mt-1">{selectedEmployee.position || 'Not specified'}</p>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-xl">
+                <p className="text-xs text-gray-500">Joined On</p>
+                <p className="text-sm font-semibold mt-1">{selectedEmployee.joinedOn || 'N/A'}</p>
+              </div>
+            </div>
 
-      {/* Close Button */}
-      <div className="mt-8 flex justify-end">
-        <button
-          onClick={() => setViewModal(false)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition flex items-center gap-2 shadow-sm"
-        >
-          <FiX /> Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            {/* Close Button */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={() => setViewModal(false)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition flex items-center gap-2 shadow-sm"
+              >
+                <FiX /> Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
 
