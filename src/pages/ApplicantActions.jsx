@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../contexts/UserContext';
 import Pagination from '../pages/hooks/Pagination';
 
+
 import {
   CheckCircle,
   XCircle,
@@ -75,6 +76,7 @@ const ApplicantActions = () => {
 
 
   const { user } = useUser();
+ // console.log("User in ApplicantActions:", user);
   const role = user?.userType?.toLowerCase();
 
   const navigate = useNavigate();
@@ -86,8 +88,9 @@ const ApplicantActions = () => {
         const res = await apiClient.get(`/${role}/job/applicant/get-applicants`, {
           params: { page }, 
           withCredentials: true,
-        });
+        }); 
         setJobs(res.data.jobs || []);
+        console.log("Fetched Jobs:", res.data.jobs);
         setTotalPages(res.data.pagination?.totalPages || 1); 
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applicants.');
@@ -203,8 +206,12 @@ const ApplicantActions = () => {
                       className="grid grid-cols-1 sm:grid-cols-6 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50 cursor-default"
                     >
                       <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
-                      <div>{job.company}</div>
-                      <div>{job.postedBy?.name}</div>
+                      <div> { (
+      user?.userType === 'company' ? user.name : job.company)
+    }</div>
+                       <div> { (
+      user?.userType === 'company' ?job.postedBy?.name|| "Self" : job.postedBy?.name) || job.postedBy?.name
+    }</div>
                       <div className="text-center text-gray-600 font-semibold">{job.applicants?.length || 0}</div>
                       <div>
                         <button
