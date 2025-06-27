@@ -92,114 +92,117 @@ export default function EmployeesList() {
   if (loading) return <IntenalLoader />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50">
-      <div className="max-w-5xl mx-auto py-10">
-        <div className="flex items-center justify-between mb-6 gap-8">
-          {/* Heading and Search */}
-          <div className="flex-1">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2 mb-4">
-              <Users className="text-indigo-600" />
-              Employee Directory
-            </h2>
-          </div>
+    <>
+    <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+      {/* Title */}
+      <div className="flex-1">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
+          <Users className="text-indigo-600" />
+          Employee Directory
+        </h2>
+      </div>
 
-          <div className="relative w-96 max-w-xl">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by name or position..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-all h-fit"
-          >
-            + Create Employee
-          </button>
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-gray-400" />
         </div>
+        <input
+          type="text"
+          placeholder="Search by name or position..."
+          className="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-        {showCreateModal && (
+      {/* Create Button */}
+      <button
+        onClick={() => setShowCreateModal(true)}
+        className="bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition-all"
+      >
+        + Create Employee
+      </button>
+    </div>
+
+    {/* Table Header */}
+    {filteredEmployees.length > 0 && (
+      <div className="hidden sm:grid grid-cols-12 font-semibold text-sm text-blue-700 bg-blue-100 px-6 py-3 rounded-t-lg">
+        <div className="col-span-3">Name</div>
+        <div className="col-span-3">Email</div>
+        <div className="col-span-3">Position</div>
+        <div className="col-span-2 text-center">Actions</div>
+      </div>
+    )}
+
+    {/* Table Rows */}
+    <div className="bg-white divide-y rounded-b-xl shadow-md">
+      {filteredEmployees.length === 0 ? (
+        <div className="min-h-96 flex flex-col justify-center items-center text-center text-gray-600 bg-gradient-to-br from-teal-50 to-blue-50 px-6 py-12 rounded-xl shadow-inner">
+          <SearchX className="w-12 h-12 mb-4 text-teal-500" />
+          <h2 className="text-xl font-semibold mb-2">No Employees Found</h2>
+          <p className="text-sm text-gray-500">Try adjusting your search or check the spelling.</p>
+        </div>
+      ) : (
+        filteredEmployees.map((emp) => (
+          <div
+            key={emp._id}
+            className="grid grid-cols-1 sm:grid-cols-12 px-6 py-4 gap-2 items-start sm:items-center hover:bg-gray-50 transition"
+          >
+            <div className="sm:col-span-3 font-medium text-gray-900">
+              <p
+                onClick={() => {
+                  setSelectedEmployee(emp);
+                  setViewModal(true);
+                }}
+                className="cursor-pointer text-blue-800 hover:underline"
+              >
+                {emp.name}
+              </p>
+            </div>
+            <div className="sm:col-span-3 text-sm text-gray-700">{emp.email}</div>
+            <div className="sm:col-span-3 text-sm text-gray-700">
+              {emp.position || <span className="italic text-gray-400">No position</span>}
+            </div>
+            <div className="sm:col-span-2 flex justify-start sm:justify-center gap-2 mt-2 sm:mt-0">
+              <button
+                onClick={() => {
+                  setSelectedEmployee(emp);
+                  setViewModal(true);
+                }}
+                className="p-2 bg-blue-50 rounded-full hover:bg-blue-100 transition"
+                title="View Employee"
+              >
+                <Eye className="w-5 h-5 text-blue-600" />
+              </button>
+              <button
+                onClick={() => handleEditClick(emp)}
+                className="p-2 bg-yellow-100 rounded-full hover:bg-yellow-200 transition"
+                title="Edit Employee"
+              >
+                <Edit className="w-5 h-5 text-yellow-700" />
+              </button>
+              <button
+                onClick={() => handleDelete(emp._id)}
+                className="p-2 bg-red-100 rounded-full hover:bg-red-200 transition"
+                title="Delete Employee"
+              >
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+
+     {showCreateModal && (
           <CreateEmployeeModal
             onClose={() => setShowCreateModal(false)}
             onCreated={fetchEmployees}
           />
         )}
-
-        <div className="bg-white rounded-xl shadow-xl w-full max-w-7xl mx-auto">
-          {filteredEmployees.length > 0 && (
-            <div className="hidden sm:grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 pl-8 py-4 rounded-t-lg">
-              <div className="col-span-2">Name</div>
-              <div>Email</div>
-              <div>Position</div>
-              <div className="text-center">Actions</div>
-            </div>
-          )}
-
-          <div className="divide-y">
-            {filteredEmployees.length === 0 ? (
-              <div className="min-h-96 flex flex-col justify-center items-center text-center text-gray-600 bg-gradient-to-br from-teal-50 to-blue-50 px-6 py-12 rounded-xl shadow-inner">
-                <SearchX className="w-12 h-12 mb-4 text-teal-500" />
-                <h2 className="text-xl font-semibold mb-2">No Employees Found</h2>
-                <p className="text-sm text-gray-500">Try adjusting your search or check the spelling.</p>
-              </div>
-            ) : (
-              filteredEmployees.map((emp) => (
-                <div
-                  key={emp._id}
-                  className="grid grid-cols-1 sm:grid-cols-6 px-6 py-4 gap-3 items-start sm:items-center hover:bg-gray-50 transition"
-                >
-                  <div className="col-span-2 font-medium text-gray-900">
-                    <p
-                      onClick={() => {
-                        setSelectedEmployee(emp);
-                        setViewModal(true);
-                      }}
-                      className="cursor-pointer text-blue-800 hover:underline"
-                    >
-                      {emp.name}
-                    </p>
-                  </div>
-                  <div className="text-sm text-gray-700">{emp.email}</div>
-                  <div className="text-sm text-gray-700">
-                    {emp.position || <span className="italic text-gray-400">No position</span>}
-                  </div>
-                  <div className="flex sm:justify-center gap-2 mt-2 sm:mt-0">
-                    <button
-                      onClick={() => {
-                        setSelectedEmployee(emp);
-                        setViewModal(true);
-                      }}
-                      className="p-2 bg-blue-50 rounded-full hover:bg-blue-100 transition"
-                      title="View Employee"
-                    >
-                      <Eye className="w-5 h-5 text-blue-600" />
-                    </button>
-                    <button
-                      onClick={() => handleEditClick(emp)}
-                      className="p-2 bg-yellow-100 rounded-full hover:bg-yellow-200 transition"
-                      title="Edit Employee"
-                    >
-                      <Edit className="w-5 h-5 text-yellow-700" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(emp._id)}
-                      className="p-2 bg-red-100 rounded-full hover:bg-red-200 transition"
-                      title="Delete Employee"
-                    >
-                      <Trash2 className="w-5 h-5 text-red-600" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
         {/* Edit Modal */}
         {showEditModal && (
@@ -309,7 +312,8 @@ export default function EmployeesList() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </>
+    
+    
   );
 }
