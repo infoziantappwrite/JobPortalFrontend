@@ -90,7 +90,7 @@ const ShortlistedCandidates = () => {
   }, []);
 
   const handleViewApplicants = (jobID) => {
-    navigate(`/employee/job/${jobID}/shortlisted-applicants`);
+    navigate(`/${role}/job/${jobID}/shortlisted-applicants`);
   };
 
   // Navigation instead of modal
@@ -237,7 +237,7 @@ const ShortlistedCandidates = () => {
 
           <button
             className="w-full bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-semibold py-2 rounded-lg shadow-md hover:from-indigo-700 hover:to-teal-600 transition-colors duration-300"
-            onClick={() => handleViewApplicants(job._id)}
+            onClick={() => handleViewApplicants(job.jobId)}
           >
             View Applicants
           </button>

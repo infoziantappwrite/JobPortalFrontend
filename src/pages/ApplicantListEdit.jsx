@@ -4,6 +4,7 @@ import apiClient from '../api/apiClient';
 import { FiUsers, FiEye, FiEdit } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import InternalLoader from '../components/InternalLoader';
+import { useUser } from '../contexts/UserContext';
 import { CheckCircle, Clock, X, BadgeCheck, ThumbsUp, XCircle } from 'lucide-react';
 
 const bgColors = [
@@ -53,12 +54,15 @@ const ApplicantListEdit = () => {
   const [updateError, setUpdateError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  const { user } = useUser();
+  const role = user?.userType?.toLowerCase();
+
     useEffect(() => {
     const fetchJobApplicants = async () => {
         try {
         setLoading(true);
 
-        const res = await apiClient.get(`/employee/job/applicant/shortlisted-applicants`, { withCredentials: true });
+        const res = await apiClient.get(`/${role}/job/applicant/shortlisted-applicants`, { withCredentials: true });
         console.log('API Response:', res.data);
 
         // Fix here: use 'shortlistedApplicants' and 'jobId'
@@ -87,7 +91,7 @@ const ApplicantListEdit = () => {
 
     const applicationIDString = typeof applicationID === 'object' ? applicationID._id : applicationID;
 
-    navigate(`/employee/applicant-detail-edit/${jobId}/${applicationIDString}`);
+    navigate(`/${role}/applicant-detail-edit/${jobId}/${applicationIDString}`);
   };
 
   const openStatusModal = (applicant) => {
@@ -120,7 +124,7 @@ const ApplicantListEdit = () => {
       }
 
       await apiClient.post(
-        `/employee/job/applicant/shortlist`,
+        `/${role}/job/applicant/shortlist`,
         {
           jobID: jobId,
           applicantID,
