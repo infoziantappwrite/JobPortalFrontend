@@ -35,6 +35,7 @@ const Job = () => {
     offeredSalary,
     description,
     specialisms,
+    keyResponsibilities,
     careerLevel,
     experience,
     gender,
@@ -149,6 +150,17 @@ const Job = () => {
                 <h2 className="text-xl font-bold mb-2">Skill Required</h2>
                 <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {specialisms.map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {keyResponsibilities?.length > 0 && (
+              <div className="px-4 md:px-8">
+                <h2 className="text-xl font-bold mb-2">key Responsibilities</h2>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  {keyResponsibilities.map((skill, i) => (
                     <li key={i}>{skill}</li>
                   ))}
                 </ul>
