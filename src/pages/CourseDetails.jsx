@@ -15,7 +15,6 @@ import { PiArrowLeftBold } from 'react-icons/pi';
 
 const CourseDetails = () => {
   const { user } = useUser();
-  const isCandidate = user?.userType?.toLowerCase() === 'candidate';
   const navigate = useNavigate();
   const { courseId } = useParams();
 
@@ -41,6 +40,9 @@ const CourseDetails = () => {
   const toggleSection = (sectionId) => {
     setOpenSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
   };
+  
+            const formatCourseNameForUrl = (name) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
   if (loading) return <InternalLoader />;
   if (!course) return <EmptyState message="Course not found." />;
@@ -74,16 +76,30 @@ const CourseDetails = () => {
               <p className="text-gray-600 text-lg mt-1">{course.description}</p>
             </div>
 
-            {isCandidate ? (
-              <ApplyNowButton courseId={course._id} />
-            ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="mt-4 sm:mt-0 px-5 py-2 text-sm font-semibold bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg hover:opacity-90"
-              >
-                Login to Apply
-              </button>
-            )}
+
+{!user ? (
+  // Not logged in
+  <button
+    onClick={() => navigate('/login')}
+    className="mt-4 sm:mt-0 px-5 py-2 text-sm font-semibold bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg hover:opacity-90"
+  >
+    Login to View
+  </button>
+) : user.userType === 'candidate' ? (
+  // Logged in candidate
+  <button
+    onClick={() =>
+      navigate(`/candidate/view-course/${formatCourseNameForUrl(course.title)}`, {
+        state: { course },
+      })
+    }
+    className="mt-4 sm:mt-0 px-5 py-2 text-sm font-semibold bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg hover:opacity-90"
+  >
+    View
+  </button>
+) : null}
+
+
           </div>
         </div>
 

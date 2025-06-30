@@ -78,6 +78,7 @@ import SuperAdminCandidateProfile from './components/SuperAdminCandidateProfile'
 import AllCourses from './course/candidate/AllCourses';
 import Courses from './pages/Courses';
 import CourseDetails from './pages/CourseDetails';
+import MyCourses from './course/candidate/MyCourses';
 
 function App() {
 
@@ -187,7 +188,7 @@ function App() {
             <Route path="manage-employees" element={<EmployeeList />} />
             <Route path="post-job" element={<PostJob />} />
             <Route path="manage-jobs" element={<JobListCompany />} />
-            
+             
             <Route path='jobdetails' element={<JobDetails />}/>
             <Route path="jobs-edit" element={<EditJobByCompany />} />
             <Route path="manage-applicants" element={<ApplicantActions />} />
@@ -252,6 +253,7 @@ function App() {
             <Route path="cv-manager" element={<CVManager />} />
             <Route path="all-courses" element={<AllCourses/>} />
             <Route path="view-course/:title" element={<ViewCoursePage />} />
+            <Route path="my-courses" element={<MyCourses/>} />
 
           </Route>
           {/* candidate Routes end */}
