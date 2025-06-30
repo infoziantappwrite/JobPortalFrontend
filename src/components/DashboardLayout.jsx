@@ -62,9 +62,6 @@ const DashboardLayout = () => {
     path: '/candidate/my-courses',
   },
 
-      // { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
-      // { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
-
     ],
    superadmin : [
   {

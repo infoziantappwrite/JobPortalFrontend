@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Bell, X, CheckSquare, Square, ChevronDown, ChevronUp,
+  Bell, X, CheckSquare, Square, ChevronDown, ChevronUp, XSquare, SquareDashed
 } from 'lucide-react';
 import apiClient from '../api/apiClient';
 
@@ -10,7 +10,8 @@ const getRandomColor = () => {
     'bg-purple-500', 'bg-yellow-500', 'bg-pink-500', 'bg-indigo-500',
   ];
   return colors[Math.floor(Math.random() * colors.length)];
-};
+}; 1;
+
 
 const formatDateGroup = (dateStr) => {
   const date = new Date(dateStr);
@@ -37,13 +38,11 @@ const NotificationPopup = () => {
   const popupRef = useRef(null);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  // Fetch once
   useEffect(() => {
     const fetch = async () => {
       try {
         const res = await apiClient.get('/common/auth/notifications', { withCredentials: true });
-        const data = res.data.notifications || [];
+        const data = (res.data.notifications || []).reverse(); // ⬅️ Reverse for descending order
 
         const colorMap = {};
         data.forEach((n) => {
@@ -59,6 +58,7 @@ const NotificationPopup = () => {
 
     fetch();
   }, []);
+
 
   // Close popup outside click
   useEffect(() => {
@@ -152,10 +152,22 @@ const NotificationPopup = () => {
             <h3 className="text-lg font-semibold text-blue-700">Notifications</h3>
             <div className="flex gap-2 items-center">
               {selectMode ? (
-                <ChevronUp onClick={() => { setSelectMode(false); setSelected([]); }} className="cursor-pointer text-gray-600" />
+                <XSquare
+                  onClick={() => {
+                    setSelectMode(false);
+                    setSelected([]);
+                  }}
+                  className="cursor-pointer text-red-500 hover:text-red-600 transition"
+                  title="Cancel Select Mode"
+                />
               ) : (
-                <ChevronDown onClick={() => setSelectMode(true)} className="cursor-pointer text-gray-600" />
+                <CheckSquare
+                  onClick={() => setSelectMode(true)}
+                  className="cursor-pointer text-green-600 hover:text-green-700 transition"
+                  title="Enable Select Mode"
+                />
               )}
+
               <X onClick={() => setShowPopup(false)} className="cursor-pointer text-gray-600 hover:text-red-600" />
             </div>
           </div>
@@ -176,64 +188,63 @@ const NotificationPopup = () => {
           )}
 
           {/* Body */}
-         {/* Body */}
-<div className="overflow-y-auto max-h-[75vh] divide-y">
-  {notifications.length === 0 ? (
-    <div className="p-6 text-center text-gray-500">
-      <p className="text-sm">You have no notifications.</p>
-    </div>
-  ) : (
-    Object.entries(grouped).map(([group, notifs]) => (
-      <div key={group} className="px-4 py-2">
-        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{group}</h4>
-        {notifs.map((n) => {
-          const isSelected = selected.includes(n._id);
-          const isUnread = !n.isRead;
-          const color = initialColors[n._id] || 'bg-blue-600';
-
-          return (
-            <div
-              key={n._id}
-              onClick={() =>
-                selectMode ? toggleSelect(n._id) : markSingleRead(n._id)
-              }
-              className={`flex items-start gap-3 p-3 rounded-md hover:bg-gray-100 transition cursor-pointer ${
-                isSelected ? 'ring-2 ring-blue-400' : ''
-              }`}
-            >
-              {selectMode && (
-                <div className="pt-1">
-                  {isSelected ? (
-                    <CheckSquare className="text-blue-600 w-5 h-5" />
-                  ) : (
-                    <Square className="text-gray-400 w-5 h-5" />
-                  )}
-                </div>
-              )}
-
-              <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white font-bold`}>
-                {n.title?.charAt(0) || 'N'}
+          {/* Body */}
+          <div className="overflow-y-auto max-h-[75vh] divide-y">
+            {notifications.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">
+                <p className="text-sm">You have no notifications.</p>
               </div>
+            ) : (
+              Object.entries(grouped).map(([group, notifs]) => (
+                <div key={group} className="px-4 py-2">
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{group}</h4>
+                  {notifs.map((n) => {
+                    const isSelected = selected.includes(n._id);
+                    const isUnread = !n.isRead;
+                    const color = initialColors[n._id] || 'bg-blue-600';
 
-              <div className="flex-1">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-semibold text-gray-800">{n.title}</p>
-                  {isUnread && (
-                    <span className="w-2 h-2 bg-red-500 rounded-full inline-block" />
-                  )}
+                    return (
+                      <div
+                        key={n._id}
+                        onClick={() =>
+                          selectMode ? toggleSelect(n._id) : markSingleRead(n._id)
+                        }
+                        className={`flex items-start gap-3 p-3 rounded-md hover:bg-gray-100 transition cursor-pointer ${isSelected ? 'ring-2 ring-blue-400' : ''
+                          }`}
+                      >
+                        {selectMode && (
+                          <div className="pt-1">
+                            {isSelected ? (
+                              <CheckSquare className="text-blue-600 w-5 h-5" />
+                            ) : (
+                              <Square className="text-gray-400 w-5 h-5" />
+                            )}
+                          </div>
+                        )}
+
+                        <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white font-bold`}>
+                          {n.title?.charAt(0) || 'N'}
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <p className="text-sm font-semibold text-gray-800">{n.title}</p>
+                            {isUnread && (
+                              <span className="w-2 h-2 bg-red-500 rounded-full inline-block" />
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600">{n.message}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(n.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <p className="text-sm text-gray-600">{n.message}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {new Date(n.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    ))
-  )}
-</div>
+              ))
+            )}
+          </div>
 
         </div>
       )}

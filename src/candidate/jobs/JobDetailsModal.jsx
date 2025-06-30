@@ -27,25 +27,30 @@ const JobDetailsModal = ({ selectedJob, onClose }) => {
                 <div className=" overflow-y-auto max-h-[85vh] relative  border-blue-100">
 
                     {/* Close Button */}
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 text-gray-600 hover:text-black"
-                        aria-label="Close"
-                    >
-                        <X size={20} />
-                    </button>
+                    {/* Sticky Header */}
+                    <div className="sticky top-0 z-10 bg-white border-b pb-4 pt-2 px-1">
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            className="absolute top-4 right-4 text-gray-600 hover:text-black"
+                            aria-label="Close"
+                        >
+                            <X size={20} />
+                        </button>
 
-                    {/* Job Title & Company */}
-                    <div className="mb-6 border-b pb-4">
-                        <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-                            <Briefcase className="text-teal-600" size={20} />
-                            {selectedJob.title}
-                        </h2>
-                        <p className="text-gray-600 text-sm mt-1 flex items-center gap-1">
-                            <Building2 className="text-teal-600" size={16} />
-                            {selectedJob.company}
-                        </p>
+                        {/* Job Title & Company */}
+                        <div className="mb-2">
+                            <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
+                                <Briefcase className="text-teal-600" size={20} />
+                                {selectedJob.title}
+                            </h2>
+                            <p className="text-gray-600 text-sm mt-1 flex items-center gap-1">
+                                <Building2 className="text-teal-600" size={16} />
+                                {selectedJob.company}
+                            </p>
+                        </div>
                     </div>
+
 
                     {/* Description */}
                     {selectedJob.description && (

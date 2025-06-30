@@ -111,6 +111,33 @@ useEffect(() => {
     }
   };
 
+  const handleDeleteStage = async (stageID) => {
+    if (!jobID || !applicationID || !stageID) return;
+
+    try {
+      await apiClient.delete(`/${role}/job/stage`, {
+        params: { jobID, applicationID, stageID },
+        withCredentials: true,
+      });
+
+      toast.success('Stage deleted successfully.');
+
+      const refreshed = await apiClient.post(
+        `/${role}/job/get-detail`,
+        {
+          IDs: [applicationID],
+          jobID,
+          type: 'jobApplication',
+        },
+        { withCredentials: true }
+      );
+      setApplication(refreshed?.data?.jobApplications?.[0] || null);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to delete stage.');
+    }
+  };
+
+
   // New function to navigate to full profile page
   const goToFullProfile = () => {
     if (!jobID || !applicationID) return;
@@ -228,71 +255,67 @@ useEffect(() => {
         {/* Timeline */}
         <div className="bg-gray-50 p-4 rounded-md shadow-sm">
           <h3 className="text-lg font-semibold text-indigo-600 mb-4">Application Timeline</h3>
-          <ol className="relative border-l border-indigo-300 ml-2">
-            {(() => {
-              if (!status || status.length === 0) {
-                return <p className="text-gray-500 italic">No timeline data available.</p>;
-              }
+            <ol className="relative border-l border-indigo-300 ml-2">
+              {(() => {
+                if (!status || status.length === 0) {
+                  return <p className="text-gray-500 italic">No timeline data available.</p>;
+                }
 
-              // Color definitions for each stage
-              const statusColors = {
-                applied: {
-                  dot: 'bg-blue-500',
-                  text: 'text-blue-600',
-                },
-                shortlisted: {
-                  dot: 'bg-yellow-400',
-                  text: 'text-yellow-600',
-                },
-                interviewed: {
-                  dot: 'bg-indigo-500',
-                  text: 'text-indigo-600',
-                },
-                offered: {
-                  dot: 'bg-green-500',
-                  text: 'text-green-600',
-                },
-                rejected: {
-                  dot: 'bg-red-500',
-                  text: 'text-red-600',
-                },
-              };
-
-              const latestOverallEntry = status.reduce((latest, current) =>
-                new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
-              );
-              const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
-              const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
-
-              return visibleStages.map(stage => {
-                const entries = status.filter(s => s.stage === stage);
-                if (entries.length === 0) return null;
-
-                const latestEntry = entries.reduce((latest, current) =>
-                  new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
-                );
-
-                const stageKey = stage.toLowerCase();
-                const { dot, text } = statusColors[stageKey] || {
-                  dot: 'bg-gray-400',
-                  text: 'text-gray-600',
+                const statusColors = {
+                  applied: { dot: 'bg-blue-500', text: 'text-blue-600' },
+                  shortlisted: { dot: 'bg-yellow-400', text: 'text-yellow-600' },
+                  interviewed: { dot: 'bg-indigo-500', text: 'text-indigo-600' },
+                  offered: { dot: 'bg-green-500', text: 'text-green-600' },
+                  rejected: { dot: 'bg-red-500', text: 'text-red-600' },
                 };
 
-                return (
-                  <li key={stage + latestEntry.createdAt} className="mb-6 relative pl-6">
-                    <div className={`absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 ${dot}`} />
-                    <time className="block mb-1 text-sm font-normal text-gray-400">
-                      {new Date(latestEntry.createdAt).toLocaleString()}
-                    </time>
-                    <p className={`text-base font-semibold capitalize ${text}`}>{stage}</p>
-                    {latestEntry.remarks && (
-                      <p className="text-sm text-gray-600 mt-1 italic">Remarks: {latestEntry.remarks}</p>
-                    )}
-                  </li>
+                const latestOverallEntry = status.reduce((latest, current) =>
+                  new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
                 );
-              });
-            })()}
-          </ol>
+                const latestStageIndex = statusOrder.indexOf(latestOverallEntry.stage);
+                const visibleStages = statusOrder.slice(0, latestStageIndex + 1);
+
+                return visibleStages.map(stage => {
+                  const entries = status.filter(s => s.stage === stage);
+                  if (entries.length === 0) return null;
+
+                  const latestEntry = entries.reduce((latest, current) =>
+                    new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+                  );
+
+                  const { dot, text } = statusColors[stage] || {
+                    dot: 'bg-gray-400',
+                    text: 'text-gray-600',
+                  };
+
+                  return (
+                    <li key={stage + latestEntry.createdAt} className="mb-6 relative pl-6">
+                      <div className={`absolute w-3 h-3 rounded-full left-0 top-2 border border-white -translate-x-1/2 ${dot}`} />
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <time className="block mb-1 text-sm font-normal text-gray-400">
+                            {new Date(latestEntry.createdAt).toLocaleString()}
+                          </time>
+                          <p className={`text-base font-semibold capitalize ${text}`}>{stage}</p>
+                          {latestEntry.remarks && (
+                            <p className="text-sm text-gray-600 mt-1 italic">Remarks: {latestEntry.remarks}</p>
+                          )}
+                        </div>
+                        {stage !== 'applied' && (
+                          <button
+                            className="text-red-500 text-sm hover:underline ml-4"
+                            onClick={() => handleDeleteStage(latestEntry._id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  );
+                });
+              })()}
+            </ol>
+
         </div>
 
       </div>

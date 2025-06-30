@@ -240,69 +240,76 @@ const ToggleSwitch = ({ checked, onChange }) => (
         ) : (
           <>
             {/* Table for desktop */}
-            <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
-              <div className="w-full">
-                <div className="grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
-                  <div className="w-28 flex items-center justify-center">S.No</div>
-                  <div className="col-span-2">Title</div>
-                  <div>Status</div>
-                  <div>Start Date</div>
-                  <div>End Date</div>
-                  <div>Actions</div>
-                </div>
+              <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border">
+                <div className="w-full">
+                  <div className="grid grid-cols-8 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg">
+                    <div className="w-28 flex items-center justify-center">S.No</div>
+                    <div className="col-span-2">Title</div>
+                    <div>Status</div>
+                    <div>Change Status</div> {/* Moved the Change Status column here */}
+                    <div>Start Date</div>
+                    <div>End Date</div>
+                    <div>Actions</div>
+                  </div>
 
-                <div className="divide-y">
-                  {jobs.map((job, index) => (
-                    <div
-                      key={job._id}
-                      className="grid grid-cols-1 sm:grid-cols-7 gap-2 px-4 py-3 text-sm items-center"
-                    >
-                      <div className="flex items-center justify-center font-semibold text-blue-700">
-                        {index + 1}
-                      </div>
-                      <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
-                      {/* Status with toggle */}
-                      <div>
-                        <label className="inline-flex items-center cursor-pointer">
+                  <div className="divide-y">
+                    {jobs.map((job, index) => (
+                      <div
+                        key={job._id}
+                        className="grid grid-cols-1 sm:grid-cols-8 gap-2 px-4 py-3 text-sm items-center"
+                      >
+                        <div className="flex items-center justify-center font-semibold text-blue-700">
+                          {index + 1}
+                        </div>
+                        <div className="col-span-2 font-medium text-blue-800">{job.title}</div>
+
+                        {/* Status text under Status column */}
+                        <div>
+                          <span className={`text-xs font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-500'}`}>
+                            {job.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+
+                        {/* Change Status toggle under Change Status column */}
+                        <div>
+                          <label className="inline-flex items-center cursor-pointer">
                             <ToggleSwitch
                               checked={job.isActive}
                               onChange={() => toggleJobStatus(job._id, !job.isActive)}
                             />
+                          </label>
+                        </div>
 
-                          <span className={`ml-2 text-xs font-semibold ${
-                            job.isActive ? 'text-blue-700' : 'text-red-500'
-                          }`}>
-                            {job.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </label>
-                      </div>
-                      {/* Start Date */}
-                      <div>{new Date(job.startDate || job.postedAt).toLocaleDateString()}</div>
-                      {/* End Date */}
-                      <div>{new Date(job.applicationDeadline).toLocaleDateString()}</div>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleViewJob(job)}
-                          title="View"
-                          className="text-blue-600"
-                        >
-                          <FiEye />
-                        </button>
-                        <button
-                          onClick={() => canEdit(job) && navigate('/employee/jobs-edit', { state: job })}
-                          title="Edit"
-                          disabled={!canEdit(job)}
-                          className={`text-yellow-600 ${!canEdit(job) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <FiEdit />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                        {/* Start Date */}
+                        <div>{new Date(job.startDate || job.postedAt).toLocaleDateString()}</div>
 
+                        {/* End Date */}
+                        <div>{new Date(job.applicationDeadline).toLocaleDateString()}</div>
+
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleViewJob(job)}
+                            title="View"
+                            className="text-blue-600"
+                          >
+                            <FiEye />
+                          </button>
+                          <button
+                            onClick={() => canEdit(job) && navigate('/employee/jobs-edit', { state: job })}
+                            title="Edit"
+                            disabled={!canEdit(job)}
+                            className={`text-yellow-600 ${!canEdit(job) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <FiEdit />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+
+
 
             {/* Cards for mobile */}
             <div className="sm:hidden mt-6 space-y-4">
