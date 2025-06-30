@@ -5,6 +5,34 @@ import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 import { FiFileText, FiCreditCard, FiCheckCircle } from "react-icons/fi";
 
+function parseQuotedCSV(input) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      if (current.trim()) {
+        result.push(current.trim().replace(/^"(.*)"$/, '$1'));
+      }
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.trim()) {
+    result.push(current.trim().replace(/^"(.*)"$/, '$1'));
+  }
+
+  return result;
+}
+
+
 const EditJob = () => {
   const { state: job } = useLocation();
   const navigate = useNavigate();
@@ -18,7 +46,7 @@ const EditJob = () => {
     emailAddress: job.emailAddress || '',
     username: job.username || '',
     specialisms: (job.specialisms || []).join(', '),
-    keyResponsibilities: (job.keyResponsibilities || []).join(', '), // ✅ Added here
+    keyResponsibilities: (job.keyResponsibilities || []).join(', '), 
     offeredSalary: job.offeredSalary || '',
     careerLevel: job.careerLevel || '',
     experience: job.experience || '',
@@ -39,11 +67,11 @@ const EditJob = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const updatedJob = {
-      ...form,
-      specialisms: form.specialisms.split(',').map(s => s.trim()),
-      keyResponsibilities: form.keyResponsibilities.split(',').map(k => k.trim()), // ✅ Added here
-    };
+const updatedJob = {
+  ...form,
+  specialisms: form.specialisms.split(',').map(s => s.trim()),
+  keyResponsibilities: parseQuotedCSV(form.keyResponsibilities), 
+};
 
     try {
       await apiClient.put(`/employee/job/${job._id}`, updatedJob, {
@@ -87,7 +115,7 @@ const EditJob = () => {
 
         {/* Dynamic Field Sections */}
         {[
-          { title: "Job Details", fields: ["title", "specialisms", "keyResponsibilities", "description"] }, // ✅ Added keyResponsibilities
+          { title: "Job Details", fields: ["title", "specialisms", "keyResponsibilities", "description"] }, 
           { title: "Company Information", fields: ["company", "emailAddress", "username"] },
           { title: "Salary & Experience", fields: ["offeredSalary", "careerLevel", "experience", "jobType"] },
           { title: "Requirements", fields: ["gender", "industry", "qualification", "applicationDeadline"] },
