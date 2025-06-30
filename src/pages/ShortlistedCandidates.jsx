@@ -187,74 +187,100 @@ const ShortlistedCandidates = () => {
           <>
             {/* Desktop Table (hidden on small screens) */}
             <div className="hidden sm:block overflow-x-auto bg-white rounded-xl shadow-xl mt-6 border border-gray-200">
-              <div className="min-w-[600px]">
+              <div className="w-full">
                 {/* Header */}
-                <div className="grid grid-cols-6 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-xl select-none">
+                <div className="grid grid-cols-7 text-sm font-semibold text-blue-700 bg-blue-100 pl-6 py-3 rounded-t-lg select-none">
                   <div className="col-span-2">Title</div>
+                  <div className="text-left">Status</div> {/* Adjusted Status to the left */}
                   <div>Company</div>
                   <div>Posted By</div>
                   <div className="text-center">Applicants</div>
-                  <div className="text-center">Actions</div>
+                  <div>Actions</div>
                 </div>
 
                 {/* Rows */}
                 <div className="divide-y divide-gray-200">
-                  {jobs.map((job) => (
-                    <div
-                      key={job._id}
-                      className="grid grid-cols-1 sm:grid-cols-6 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50 transition-colors cursor-default"
-                    >
-                      <div className="col-span-2 font-medium text-blue-900 truncate">{job.title}</div>
-                      <div className="text-gray-700 truncate">{job.company}</div>
-                      <div className="text-gray-700 truncate">{job.postedBy?.name || 'N/A'}</div>
-                      <div className="text-center text-gray-600 font-semibold">{job.applicants?.length || 0}</div>
-                      <div className="text-center">
-                        <button
-                          className="inline-block text-white bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 px-4 py-1.5 rounded-lg shadow-md transition-colors duration-300"
-                          onClick={() => handleViewApplicants(job.jobId)}
-                        >
-                          View Shortlisted
-                        </button>
+                  {jobs.map((job) => {
+                    // Determine the job status based on the `isActive` field
+                    const jobStatus = job.isActive ? "Active" : "Inactive";
+                    return (
+                      <div
+                        key={job._id}
+                        className="grid grid-cols-7 gap-2 px-6 py-3 text-sm items-center hover:bg-blue-50 transition-colors cursor-default"
+                      >
+                        <div className="col-span-2 font-medium text-blue-900 truncate">{job.title}</div>
+
+                        {/* Job Status Column with better left alignment */}
+                        <div className={`text-left font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}>
+                          {jobStatus}
+                        </div>
+
+                        <div className="text-gray-700 truncate">{job.company}</div>
+                        <div className="text-gray-700 truncate">{job.postedBy?.name || 'N/A'}</div>
+                        <div className="text-center text-gray-600 font-semibold">{job.applicants?.length || 0}</div>
+
+                        {/* Actions - View Shortlisted Button */}
+                        <div>
+                          <button
+                            className="inline-block text-white bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 px-4 py-1.5 rounded-lg shadow-md transition-colors duration-300 whitespace-nowrap"
+                            onClick={() => handleViewApplicants(job.jobId)}
+                          >
+                            View Shortlisted
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             {/* Mobile Cards (visible only on small screens) */}
             <div className="sm:hidden mt-6 space-y-5 px-2">
-              {jobs.map((job) => (
-                <div
-                  key={job._id}
-                  className="bg-white rounded-xl shadow-lg p-5 cursor-default hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-blue-900 text-xl truncate">{job.title}</h3>
-                    <div className="text-sm font-medium text-gray-500 inline-flex items-center gap-1">
-                      <FiUsers className="text-blue-600" />
-                      {job.applicants?.length || 0}
-                    </div>
-                  </div>
-
-                  <div className="text-gray-600 space-y-1 mb-4">
-                    <p className="text-sm truncate">{job.company}</p>
-                    <p className="text-sm">
-                      Posted by <span className="font-medium">{job.postedBy?.name || 'N/A'}</span>
-                    </p>
-                  </div>
-
-                  <button
-                    className="w-full bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-semibold py-2 rounded-lg shadow-md hover:from-indigo-700 hover:to-teal-600 transition-colors duration-300"
-                    onClick={() => handleViewApplicants(job.jobId)}
+              {jobs.map((job) => {
+                // Determine the job status based on the `isActive` field
+                const jobStatus = job.isActive ? "Active" : "Inactive";
+                return (
+                  <div
+                    key={job._id}
+                    className="bg-white rounded-xl shadow-lg p-5 cursor-default hover:shadow-xl transition-shadow duration-300"
                   >
-                    View Applicants
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-blue-900 text-xl truncate">{job.title}</h3>
+                      <div className="text-sm font-medium text-gray-500 inline-flex items-center gap-1">
+                        <FiUsers className="text-blue-600" />
+                        {job.applicants?.length || 0}
+                      </div>
+                    </div>
+
+                    {/* Status for Mobile */}
+                    <div className="flex items-center justify-between mb-3">
+                      {/* Job Status Column */}
+                      <span
+                        className={`text-sm font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}
+                      >
+                        {jobStatus}
+                      </span>
+                    </div>
+
+                    <div className="text-gray-600 space-y-1 mb-4">
+                      <p className="text-sm truncate">{job.company}</p>
+                      <p className="text-sm">
+                        Posted by <span className="font-medium">{job.postedBy?.name || 'N/A'}</span>
+                      </p>
+                    </div>
+
+                    <button
+                      className="w-full bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-semibold py-2 rounded-lg shadow-md hover:from-indigo-700 hover:to-teal-600 transition-colors duration-300"
+                      onClick={() => handleViewApplicants(job.jobId)}
+                    >
+                      View Shortlisted
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
-            
             {/* Pagination */}
             <Pagination
               currentPage={page}
@@ -264,10 +290,9 @@ const ShortlistedCandidates = () => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
-
-
           </>
         ) : (
+
 
         <div>
           <div className="flex justify-between items-center mb-4">
