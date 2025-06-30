@@ -66,24 +66,33 @@ const PostJob = () => {
   });
 
   
-    useEffect(() => {
-  const loadUserCompany = async () => {
-    try {
-      const currentUser = await fetchCurrentUser();
-      if (currentUser?.company?.name) {
-        setForm(prev => ({
-          ...prev,
-          company: currentUser.company.name,
-        }));
+  useEffect(() => {
+    const loadUserCompany = async () => {
+      try {
+        const currentUser = await fetchCurrentUser();
+
+        if (currentUser?.userType === 'company' && currentUser?.name) {
+          // For company users: use their own name as company
+          setForm(prev => ({
+            ...prev,
+            company: currentUser.name,
+          }));
+        } else if (currentUser?.userType === 'employee' && currentUser?.company?.name) {
+          // For employee users: use company name from nested company object
+          setForm(prev => ({
+            ...prev,
+            company: currentUser.company.name,
+          }));
+        }
+      } catch (err) {
+        toast.error('Unable to fetch company details.');
+        console.error(err);
       }
-    } catch (err) {
-      toast.error('Unable to fetch company details.');
-      console.error(err);
-    }
-  };
+    };
 
   loadUserCompany();
 }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
