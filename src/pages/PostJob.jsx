@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import apiClient from '../api/apiClient';
 import { FiFileText, FiCreditCard, FiCheckCircle } from 'react-icons/fi';
+import { fetchCurrentUser } from '../api/fetchuser';
+import { useEffect } from 'react';
 
 const labelMap = {
   specialisms: 'Skills (Comma separated)',
@@ -9,6 +11,34 @@ const labelMap = {
   description: 'Job Description',
 };
 import { useUser } from '../contexts/UserContext';
+
+function parseQuotedCSV(input) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      if (current.trim()) {
+        result.push(current.trim().replace(/^"(.*)"$/, '$1'));
+      }
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.trim()) {
+    result.push(current.trim().replace(/^"(.*)"$/, '$1'));
+  }
+
+  return result;
+}
+
 
 const PostJob = () => {
   const { user } = useUser();
@@ -34,6 +64,26 @@ const PostJob = () => {
     city: '',
     address: '',
   });
+
+  
+    useEffect(() => {
+  const loadUserCompany = async () => {
+    try {
+      const currentUser = await fetchCurrentUser();
+      if (currentUser?.company?.name) {
+        setForm(prev => ({
+          ...prev,
+          company: currentUser.company.name,
+        }));
+      }
+    } catch (err) {
+      toast.error('Unable to fetch company details.');
+      console.error(err);
+    }
+  };
+
+  loadUserCompany();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,8 +123,8 @@ const PostJob = () => {
     try {
       await apiClient.post('/employee/job/postjob', {
         ...form,
-        specialisms: form.specialisms.split(',').map((s) => s.trim()),
-        keyResponsibilities: form.keyResponsibilities.split(',').map((k) => k.trim()),
+          specialisms: parseQuotedCSV(form.specialisms),
+          keyResponsibilities: parseQuotedCSV(form.keyResponsibilities),
       });
 
       toast.success('Job posted successfully!');
@@ -276,8 +326,10 @@ const PostJob = () => {
                     value={form[field]}
                     onChange={handleChange}
                     placeholder={label}
-                    className="input bg-indigo-50"
+                    className={`input bg-indigo-50 ${field === "keyResponsibilities" ? "md:col-span-2" : ""}`}
+                    readOnly={field === 'company'}
                   />
+
                 );
               })}
             </div>
