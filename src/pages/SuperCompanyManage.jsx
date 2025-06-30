@@ -15,7 +15,7 @@ import {
 
 const SuperCompanyManage = () => {
   const [allCompanies, setAllCompanies] = useState([]);
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,7 +33,7 @@ const SuperCompanyManage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllCompanies(res.data.companies || []);
-    } catch  {
+    } catch {
       toast.error('Failed to load companies');
     }
   };
@@ -47,7 +47,7 @@ const SuperCompanyManage = () => {
       });
       toast.success('Company deleted successfully');
       fetchCompanies();
-    } catch  {
+    } catch {
       toast.error('Delete failed');
     }
   };
@@ -63,13 +63,13 @@ const SuperCompanyManage = () => {
 
       toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);
       fetchCompanies();
-    } catch  {
+    } catch {
       toast.error(`Failed to ${status} company.`);
     }
   };
 
   const filteredCompanies = allCompanies.filter(c =>
-    c.status === activeTab &&
+    (activeTab === 'all' || c.status === activeTab) &&
     c.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -115,27 +115,45 @@ const SuperCompanyManage = () => {
           </div>
         </div>
 
-        <div className="flex justify-center mb-6 gap-4">
-          {['pending', 'approved', 'rejected'].map(status => (
-            <button
-              key={status}
-              onClick={() => {
-                setActiveTab(status);
+        {/* Dropdown Filter */}
+        <div className="flex justify-start mb-6">
+          <label className="text-sm font-medium text-blue-700 mr-3 self-center">
+            Filter by Status:
+          </label>
+          <div className="relative w-56">
+            <select
+              value={activeTab}
+              onChange={(e) => {
+                setActiveTab(e.target.value);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-lg font-medium shadow transition-all duration-200 ${
-                activeTab === status
-                  ? 'bg-gradient-to-r from-teal-500 to-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className="w-full appearance-none px-4 py-2 pr-10 rounded-lg border border-blue-300 bg-white text-sm text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200"
             >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
+              <option value="all">All</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
+            {/* Dropdown arrow icon */}
+            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-500">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {filteredCompanies.length === 0 ? (
-          <div className="text-center text-gray-500 py-16">No {activeTab} companies found.</div>
+          <div className="text-center text-gray-500 py-16">
+            No {activeTab} companies found.
+          </div>
         ) : (
           <>
             <div className="bg-white rounded-xl shadow-xl overflow-x-auto">
@@ -168,7 +186,7 @@ const SuperCompanyManage = () => {
                         <Eye className="w-4 h-4 text-blue-600" />
                       </button>
 
-                      {activeTab === 'pending' && (
+                      {company.status === 'pending' && (
                         <>
                           <button
                             onClick={() => handleStatusUpdate(company._id, 'approved')}
