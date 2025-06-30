@@ -38,7 +38,7 @@ const ViewCourse = ({ search, filters }) => {
     try {
       const res = await apiClient.get(endpoint, { withCredentials: true });
       setCourses(res.data.courses || []);
-      console.log("Fetched courses:", res.data.courses);
+      //console.log("Fetched courses:", res.data.courses);
     } catch (err) {
       console.error("Failed to fetch courses:", err);
     } finally {

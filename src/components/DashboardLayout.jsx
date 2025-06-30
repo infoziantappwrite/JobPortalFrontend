@@ -11,6 +11,14 @@ import { MdOutlineManageAccounts } from 'react-icons/md';
 import { PiChalkboardTeacher } from 'react-icons/pi';
 import { BiUserCheck } from 'react-icons/bi';
 import { TbUserSquareRounded } from 'react-icons/tb';
+import {
+  BookCopy,
+  GraduationCap,
+  Notebook,
+  School,
+  Layers3,
+} from 'lucide-react';
+
 
 
 
@@ -41,9 +49,18 @@ const DashboardLayout = () => {
       { key: 'resume', label: 'My Resume', icon: <FiFileText />, path: '/candidate/resume' },
       { key: 'jobs', label: 'Job Alerts', icon: <FiBell />, path: '/candidate/jobs' },
       { key: 'applied', label: 'Applied Jobs', icon: <FiBriefcase />, path: '/candidate/applied' },
-      {key: 'course',label: 'All Courses',icon: <PiChalkboardTeacher className='w-5 h-6' />,path: '/candidate/all-courses',},
-      // { key: 'shortlisted', label: 'Shortlisted Jobs', icon: <FiHeart />, path: '/candidate/shortlisted' },
-      // { key: 'cv', label: 'CV Manager', icon: <FiFileText />, path: '/candidate/cv-manager' },
+      {
+    key: 'course',
+    label: 'All Courses',
+    icon: <BookCopy className="w-5 h-6" />,
+    path: '/candidate/all-courses',
+  },
+  {
+    key: 'mycourse',
+    label: 'My Courses',
+    icon: < GraduationCap className="w-5 h-6" />,
+    path: '/candidate/my-courses',
+  },
 
     ],
    superadmin : [

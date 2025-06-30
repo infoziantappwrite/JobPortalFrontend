@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { PiChalkboardTeacher } from 'react-icons/pi';
+import {BookCopy} from 'lucide-react';
 import ViewCourse from "../superadmin/ViewCourse";
 
 const AllCourses = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
-      price: '',
-      level: '',
-      
-    })
+    price: '',
+    level: '',
+
+  })
 
   return (
     <div className='p-6 bg-gradient-to-br from-teal-50 to-blue-50 min-h-screen'>
@@ -17,7 +17,7 @@ const AllCourses = () => {
         {/* Header Row */}
         <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <h2 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-            <PiChalkboardTeacher className="text-blue-600 w-6 h-6" />
+            <BookCopy className="w-5 h-6" />
             All Courses
           </h2>
 
@@ -38,29 +38,29 @@ const AllCourses = () => {
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
 
-            {/* Price Filter */}
-            <select
-              value={filters.price}
-              onChange={(e) => setFilters({ ...filters, price: e.target.value })}
-              className="px-4 py-2 rounded-md border w-1/2 border-blue-200 bg-blue-100 text-sm text-gray-700 shadow-sm"
-            >
-              <option value="">All Prices</option>
-              <option value="free">Free</option>
-              <option value="paid">Paid</option>
-            </select>
+              {/* Price Filter */}
+              <select
+                value={filters.price}
+                onChange={(e) => setFilters({ ...filters, price: e.target.value })}
+                className="px-4 py-2 rounded-md border w-1/2 border-blue-200 bg-blue-100 text-sm text-gray-700 shadow-sm"
+              >
+                <option value="">All Prices</option>
+                <option value="free">Free</option>
+                <option value="paid">Paid</option>
+              </select>
 
-            {/* Level Filter */}
-            <select
-              value={filters.level}
-               onChange={(e) => setFilters({ ...filters, level: e.target.value })}
-              className="px-4 py-2 rounded-md border w-1/2 border-blue-200 bg-blue-100 text-sm text-gray-700 shadow-sm"
-            >
-              <option value="">All Levels</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
-</div>
+              {/* Level Filter */}
+              <select
+                value={filters.level}
+                onChange={(e) => setFilters({ ...filters, level: e.target.value })}
+                className="px-4 py-2 rounded-md border w-1/2 border-blue-200 bg-blue-100 text-sm text-gray-700 shadow-sm"
+              >
+                <option value="">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
 
           </div>
         </div>
@@ -68,7 +68,7 @@ const AllCourses = () => {
         {/* Courses */}
         <ViewCourse
           search={searchQuery}
-         filters={filters}
+          filters={filters}
         />
       </div>
     </div>
