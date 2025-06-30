@@ -19,6 +19,8 @@ const Input = ({ placeholder, type = 'text', value, onChange }) => (
 const SectionTimeline = ({ title, items, type, fetchData }) => {
   const [editingItem, setEditingItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
+  const [isPresent, setIsPresent] = useState(false);
+
 
   const { user } = useUser();
   const role = user?.userType?.toLowerCase();
@@ -47,6 +49,7 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
       const url = `/candidate/info/${type}${formData._id ? `/${formData._id}` : ''}`;
       const method = formData._id ? 'put' : 'post';
       await apiClient[method](url, formData, { withCredentials: true });
+
       toast.success(`${title} ${formData._id ? 'updated' : 'added'} successfully`);
       setEditingItem(null);
       fetchData();
@@ -54,6 +57,26 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
       toast.error('Failed to save data');
     }
   };
+
+  const toYYYYMM = (year, month) => {
+    if (!year || month === undefined || month === null) return null;
+    const mm = String(Number(month) + 1).padStart(2, '0'); // month is 0-based
+    return `${year}-${mm}`;
+  };
+const formatMonthYear = (val) => {
+  if (!val) return 'Present';
+
+  // Check for "Present" fallback
+  if (String(val).startsWith('1700')) return 'Present';
+
+  const date = new Date(val);
+  if (isNaN(date)) return val;
+
+  const month = date.toLocaleString('default', { month: 'short' }); // e.g., Jan
+  const year = date.getFullYear();
+
+  return `${month} ${year}`;
+};
 
   return (
     <div className="mb-10">
@@ -80,8 +103,9 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
           const subHeading = type === 'education' ? item.institution : type === 'experience' ? item.company : item.year;
           const badge =
             type === 'awards'
-              ? item.year
-              : `${item.startYear} - ${item.endYear === 0 ? 'Present' : item.endYear}`;
+              ? formatMonthYear(item.year)
+              : `${formatMonthYear(item.startYear)} - ${formatMonthYear(item.endYear)}`;
+
 
           return (
             <div key={index} className="relative group">
@@ -138,10 +162,16 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleSave(editingItem);
+                const sendData = {
+                  ...editingItem,
+                  startYear: toYYYYMM(editingItem.startYear, editingItem.startMonth),
+                  endYear: editingItem.present ? '1700-01' : toYYYYMM(editingItem.endYear, editingItem.endMonth),
+                };
+                handleSave(sendData);
               }}
               className="space-y-4"
             >
+
               {/* Fields based on type */}
               {type === 'education' && (
                 <>
@@ -180,20 +210,67 @@ const SectionTimeline = ({ title, items, type, fetchData }) => {
               )}
               {type !== 'awards' && (
                 <>
-                  <Input
-                    type="number"
-                    placeholder="Start Year"
-                    value={editingItem.startYear}
-                    onChange={(val) => setEditingItem({ ...editingItem, startYear: val })}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="End Year (0 for Present)"
-                    value={editingItem.endYear}
-                    onChange={(val) => setEditingItem({ ...editingItem, endYear: val })}
-                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <select
+                      value={editingItem.startMonth || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, startMonth: e.target.value })}
+                      className="border rounded px-3 py-2 text-sm"
+                    >
+                      <option value="">Start Month</option>
+                      {[
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                      ].map((month, i) => (
+                        <option key={i} value={i}>{month}</option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      placeholder="Start Year"
+                      className="border rounded px-3 py-2 text-sm"
+                      value={editingItem.startYear || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, startYear: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <select
+                      value={editingItem.endMonth || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, endMonth: e.target.value })}
+                      disabled={editingItem.present}
+                      className="border rounded px-3 py-2 text-sm"
+                    >
+                      <option value="">End Month</option>
+                      {[
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                      ].map((month, i) => (
+                        <option key={i} value={i}>{month}</option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="number"
+                      placeholder="End Year"
+                      className="border rounded px-3 py-2 text-sm"
+                      value={editingItem.endYear || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, endYear: e.target.value })}
+                      disabled={editingItem.present}
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2 mt-1 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={editingItem.present}
+                      onChange={(e) => setEditingItem({ ...editingItem, present: e.target.checked })}
+                    />
+                    Present
+                  </label>
                 </>
               )}
+
               {type === 'awards' && (
                 <Input
                   type="number"
