@@ -212,7 +212,7 @@ const ApplicantActions = () => {
 
                         {/* Job Status Column with better left alignment */}
                         <div className="flex justify-start items-center ml-1">
-                          <span className={`font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}>
+                          <span className={`font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-600'}`}>
                             {jobStatus}
                           </span>
                         </div>
@@ -251,7 +251,7 @@ const ApplicantActions = () => {
                       <h3 className="font-semibold text-blue-900 text-xl truncate">{job.title}</h3>
                       {/* Job Status Column */}
                       <span
-                        className={`ml-2 text-sm font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}
+                        className={`ml-2 text-sm font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-600'}`}
                       >
                         {jobStatus}
                       </span>

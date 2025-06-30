@@ -211,7 +211,7 @@ const ShortlistedCandidates = () => {
                         <div className="col-span-2 font-medium text-blue-900 truncate">{job.title}</div>
 
                         {/* Job Status Column with better left alignment */}
-                        <div className={`text-left font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`text-left font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-600'}`}>
                           {jobStatus}
                         </div>
 
@@ -257,7 +257,7 @@ const ShortlistedCandidates = () => {
                     <div className="flex items-center justify-between mb-3">
                       {/* Job Status Column */}
                       <span
-                        className={`text-sm font-semibold ${job.isActive ? 'text-green-600' : 'text-red-600'}`}
+                        className={`text-sm font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-600'}`}
                       >
                         {jobStatus}
                       </span>
