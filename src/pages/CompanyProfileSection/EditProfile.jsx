@@ -114,21 +114,25 @@ const EditCompanyProfile = () => {
     }
   };
 
-  const renderInput = (label, name, icon, value, type = 'text') => (
-    <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
-      <div className="text-indigo-500 mt-1">{icon}</div>
-      <div className="w-full">
-        <p className="text-sm text-gray-600">{label}</p>
-        <input
-          type={type}
-          name={name}
-          value={value || ''}
-          onChange={handleChange}
-          className="w-full mt-1 input bg-white text-gray-800"
-        />
-      </div>
+ const renderInput = (label, name, icon, value, type = 'text', disabled = false) => (
+  <div className="flex items-start gap-3 bg-indigo-50 p-3 rounded-lg shadow-sm">
+    <div className="text-indigo-500 mt-1">{icon}</div>
+    <div className="w-full">
+      <p className="text-sm text-gray-600">{label}</p>
+      <input
+        type={type}
+        name={name}
+        value={value || ''}
+        onChange={handleChange}
+        disabled={disabled}
+        className={`w-full mt-1 input bg-white text-gray-800 ${
+          disabled ? 'opacity-60 cursor-not-allowed' : ''
+        }`}
+      />
     </div>
-  );
+  </div>
+);
+
 
   if (loading) return <p className="text-center mt-10">Loading profile...</p>;
 
@@ -183,8 +187,7 @@ const EditCompanyProfile = () => {
             <p className="text-xs text-indigo-500 italic ml-10">This information is visible publicly.</p>
           </div>
           <div className="flex flex-col gap-1">
-            {renderInput('Email', 'email', <FiMail />, form.email)}
-            <p className="text-xs text-indigo-500 italic ml-10">This information is visible publicly.</p>
+           {renderInput('Email', 'email', <FiMail />, form.email, 'text', true)}
           </div>
 
           {renderInput('Phone', 'phone', <FiPhone />, form.phone)}

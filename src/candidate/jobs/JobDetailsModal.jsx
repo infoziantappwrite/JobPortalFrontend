@@ -54,7 +54,7 @@ const JobDetailsModal = ({ selectedJob, onClose }) => {
 
                     {/* Description */}
                     {selectedJob.description && (
-                        <div className="mb-8">
+                        <div className="mb-8 mt-5">
                             <h3 className="text-lg font-semibold text-blue-700 mb-3 flex items-center gap-2">
                                 <FileText className="text-teal-600 w-5 h-5" />
                                 Job Description
