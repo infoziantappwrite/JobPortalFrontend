@@ -47,6 +47,8 @@ const getBgColor = (name) => {
 const ShortlistedCandidates = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  console.log(jobs);
+  
   
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -70,12 +72,24 @@ const ShortlistedCandidates = () => {
           withCredentials: true
         });
 
-        const formattedJobs = (res.data.shortlistedApplicants || []).map(item => ({
-          jobId: item.job._id,
-          title: item.job.title,
-          company: res.data.company.name || 'N/A',
-          applicants: item.applicants || []
-        }));
+const rawJobs = res.data.shortlistedApplicants || [];
+const seen = new Set();
+
+const formattedJobs = rawJobs
+  .filter(item => {
+    if (seen.has(item.job._id)) {
+      return false; // duplicate, skip
+    }
+    seen.add(item.job._id);
+    return true;
+  })
+  .map(item => ({
+    jobId: item.job._id,
+    title: item.job.title,
+    company: res.data.company.name || 'N/A',
+    applicants: item.applicants || []
+  }));
+
         
 
         setJobs(formattedJobs);

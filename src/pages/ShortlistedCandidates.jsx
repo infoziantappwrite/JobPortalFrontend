@@ -85,6 +85,7 @@ const ShortlistedCandidates = () => {
           params: { page },  
           withCredentials: true,
         });
+        
         setJobs(res.data.shortlistedApplicants || []);
         setTotalPages(res.data.pagination?.totalPages || 1);  
       } catch (err) {
@@ -216,7 +217,7 @@ const ShortlistedCandidates = () => {
                         </div>
 
                         <div className="text-gray-700 truncate">{job.company}</div>
-                        <div className="text-gray-700 truncate">{job.postedBy?.name || 'N/A'}</div>
+                        <div className="text-gray-700 truncate">{job.postedBy?.name || 'Self'}</div>
                         <div className="text-center text-gray-600 font-semibold">{job.applicants?.length || 0}</div>
 
                         {/* Actions - View Shortlisted Button */}

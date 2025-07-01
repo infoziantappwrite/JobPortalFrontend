@@ -145,7 +145,7 @@ const AllJobs = () => {
         {/* Specialisms Input */}
         <input
           type="text"
-          placeholder="Specialisms"
+          placeholder="Skills"
           value={filters.specialisms}
           onChange={(e) => handleChange("specialisms", e.target.value)}
           className="bg-gray-100 text-gray-700 px-3 py-2 rounded-md w-full md:w-auto placeholder-gray-500"
