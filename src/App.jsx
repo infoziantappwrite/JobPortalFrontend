@@ -34,6 +34,8 @@ import ApplicantDetailView from './pages/ApplicantDetailView';
 import CandidateProfile from './components/CandidateProfile';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import ForgotPass from './pages/Auth/ForgotPass';
+import ResetPass from './pages/Auth/ResetPass';
 import GlobalLoader from './components/GlobalLoader';
 import ViewProfile from './candidate/ViewProfile';
 import EditProfilecandidate from './candidate/EditProfile';
@@ -119,6 +121,24 @@ function App() {
             element={
               <PublicRoute>
                 <EmployeeLogin />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ForgotPass />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/reset-password/:token"
+            element={
+              <PublicRoute>
+                <ResetPass />
               </PublicRoute>
             }
           />

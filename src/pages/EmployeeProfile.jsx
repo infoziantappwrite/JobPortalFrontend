@@ -57,19 +57,18 @@ const EmployeeProfile = () => {
           <img
             src={defaultProfileImage}
             alt="User Avatar"
-            className="w-24 h-24 rounded-full border-4 border-indigo-300 object-cover shadow-md"
+            className="w-28 h-28 rounded-full border-4 border-indigo-300 object-cover shadow-md"
           />
           <div className="text-center">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {userInfo.name}
-            </h3>
-            <p className="text-sm text-indigo-700 capitalize">
-              {userInfo.userType || 'N/A'}
+            <h3 className="text-2xl font-semibold text-gray-900">{userInfo.name}</h3>
+            <p className="text-indigo-700 text-sm font-medium capitalize">
+              <span className="text-gray-600 font-normal capitalize">
+                {userInfo.company?.name || 'N/A'}
+              </span>
             </p>
-            <p className="text-sm text-gray-600">{userInfo.email}</p>
+            <p className="text-indigo-700 text-sm font-medium capitalize">{userInfo.userType || 'N/A'}</p>
           </div>
         </div>
-
         <div className="space-y-4">
           <h3 className="flex items-center gap-2 text-lg font-medium text-gray-700 border-b pb-1 border-indigo-200">
             <FiUser className="text-gray-600" />

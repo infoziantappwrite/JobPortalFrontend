@@ -52,8 +52,8 @@ const Login = () => {
       <div className="w-full md:w-1/2 h-full bg-white flex items-center justify-center">
         <div className="w-full h-full overflow-y-auto px-6 py-10 flex flex-col items-center justify-start">
           <h2 className="text-3xl text-center mb-6">
-  👋 Welcome back to Infoziant!
-</h2>
+             Welcome back to Infoziant!
+          </h2>
 
            <div className="flex flex-col gap-6 mb-6 md:flex-row">
             <button
@@ -121,7 +121,7 @@ const Login = () => {
                 <input type="checkbox" className="accent-teal-600" />
                 Remember me
               </label>
-              <a href="#" className="text-teal-600 hover:underline">
+              <a href="/forgot-password" className="text-teal-600 hover:underline">
                 Forgot password?
               </a>
             </div>
