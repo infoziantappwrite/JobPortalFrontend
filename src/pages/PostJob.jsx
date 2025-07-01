@@ -335,9 +335,12 @@ const PostJob = () => {
                     value={form[field]}
                     onChange={handleChange}
                     placeholder={label}
-                    className={`input bg-indigo-50 ${field === "keyResponsibilities" ? "md:col-span-2" : ""}`}
-                    readOnly={field === 'company'}
+                    disabled={field === 'company'}
+                    className={`input bg-indigo-50 ${field === 'keyResponsibilities' ? 'md:col-span-2' : ''} ${
+                      field === 'company' ? 'text-gray-800 bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                   />
+
 
                 );
               })}
