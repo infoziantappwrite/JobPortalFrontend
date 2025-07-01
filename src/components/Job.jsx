@@ -145,28 +145,42 @@ const Job = () => {
             </div>
 
             {/* Key Responsibilities */}
-            {specialisms?.length > 0 && (
-              <div className="px-4 md:px-8">
-                <h2 className="text-xl font-bold mb-2">Skill Required</h2>
-                <ul className="list-disc list-inside text-gray-700 space-y-1">
-                  {specialisms.map((skill, i) => (
-                    <li key={i}>{skill}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+{keyResponsibilities?.length > 0 && (
+  <div className="px-4 md:px-8 my-4">
+    <h2 className="text-xl font-bold mb-3 border-l-4 border-indigo-600 pl-3 text-gray-800">
+      Key Responsibilities
+    </h2>
+    <ul className="space-y-2 ml-2 text-gray-700">
+      {keyResponsibilities.map((item, i) => (
+        <li
+          key={i}
+          className="relative pl-5 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-indigo-600 before:rounded-full"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
-            {keyResponsibilities?.length > 0 && (
-              <div className="px-4 md:px-8">
-                <h2 className="text-xl font-bold mb-2">key Responsibilities</h2>
-                <ul className="list-disc list-inside text-gray-700 space-y-1">
-                  {keyResponsibilities.map((skill, i) => (
-                    <li key={i}>{skill}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
+{/* Skills Required */}
+{specialisms?.length > 0 && (
+  <div className="px-4 md:px-8 my-4">
+    <h2 className="text-xl font-bold mb-3 text-gray-800 border-l-4 border-blue-600 pl-3">
+      Skills Required
+    </h2>
+    <div className="flex flex-wrap gap-2">
+      {specialisms.map((skill, i) => (
+        <span
+          key={i}
+          className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm shadow hover:bg-blue-200 transition"
+        >
+          {skill}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
             
 
             

@@ -259,13 +259,8 @@ const JobList = () => {
                     </span>
                   </td>
                   <td>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs font-semibold ${job.isActive ? 'text-blue-700' : 'text-red-500'
-                          }`}
-                      >
-                        {job.isActive ? 'Active' : 'Inactive'}
-                      </span>
+                    <div className="flex items-center gap-2 ml-9">
+                    
                       <ToggleSwitch
                         checked={job.isActive}
                         onChange={() => toggleJobStatus(job._id, !job.isActive)}
