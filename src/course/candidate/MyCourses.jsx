@@ -29,7 +29,7 @@ const MyCourses = () => {
   try {
     const res = await apiClient.get('/candidate/course/my-courses');
     setEnrollments(res.data.enrollments || []);  // ✅ FIXED HERE
-    console.log('Enrolled courses:', res.data.enrollments);
+   // console.log('Enrolled courses:', res.data.enrollments);
   } catch (err) {
     console.error('Failed to fetch enrolled courses:', err);
   } finally {
@@ -183,6 +183,7 @@ const MyCourses = () => {
               Completed
             </span>
           )}
+          
           {isCertified && (
             <span className="bg-blue-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full shadow">
               Certified

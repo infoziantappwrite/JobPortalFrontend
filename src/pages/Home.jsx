@@ -31,6 +31,7 @@ import avatar3 from "../assets/avatars/testi-img3.png";
 import avatar4 from "../assets/avatars/testi-img1.png";
 import avatar5 from "../assets/avatars/testi-img1.png";
 import Footer from "../components/Footer";
+import JobSearchBar from "../components/JobSearchBar";
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -239,18 +240,18 @@ const testimonials = [
         />
 
         {/* Content on top of image */}
-        <div className="absolute inset-0 flex flex-col items-center mt-14 text-white">
+        <div className="absolute inset-0 flex flex-col items-center mt-10 text-white">
           {/* Your content here */}
 
           {/* Header Title */}
           <motion.h1
-            className="text-4xl md:text-5xl font-jost text-center leading-tight mb-4 mt-10 drop-shadow-lg"
+            className="text-4xl md:text-5xl font-jost text-center leading-tight mb-4  drop-shadow-lg"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             Elevate Your Career with{" "}
-            <span className="bg-gradient-to-r from-purple-700 to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent font-semibold">
               Infoziant
             </span>{" "}
             - All in one <br /> Career Catalyst
@@ -258,7 +259,7 @@ const testimonials = [
 
           {/* Typewriter */}
           <motion.div
-            className="text-lg md:text-xl font-jost text-center mt-2 mb-10 text-gray-100"
+            className="text-lg md:text-xl font-jost text-center mt-2 mb-5 text-gray-100"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
@@ -275,122 +276,30 @@ const testimonials = [
               }}
             />
           </motion.div>
-          <div className="bg-white rounded-full text-gray-600 shadow-md flex items-center max-w-full px-4 py-4 space-x-10">
+          <div >
             {/* Job Title Input */}
-            <div className="flex items-center space-x-2 flex-1 min-w-[250px]">
-              <img
-                src="https://www.svgrepo.com/show/521826/search.svg"
-                alt="Search"
-                className="w-5 h-5 opacity-60"
-              />
-              <input
-                type="text"
-                placeholder="Job title, keywords, or company"
-                className="bg-transparent outline-none text-sm placeholder-gray-500 w-full"
-              />
-            </div>
+            <JobSearchBar />
 
-            {/* Divider */}
-            <div className="h-12 border-l border-gray-300"></div>
-            {/* Location Input */}
-            <div className="flex items-center space-x-2 flex-1 min-w-[150px]">
-              <img
-                src="https://raw.githubusercontent.com/feathericons/feather/master/icons/map-pin.svg"
-                alt="Location"
-                className="w-5 h-5 opacity-60"
-              />
-              <input
-                type="text"
-                placeholder="City or postcode"
-                className="bg-transparent outline-none text-sm placeholder-gray-500 w-full"
-              />
-            </div>
-
-            {/* Divider */}
-            <div className="h-12 border-l border-gray-300"></div>
-
-            {/* Custom Dropdown */}
-            {/* Custom Dropdown */}
-            <div className="relative min-w-[160px] w-full max-w-[180px]">
-              <div
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center justify-between w-full space-x-2 cursor-pointer text-sm text-gray-500 hover:text-violet-500"
-              >
-                <img
-                  src="https://raw.githubusercontent.com/feathericons/feather/master/icons/box.svg"
-                  alt="Category"
-                  className="w-5 h-5 opacity-60"
-                />
-                <span className="overflow-hidden whitespace-nowrap text-ellipsis block max-w-[100px]">
-                  {selectedCategory}
-                </span>
-                <svg
-                  className="w-4 h-4 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-
-              {/* Dropdown Menu */}
-              {dropdownOpen && (
-                <div className="absolute z-10 mt-2 w-48 bg-white rounded-xl shadow-lg">
-                  {[
-                    "All Categories",
-                    "Accounting / Finance",
-                    "Automotive Jobs",
-                    "Customer",
-                    "Design",
-                    "Development",
-                    "Health and Care",
-                    "Marketing",
-                    "Project Management",
-                  ].map((category) => (
-                    <div
-                      key={category}
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        setDropdownOpen(false);
-                      }}
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-500 hover:bg-purple-300 cursor-pointer"
-                    >
-                      <span>{category}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Button */}
-            <button className="ml-4 flex items-center space-x-2 rounded-full px-10 py-5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-sm font-jost hover:scale-105 transition-transform">
-              <span>Find Jobs</span>
-            </button>
+            {/* Search Button */}
           </div>
 
           {/* Floating Bubbles */}
           <motion.div
-            className="relative w-full max-w-6xl h-[320px]"
+            className="relative w-full max-w-6xl h-[310px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 1 }}
           >
             {[
-              { text: "Boost Your Skills", x: "-7.5%", y: "80%" },
-              { text: "Elevate Your Profile", x: "19%", y: "45%" },
-              { text: "AI - Powered Job Matching", x: "45.5%", y: "58%" },
-              { text: "Mentor Connect", x: "70%", y: "92%" },
-              { text: "Hiring Reimagined", x: "95.5%", y: "46%" },
+              { text: "Boost Your Skills", x: "3%", y: "26%" },
+              { text: "Elevate Your Profile", x: "24.8%", y: "-3%" },
+              { text: "AI - Powered Job Matching", x: "46.3%", y: "8%" },
+              { text: "Mentor Connect", x: "67%", y: "36%" },
+              { text: "Hiring Reimagined", x: "88%", y: "-3%" },
             ].map((item, index) => (
               <motion.div
                 key={index}
-                className="absolute flex flex-col items-center justify-center w-[110px] h-[110px] rounded-full bg-gray-200 text-black text-center text-xs shadow-xl border-4 border-white hover:bg-purple-600 hover:text-white transition duration-500"
+                className="absolute flex flex-col items-center justify-center w-[85px] h-[85px] rounded-full bg-gray-200 text-black text-center text-xs shadow-xl border-4 border-white hover:bg-purple-600 hover:text-white transition duration-500"
                 style={{
                   left: item.x,
                   top: item.y,
@@ -837,7 +746,6 @@ const testimonials = [
 </section>
 
       </div>
-      <Footer/>
     </div>
   );
 };

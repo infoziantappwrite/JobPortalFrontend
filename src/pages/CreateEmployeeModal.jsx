@@ -18,10 +18,8 @@ export default function CreateEmployeeModal({ onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      await apiClient.post('/company/employee/create/', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     
+      await apiClient.post('/company/employee/create/', formData);
       toast.success('Employee created successfully');
       setFormData({ name: '', email: '', password: '', position: '' });
       onClose();

@@ -16,6 +16,29 @@ const getColorByString = (str) => {
   return colors[hash % colors.length];
 };
 
+const timeAgo = (dateString) => {
+  const now = new Date();
+  const postedDate = new Date(dateString);
+  const secondsAgo = Math.floor((now - postedDate) / 1000);
+
+  const intervals = [
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 },
+    { label: 'second', seconds: 1 },
+  ];
+
+  for (const interval of intervals) {
+    const count = Math.floor(secondsAgo / interval.seconds);
+    if (count >= 1) {
+      return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+    }
+  }
+  return 'just now';
+};
+
 const JobCards = ({ paginatedJobs }) => {
   const navigate = useNavigate();
 
@@ -36,7 +59,7 @@ const JobCards = ({ paginatedJobs }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-6 px-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 pb-6 px-4">
       {paginatedJobs.map((job) => (
         <div
           key={job._id}
@@ -48,7 +71,7 @@ const JobCards = ({ paginatedJobs }) => {
             <span className="text-[11px] font-medium bg-gradient-to-r from-teal-500 to-blue-600 text-white px-2 py-0.5 rounded-full shadow">
               {job.jobType || 'Full Time'}
             </span>
-            <span className="text-[11px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full shadow">
+            <span className="text-[11px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full shadow line-clamp-1 max-w-[100px]">
               {job.specialisms?.[0] || 'General'}
             </span>
           </div>
@@ -63,20 +86,25 @@ const JobCards = ({ paginatedJobs }) => {
           </div>
 
           {/* Job Title & Company */}
-          <div className="text-center mb-2">
-            <h3 className="text-base font-semibold text-gray-800 line-clamp-2">{job.title}</h3>
-            <p className="text-sm text-gray-500">{job.company || 'Unknown Company'}</p>
+          <div className="text-center mb-3">
+            <h3 className="text-base font-semibold text-gray-800 mb-1 line-clamp-2 break-words">
+              {job.title}
+            </h3>
+            <p className="text-sm text-gray-500 line-clamp-1">{job.company || 'Unknown Company'}</p>
           </div>
 
-          {/* Job Meta Info */}
-          <div className="flex justify-between items-center mt-5 text-sm text-gray-600">
-            <div className="flex items-center">
-              <FiMapPin className="mr-1 text-blue-500" />
-              <span className="truncate max-w-[120px]">{job.location || 'Remote'}</span>
+          {/* Meta Info */}
+          <div className="text-sm text-gray-600 flex flex-col gap-2 mt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1 text-blue-600 font-medium">
+                <FiMapPin className="text-blue-500" />
+                <span className="truncate max-w-[140px]">{job.location || 'Remote'}</span>
+              </div>
+              <span className="bg-blue-100 text-blue-700 px-2 py-0.5 text-[11px] rounded-full">
+                {job.experience ? `Exp: ${job.experience}` : 'Experience: Any'}
+              </span>
             </div>
-            <div className="text-[11px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">
-              {job.experience ? `Exp: ${job.experience}` : 'Experience: Any'}
-            </div>
+            
           </div>
         </div>
       ))}

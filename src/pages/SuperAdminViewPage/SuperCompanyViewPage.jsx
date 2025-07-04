@@ -23,7 +23,7 @@ const SuperCompanyViewPage = () => {
       try {
         const res = await apiClient.get(`/superadmin/company/${id}`);
         setProfile(res.data.company);
-        console.log('Fetched Company Profile:', res.data);
+       // console.log('Fetched Company Profile:', res.data);
         
       } catch (err) {
         setError('Failed to fetch company profile');

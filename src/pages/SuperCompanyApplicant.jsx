@@ -26,12 +26,10 @@ const SuperCompanyManage = () => {
 
   const fetchCompanies = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await apiClient.get('/superadmin/company/all', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     
+      const res = await apiClient.get('/superadmin/company/all');
       setAllCompanies(res.data.companies || []);
-    } catch (err) {
+    } catch  {
       toast.error('Failed to load companies');
     }
   };

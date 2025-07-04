@@ -1,18 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
+import { useUser } from '../contexts/UserContext';
 
 const PublicRoute = ({ children }) => {
-  const token = Cookies.get('at');
+  const { user } = useUser();
+  const toastShown = useRef(false); // <-- NEW
 
   useEffect(() => {
-    if (token) {
+    if (user && !toastShown.current) {
       toast.warn('You are already logged in!');
+      toastShown.current = true;
     }
-  }, [token]);
+  }, [user]);
 
-  if (token) {
+  if (user) {
     return <Navigate to="/" replace />;
   }
 

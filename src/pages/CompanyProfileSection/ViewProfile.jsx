@@ -22,7 +22,7 @@ const ViewProfile = () => {
         const res = await apiClient.get('/company/info');
         const data = res.data.companyInfo;
 
-        console.log('Fetched Profile Data:', data); // Debugging line
+        //console.log('Fetched Profile Data:', data); // Debugging line
         
 
         if (!data) {

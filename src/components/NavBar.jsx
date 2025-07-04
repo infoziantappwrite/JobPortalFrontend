@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaUser, FaBars, FaBell, } from 'react-icons/fa';
-import {FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers,FiInfo,FiBriefcase,FiBookOpen} from 'react-icons/fi';
+import { FiUser, FiLogOut, FiGrid, FiSettings, FiUserCheck, FiBell, FiHome, FiLayers, FiInfo, FiBriefcase, FiBookOpen } from 'react-icons/fi';
 import logo from '/src/assets/logos/Logo.png';
 import apiClient from '../api/apiClient';
 import Cookies from 'js-cookie';
@@ -21,9 +21,9 @@ export default function Navbar() {
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
- const { user,setUser } = useUser(); // ✅ Get user and loading state
+  const { user, setUser } = useUser(); // ✅ Get user and loading state
 
-  
+
 
 
   useEffect(() => {
@@ -44,21 +44,22 @@ export default function Navbar() {
   }, [lastScrollY]);
 
 
- const handleLogoutClick = async () => {
-  try {
-    await apiClient.post(`${user?.userType?.toLowerCase()}/auth/logout`, {}, {
-      withCredentials: true,
-    });
-    Cookies.remove('at'); // Clear the authentication token cookie
-    toast.success('Logout successful');
-    setUser(null); // Clear user state
-    setUserMenuOpen(false); // Close user menu
+  const handleLogoutClick = async () => {
+    try {
+      await apiClient.post(`${user?.userType?.toLowerCase()}/auth/logout`, {}, {
+        withCredentials: true,
+      });
+      // Clear the authentication token cookie
+      //console.log('Logout response:', res.data);
+      toast.success('Logout successful');
+      setUser(null); // Clear user state
+      setUserMenuOpen(false); // Close user menu
       navigate('/login');
 
-  } catch (err) {
-    console.error('Logout error:', err);
-  }
-};
+    } catch  {
+      //console.error('Logout error:', err);
+    }
+  };
 
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function Navbar() {
   };
 
   const isActive = (path) => location.pathname === path;
- 
+
 
   return (
     <nav
@@ -110,19 +111,27 @@ export default function Navbar() {
       {/* Right Actions */}
       <div className="flex items-center gap-4">
         {!user && (
-          <Link
-            to="/register"
-            className="bg-gradient-to-r from-teal-500 to-indigo-600 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:opacity-90"
-          >
-            Register
-          </Link>
-
+          <div className="flex gap-3">
+            <Link
+              to="/register"
+              className="bg-gradient-to-r from-teal-500 to-indigo-600 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:opacity-90"
+            >
+              Register
+            </Link>
+            <Link
+              to="/login"
+              className="bg-gradient-to-r from-indigo-600 to-teal-500 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:opacity-90"
+            >
+              Login
+            </Link>
+          </div>
         )}
+
 
         {user && (
           <div className="flex items-center gap-4 px-4">
             {/* Notification */}
-                 <NotificationPopup />
+            <NotificationPopup />
 
 
             {/* User Menu */}
@@ -151,7 +160,7 @@ export default function Navbar() {
                   <div className="flex flex-col py-2 px-2 space-y-1">
                     <Link
                       to={`/${user?.userType?.toLowerCase()}/dashboard`}
-                       onClick={() => setUserMenuOpen((prev) => !prev)}
+                      onClick={() => setUserMenuOpen((prev) => !prev)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition ${isActive(`/${user?.role?.toLowerCase()}/dashboard`)
                         ? 'text-indigo-700 font-medium'
                         : 'text-gray-700'
@@ -171,18 +180,18 @@ export default function Navbar() {
                     </Link> */}
 
                     <Link
-                        to={`/${user?.userType?.toLowerCase()}/profileview`}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
-                      >
-                        <FiUserCheck size={16} />
-                        My Profile
-                      </Link>
+                      to={`/${user?.userType?.toLowerCase()}/profileview`}
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
+                    >
+                      <FiUserCheck size={16} />
+                      My Profile
+                    </Link>
 
 
                     <Link
                       to="/account-settings"
-                       onClick={() => setUserMenuOpen((prev) => !prev)}
+                      onClick={() => setUserMenuOpen((prev) => !prev)}
                       className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-gray-700"
                     >
                       <FiSettings size={16} />

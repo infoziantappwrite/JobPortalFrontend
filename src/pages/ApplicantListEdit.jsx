@@ -63,7 +63,7 @@ const ApplicantListEdit = () => {
         setLoading(true);
 
         const res = await apiClient.get(`/${role}/job/applicant/shortlisted-applicants`, { withCredentials: true });
-        console.log('API Response:', res.data);
+        
 
         // Fix here: use 'shortlistedApplicants' and 'jobId'
         const matchedJob = res.data.shortlistedApplicants.find(job => job.jobId.toString() === jobId.toString());

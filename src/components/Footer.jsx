@@ -1,66 +1,56 @@
-import logo from '/src/assets/logos/Logo.png';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import logo from "/src/assets/logos/Logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#18181B] text-white py-16 px-6 md:px-20">
+    <footer className="bg-[#18181B] text-white py-16 px-6 md:px-20 font-jost">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row md:justify-between gap-16 mb-14">
-
-        {/* Left: Branding + Contact */}
+        {/* Branding & Contact */}
         <div className="w-full md:w-1/3 max-w-sm">
           <img src={logo} alt="Infoziant Logo" className="mb-6 w-56" />
           <p className="text-lg font-semibold mb-2">Contact Us</p>
-          <p className="text-sm leading-relaxed text-gray-300">
-            1 (314) 732 0300<br />
-            +91 96000 85988
+          <p className="text-sm leading-relaxed text-gray-300 mb-3">
+            Chennai: Akshaya HQ, Rajiv Gandhi Salai, Kazhipattur, Chennai - 603103, India
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-gray-300">
-            Akshaya HQ, Rajiv Gandhi Salai, Kazhipattur,<br />
-            Chennai - 603103, India.
-            <br />
-            1401, 21st ST STE 6310, Sacramento, CA 95811, USA
+          <p className="text-sm leading-relaxed text-gray-300 mb-3">
+            United States: 1401, 21st ST STE 6310, Sacramento, CA 95811, USA
           </p>
-          <p className="mt-2 text-sm text-purple-400">support@infoziant.com</p>
+          <p className="text-sm text-purple-400">support@infoziant.com</p>
         </div>
 
-        {/* Right: Useful Links */}
-        <div className="w-full md:w-2/3 grid grid-cols-2 md:grid-cols-4 gap-10 text-sm">
+        {/* Navigation Links */}
+        <div className="w-full md:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-10 text-sm">
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">For Candidates</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Navigation</h3>
             <ul className="space-y-2 text-gray-300 hover:[&>li:hover]:text-purple-400">
-              <li>Browse Jobs</li>
-              <li>Upload Resume</li>
-              <li>Find Companies</li>
-              <li>Job Alerts</li>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/jobs">Jobs</Link></li>
+              <li><Link to="/companies">Companies</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">For Employers</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Account</h3>
             <ul className="space-y-2 text-gray-300 hover:[&>li:hover]:text-purple-400">
-              <li>Employer Login</li>
-              <li>Job Posting</li>
-              <li>Discover Talent</li>
-              <li>Packages</li>
+              <li><Link to="/login">Login</Link></li>
+              <li><Link to="/register">Register</Link></li>
+              <li><Link to="/login/employee">Employee Login</Link></li>
+              <li><Link to="/register/employee">Employee Register</Link></li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-lg font-bold text-white mb-4">About Us</h3>
-            <ul className="space-y-2 text-gray-300 hover:[&>li:hover]:text-purple-400">
-              <li>About</li>
-              <li>Contact</li>
-              <li>FAQ</li>
-            </ul>
-          </div>
+          
 
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">Upskills</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Support</h3>
             <ul className="space-y-2 text-gray-300 hover:[&>li:hover]:text-purple-400">
-              <li>All Courses</li>
-              <li>My Courses</li>
-              <li>Completed Courses</li>
-              <li>Skill Assessment</li>
+              <li><Link to="/about">Contact</Link></li>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Help Center</a></li>
             </ul>
           </div>
         </div>
@@ -69,15 +59,15 @@ const Footer = () => {
       {/* Bottom Section */}
       <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
         <p className="text-sm text-gray-400 text-center md:text-left">
-          © 2024 <span className="text-white font-semibold">Infoziant</span>. All Rights Reserved.
+          © 2025 <span className="text-white font-semibold">Infoziant IT Solutions Inc.</span> All rights reserved. <br className="md:hidden" />
+          A <span className="text-teal-400 font-medium">SOC 2</span> |{" "}
+          <span className="text-teal-400 font-medium">ISO 27001:2022</span> Certified Company
         </p>
 
         {/* Social Icons */}
-        <div className="flex gap-4 text-xl text-gray-400">
-          <i className="fab fa-facebook-f hover:text-white transition" />
-          <i className="fab fa-twitter hover:text-white transition" />
-          <i className="fab fa-instagram hover:text-white transition" />
-          <i className="fab fa-linkedin-in hover:text-white transition" />
+        <div className="flex gap-4 text-gray-400">
+          <a href="https://www.instagram.com/infoziant.inc/" aria-label="Instagram" className="hover:text-white transition"><Instagram size={20} /></a>
+          <a href="https://www.linkedin.com/company/infoziant/" aria-label="LinkedIn" className="hover:text-white transition"><Linkedin size={20} /></a>
         </div>
       </div>
     </footer>
