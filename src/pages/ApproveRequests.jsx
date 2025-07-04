@@ -8,13 +8,11 @@ const ApproveRequests = () => {
   useEffect(() => {
     const fetchPendingCompanies = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await apiClient.get('/superadmin/company/all', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        const res = await apiClient.get('/superadmin/company/all');
         const allCompanies = res.data.companies || [];
 
-        console.log(allCompanies);
+       // console.log(allCompanies);
         
         const pending = allCompanies.filter(company => company.status === 'pending');
         setPendingCompanies(pending);
@@ -29,11 +27,9 @@ const ApproveRequests = () => {
 
   const handleStatusUpdate = async (companyId, status) => {
     try {
-      const token = localStorage.getItem('token');
+     
       await apiClient.patch(`/superadmin/company/approve/${companyId}`, {
         currStatus: status,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);

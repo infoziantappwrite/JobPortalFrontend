@@ -90,7 +90,7 @@ const ApplicantActions = () => {
           withCredentials: true,
         }); 
         setJobs(res.data.jobs || []);
-        console.log("Fetched Jobs:", res.data.jobs);
+        //console.log("Fetched Jobs:", res.data.jobs);
         setTotalPages(res.data.pagination?.totalPages || 1); 
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load applicants.');

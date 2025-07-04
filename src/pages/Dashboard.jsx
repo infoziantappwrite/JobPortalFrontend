@@ -21,7 +21,7 @@ const Dashboard = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  console.log('User in Dashboard:', user);
+  //console.log('User in Dashboard:', user);
 
   if (!user) {
     return <p className="text-center mt-10 text-red-500 font-semibold">Please log in to access the dashboard.</p>;

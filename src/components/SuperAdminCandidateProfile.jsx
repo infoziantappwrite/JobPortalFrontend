@@ -20,7 +20,7 @@ const CandidateProfile = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  console.log('Candidate ID:', candidateID); // ✅ Corrected here
+ // console.log('Candidate ID:', candidateID); // ✅ Corrected here
 
   // Fetch candidate profile by ID
   const fetchProfile = useCallback(async (id) => {

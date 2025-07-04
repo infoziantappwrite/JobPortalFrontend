@@ -21,13 +21,13 @@ const SuperAdminLogin = () => {
       const response = await apiClient.post(`/${role}/auth/login`, { email, password }, {
         withCredentials: true,
       });
-
-      Cookies.set('at', response.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+      navigate('/');
+     
 
       toast.success(response.data.message || 'Login successful');
       await refreshUser();
      
-        navigate('/');
+        
      
     } catch (error) {
       const data = error.response?.data;

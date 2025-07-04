@@ -8,8 +8,9 @@ export const fetchCurrentUser = async () => {
     //console.log('Current user fetched successfully:', response.data);
     return response.data.user; // user data
    
-  } catch (error) {
-    console.error('Error fetching current user:', error);
-    throw error;
+  } catch {
+    
+    // console.error('Error fetching current user:', error);
+    //throw new Error('Failed to fetch current user');
   }
 };

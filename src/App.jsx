@@ -83,6 +83,18 @@ import CourseDetails from './pages/CourseDetails';
 import MyCourses from './course/candidate/MyCourses';
 
 function App() {
+  const showFooterRoutes = [
+    '/', '/login', '/register', '/register/employee', '/login/employee',
+    '/forgot-password', '/reset-password/:token',
+    '/login/admin/super',
+    '/verify-success', '/verify-failed', '/verify-email',
+    '/about', '/jobs', '/job/:slug', '/companies', '/company/:companyName',
+    '/courses', '/course-details/:courseId'
+  ];
+   const isFooterVisible = showFooterRoutes.some(path => {
+    const pattern = new RegExp('^' + path.replace(/:\w+/g, '[^/]+') + '$');
+    return pattern.test(location.pathname);
+  });
 
   return (
     <Router>
@@ -334,6 +346,7 @@ function App() {
           {/* Add PostJob page route if you have one */}
         </Routes>
       </div>
+        {isFooterVisible && <Footer />}
      
       <ToastContainer
         position="top-right"

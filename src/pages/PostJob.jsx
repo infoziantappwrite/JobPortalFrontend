@@ -42,7 +42,7 @@ function parseQuotedCSV(input) {
 
 const PostJob = () => {
   const { user } = useUser();
-  console.log('User:', user);
+  //console.log('User:', user);
   const [form, setForm] = useState({
     title: '',
     description: '',

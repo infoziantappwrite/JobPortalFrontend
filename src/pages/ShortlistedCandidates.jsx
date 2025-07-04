@@ -124,7 +124,7 @@ const ShortlistedCandidates = () => {
     setUpdatingStatus(true);
     setUpdateError('');
     try {
-      const res = await apiClient.post(
+      await apiClient.post(
         `/${role}/job/applicant/shortlist`,
         {
           jobID: selectedJob.jobId,

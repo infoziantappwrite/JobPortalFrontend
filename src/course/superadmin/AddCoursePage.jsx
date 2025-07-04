@@ -99,7 +99,7 @@ const AddCoursePage = () => {
             //console.log(res)
             toast.success('Course added successfully!')
         } catch (err) {
-            console.log('Error adding course:', err)
+            //console.log('Error adding course:', err)
             toast.error('Failed to add course. Please try again.')
         } finally {
             setLoading(false)

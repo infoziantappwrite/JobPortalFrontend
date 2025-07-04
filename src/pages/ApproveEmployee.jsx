@@ -6,17 +6,14 @@ import { Users, SearchX } from 'lucide-react';
 
 const ApproveEmployee = () => {
   const [pendingEmployees, setPendingEmployees] = useState([]);
-  const token = localStorage.getItem('token');
-
+ 
   useEffect(() => {
     fetchPendingEmployees();
   }, []);
 
   const fetchPendingEmployees = async () => {
     try {
-      const response = await apiClient.get('/company/employee/get/', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get('/company/employee/get/');
 
       const pending = response.data.employees.filter(
         (emp) => emp.status !== 'approved' && emp.status !== 'rejected'
@@ -32,9 +29,7 @@ const ApproveEmployee = () => {
       await apiClient.patch(
         `/company/employee/approve/${id}`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        
       );
       toast.success('Employee approved');
       fetchPendingEmployees();
@@ -48,9 +43,7 @@ const ApproveEmployee = () => {
       await apiClient.patch(
         `/company/employee/reject/${id}`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        
       );
       toast.success('Employee rejected');
       fetchPendingEmployees();

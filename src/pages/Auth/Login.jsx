@@ -21,13 +21,14 @@ const Login = () => {
       const response = await apiClient.post(`/${role}/auth/login`, { email, password }, {
         withCredentials: true,
       });
-      // Store the token in cookies
-      Cookies.set('at', response.data.token, { expires: 1, secure: true, sameSite: 'strict' });
       //console.log('Login response:', response.data);
+      // Store the token in cookies
+      //console.log('Login response:', response.data);
+       navigate('/');
       toast.success(response.data.message || 'Login successful');
       await refreshUser();
      
-        navigate('/');
+       
       
     } catch (error) {
       const data = error.response?.data;

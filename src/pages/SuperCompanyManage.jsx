@@ -28,10 +28,8 @@ const SuperCompanyManage = () => {
 
   const fetchCompanies = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await apiClient.get('/superadmin/company/all', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     
+      const res = await apiClient.get('/superadmin/company/all');
       setAllCompanies(res.data.companies || []);
     } catch {
       toast.error('Failed to load companies');
@@ -41,10 +39,8 @@ const SuperCompanyManage = () => {
   const handleDelete = async (companyID) => {
     if (!window.confirm('Are you sure you want to delete this company?')) return;
     try {
-      const token = localStorage.getItem('token');
-      await apiClient.delete(`/superadmin/company/${companyID}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      
+      await apiClient.delete(`/superadmin/company/${companyID}`);
       toast.success('Company deleted successfully');
       fetchCompanies();
     } catch {
@@ -54,11 +50,9 @@ const SuperCompanyManage = () => {
 
   const handleStatusUpdate = async (companyId, status) => {
     try {
-      const token = localStorage.getItem('token');
+      
       await apiClient.patch(`/superadmin/company/approve/${companyId}`, {
         currStatus: status,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       toast.success(`Company ${status === 'approved' ? 'approved' : 'rejected'}!`);

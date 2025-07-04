@@ -26,7 +26,7 @@ export default function EmployeesList() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true); // ✅ local loading state
-  const token = localStorage.getItem('token');
+  
 
   useEffect(() => {
     fetchEmployees();
@@ -43,9 +43,7 @@ export default function EmployeesList() {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get('/company/employee/get/', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiClient.get('/company/employee/get/');
       setEmployees(response.data.employees);
       setFilteredEmployees(response.data.employees);
     } catch (error) {
@@ -63,9 +61,7 @@ export default function EmployeesList() {
 
   const handleEditSubmit = async () => {
     try {
-      await apiClient.patch(`/company/employee/patch/${editId}`, editForm, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.patch(`/company/employee/patch/${editId}`, editForm);
       toast.success('Employee updated');
       setEditId(null);
       setShowEditModal(false);
@@ -78,9 +74,7 @@ export default function EmployeesList() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this employee?')) return;
     try {
-      await apiClient.delete(`/company/employee/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.delete(`/company/employee/delete/${id}`);
       toast.success('Employee deleted');
       fetchEmployees();
     } catch (err) {

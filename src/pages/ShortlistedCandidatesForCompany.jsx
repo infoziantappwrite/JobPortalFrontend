@@ -47,7 +47,7 @@ const getBgColor = (name) => {
 const ShortlistedCandidates = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
-  console.log(jobs);
+  //console.log(jobs);
   
   
   const [selectedApplication, setSelectedApplication] = useState(null);

@@ -39,7 +39,7 @@ const ApplicationDetailView = () => {
                         { candidateID: applicationID, jobID },
                         { withCredentials: true }
                     );
-                    console.log('Response from superadmin:', res.data);
+                    //console.log('Response from superadmin:', res.data);
 
                     const app = res?.data?.application;
                     if (!app) {
