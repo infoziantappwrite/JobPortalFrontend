@@ -1,14 +1,13 @@
-/* eslint-disable no-unused-vars */
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { Undo2, AlertTriangle } from "lucide-react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
 import apiClient from "../api/apiClient";
 import JobCards from "./JobCards";
 import Pagination from "../pages/hooks/Pagination";
 import InternalLoader from "./InternalLoader";
-import { Undo2, AlertTriangle } from "lucide-react";
 import EmptyState from "./EmptyState";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import debounce from "lodash.debounce";
 
 const predefinedOptions = {
   gender: ["Any", "Male", "Female", "Other"],
@@ -41,15 +40,6 @@ const AllJobs = () => {
   const navigate = useNavigate();
 
   const [jobs, setJobs] = useState([]);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalJobs, setTotalJobs] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [error, setError] = useState("");
-  const [filtersReady, setFiltersReady] = useState(false);
-
   const [filters, setFilters] = useState({
     title: "",
     location: "",
@@ -65,35 +55,44 @@ const AllJobs = () => {
     sortOrder: "desc",
   });
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const [error, setError] = useState("");
+
+  // 1. Load query from URL and set as filters (on first mount)
   useEffect(() => {
-    const initial = {
-      title: searchParams.get("title") || "",
-      location: "",
-      specialisms: searchParams.get("skills") || "",
-      gender: "",
-      experience: "",
-      qualification: "",
-      jobType: "",
-      careerLevel: "",
-      industry: "",
-      city: searchParams.get("city") || "",
-      sortBy: "postedAt",
-      sortOrder: "desc",
+    const title = searchParams.get("title") || "";
+    const skills = searchParams.get("skills") || "";
+    const city = searchParams.get("city") || "";
+
+    const newFilters = {
+      ...filters,
+      title,
+      specialisms: skills,
+      city,
     };
-    setFilters(initial);
-    setFiltersReady(true);
+
+    setFilters(newFilters);
+    fetchJobs(newFilters);
+    setInitialLoadDone(true);
   }, []);
 
-  const fetchJobs = async () => {
+  // 2. Fetch jobs function
+  const fetchJobs = async (customFilters = filters, customPage = page) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await apiClient.get("/common/job/public/all", {
-        params: { ...filters, page, limit },
+        params: { ...customFilters, page: customPage, limit },
       });
+
       const { jobs = [], pagination = {} } = res.data;
       setJobs(jobs);
-      setTotalPages(pagination.totalPages || 1);
       setTotalJobs(pagination.total || 0);
+      setTotalPages(pagination.totalPages || 1);
       setError("");
     } catch (err) {
       console.error("Error fetching jobs:", err);
@@ -103,28 +102,12 @@ const AllJobs = () => {
     }
   };
 
-  useEffect(() => {
-    if (filtersReady) {
-      fetchJobs();
-    }
-  }, [filters, page, limit]);
-
-  const debouncedChange = useCallback(
-    debounce(async (field, value) => {
-      setSearching(true);
-      setFilters((prev) => ({ ...prev, [field]: value }));
-      setPage(1);
-      setSearching(false);
-    }, 600),
-    []
-  );
-
-  useEffect(() => {
-    return () => debouncedChange.cancel();
-  }, [debouncedChange]);
-
+  // 3. Handle input/select changes
   const handleChange = (field, value) => {
-    debouncedChange(field, value);
+    const updatedFilters = { ...filters, [field]: value };
+    setFilters(updatedFilters);
+    setPage(1);
+    fetchJobs(updatedFilters, 1);
   };
 
   const handleReset = () => {
@@ -144,10 +127,16 @@ const AllJobs = () => {
     };
     setFilters(defaultFilters);
     setPage(1);
-    navigate("/jobs");
+    fetchJobs(defaultFilters, 1);
+    navigate("/jobs"); // clean URL
   };
 
-  if (loading && !searching) return <InternalLoader text="Loading Jobs" />;
+  // 4. When page or limit changes
+  useEffect(() => {
+    if (initialLoadDone) fetchJobs(filters, page);
+  }, [page, limit]);
+
+  if (loading && !initialLoadDone) return <InternalLoader text="Loading Jobs..." />;
   if (error) return <EmptyState icon={AlertTriangle} title="Oops! Something Went Wrong" message={error} />;
 
   return (
@@ -166,19 +155,16 @@ const AllJobs = () => {
           <input
             type="text"
             placeholder="Job title, keywords, or company"
-            defaultValue={filters.title}
+            value={filters.title}
             onChange={(e) => handleChange("title", e.target.value)}
             className="bg-transparent w-full outline-none text-gray-700 placeholder-gray-400"
           />
-          {searching && (
-            <div className="ml-2 w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          )}
         </div>
 
         <input
           type="text"
           placeholder="City"
-          defaultValue={filters.city}
+          value={filters.city}
           onChange={(e) => handleChange("city", e.target.value)}
           className="bg-gray-100 text-gray-700 px-3 py-2 rounded-md w-full md:w-auto placeholder-gray-500"
         />
@@ -186,7 +172,7 @@ const AllJobs = () => {
         <input
           type="text"
           placeholder="Skills"
-          defaultValue={filters.specialisms}
+          value={filters.specialisms}
           onChange={(e) => handleChange("specialisms", e.target.value)}
           className="bg-gray-100 text-gray-700 px-3 py-2 rounded-md w-full md:w-auto placeholder-gray-500"
         />
